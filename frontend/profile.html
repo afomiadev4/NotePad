@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NotePad+ Account</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1754cf",
+            "background-light": "#f6f6f8",
+            "background-dark": "#111621",
+          },
+          fontFamily: {
+            "display": ["Manrope", "sans-serif"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: 100dvh;
+    }
+    .peer:checked~.peer-checked\:translate-x-0 {
+      transform: translateX(0);
+    }
+    .peer:checked~* .peer-checked\:opacity-100 {
+      opacity: 1;
+    }
+    .peer:checked~* .peer-checked\:pointer-events-auto {
+      pointer-events: auto;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display bg-background-dark">
+<div class="relative w-full overflow-x-hidden group/design-root">
+<input class="peer sr-only" id="nav-toggle" type="checkbox"/>
+<aside class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full transform bg-[#0D1117] shadow-xl transition-transform duration-300 ease-in-out peer-checked:translate-x-0">
+<div class="flex h-full flex-col p-6 pt-10">
+<div class="mb-8 flex items-center gap-4">
+<img alt="User Avatar" class="h-12 w-12 rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCXinegcYrzZMnmohwZjGfx2Fd6cXfc9SurSinK-zAEgtjgrgRAVHCB2odbOv-C_rvkMia6OjvUDY38jeelqAyE5GV0E6QNaVbw5n8bHqG_MvPA-fCuNMissVkd1bMyBir7fkmuAFMUiGum019HGxXOh1ZcsbKiBUrN34zJrO5zQwn_LbHt78Y8uUMttEWrcMFDP7Z_AD1OO1Wuo2-CAhEUkRL_7P8dJb2R_0QlP2NVjJc3Dm0gCZuG78DO_1M5oQE8pkGLiWLc1ZY"/>
+<div>
+<p class="font-bold text-lg text-slate-200">John</p>
+<p class="text-sm text-slate-400">john.doe@example.com</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-4 rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span>Notes</span>
+</a>
+<a class="flex items-center gap-4 rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">upload</span>
+<span>Upload</span>
+</a>
+<a class="flex items-center gap-4 rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">dynamic_feed</span>
+<span>Feed</span>
+</a>
+<a class="flex items-center gap-4 rounded-lg bg-primary/10 px-4 py-3 font-semibold text-primary" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Account</span>
+</a>
+<hr class="my-4 border-slate-700"/>
+<a class="flex items-center gap-4 rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-4 rounded-lg px-4 py-3 text-slate-300 hover:bg-slate-800" href="#">
+<span class="material-symbols-outlined">help</span>
+<span>Help &amp; Feedback</span>
+</a>
+</nav>
+<div class="mt-auto">
+<a class="flex items-center gap-4 rounded-lg px-4 py-3 text-red-500 hover:bg-red-500/10" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<label class="fixed inset-0 z-30 bg-black/80 opacity-0 transition-opacity duration-300 ease-in-out peer-checked:pointer-events-auto peer-checked:opacity-100 lg:hidden" for="nav-toggle"></label>
+<div class="flex min-h-screen flex-col">
+<header class="sticky top-0 z-20 flex items-center bg-background-dark/80 p-4 backdrop-blur-sm shrink-0 border-b border-slate-200/10">
+<label class="flex size-12 cursor-pointer items-center justify-start -ml-2" for="nav-toggle">
+<button class="flex h-10 w-10 items-center justify-center rounded-full text-slate-200">
+<span class="material-symbols-outlined text-2xl">menu</span>
+</button>
+</label>
+<h1 class="flex-1 text-center text-lg font-bold leading-tight tracking-[-0.015em] text-slate-200">Account</h1>
+<div class="flex w-12 items-center justify-end">
+<button class="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-transparent text-slate-200">
+<span class="material-symbols-outlined text-2xl">more_vert</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-4 pb-24 pt-4 bg-background-dark">
+<div class="mx-auto max-w-md">
+<div class="flex flex-col items-center gap-4">
+<div class="relative">
+<img alt="User Avatar" class="h-28 w-28 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z"/>
+<button class="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 border-background-dark bg-slate-700 text-slate-300">
+<span class="material-symbols-outlined text-base">edit</span>
+</button>
+</div>
+<div class="text-center">
+<p class="text-2xl font-bold text-slate-200">John</p>
+<p class="text-base text-slate-400">john.doe@example.com</p>
+</div>
+<button class="mt-2 rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white">Edit Profile</button>
+</div>
+<div class="mt-10 space-y-2">
+<h2 class="px-4 text-xs font-bold uppercase text-slate-500">General</h2>
+<div class="divide-y divide-slate-200/10 rounded-xl bg-slate-900/60">
+<a class="flex items-center justify-between p-4" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">notifications</span>
+<span class="font-medium text-slate-300">Notifications</span>
+</div>
+<span class="material-symbols-outlined text-slate-500">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">palette</span>
+<span class="font-medium text-slate-300">Appearance</span>
+</div>
+<span class="material-symbols-outlined text-slate-500">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">lock</span>
+<span class="font-medium text-slate-300">Privacy &amp; Security</span>
+</div>
+<span class="material-symbols-outlined text-slate-500">chevron_right</span>
+</a>
+</div>
+</div>
+<div class="mt-8 space-y-2">
+<h2 class="px-4 text-xs font-bold uppercase text-slate-500">Support</h2>
+<div class="divide-y divide-slate-200/10 rounded-xl bg-slate-900/60">
+<a class="flex items-center justify-between p-4" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">help</span>
+<span class="font-medium text-slate-300">Help Center</span>
+</div>
+<span class="material-symbols-outlined text-slate-500">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-4" href="#">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-slate-400">info</span>
+<span class="font-medium text-slate-300">About NotePad+</span>
+</div>
+<span class="material-symbols-outlined text-slate-500">chevron_right</span>
+</a>
+</div>
+</div>
+</div>
+</main>
+<footer class="fixed bottom-0 left-0 right-0 z-20 border-t border-slate-200/10 bg-background-dark/80 backdrop-blur-sm">
+<nav class="mx-auto flex max-w-md items-center justify-around px-2 pb-2 pt-1.5">
+<a class="flex flex-col items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-slate-400 hover:text-primary" href="#">
+<span class="material-symbols-outlined">edit_note</span>
+<span class="text-xs font-medium">Notes</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-slate-400 hover:text-primary" href="#">
+<span class="material-symbols-outlined">upload</span>
+<span class="text-xs font-medium">Upload</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-slate-400 hover:text-primary" href="#">
+<span class="material-symbols-outlined">dynamic_feed</span>
+<span class="text-xs font-medium">Feed</span>
+</a>
+<a class="flex flex-col items-center justify-center gap-1.5 rounded-xl px-4 py-2 text-primary" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-xs font-bold">Account</span>
+</a>
+</nav>
+</footer>
+</div>
+</div>
+</body></html>

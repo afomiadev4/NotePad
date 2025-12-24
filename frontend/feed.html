@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NotePad+ Public Feed</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1754cf",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111621",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark">
+<!-- Sticky Header Bar -->
+<header class="sticky top-0 z-10 w-full bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm">
+<div class="flex h-16 items-center justify-between p-4">
+<div class="text-slate-900 dark:text-white flex size-12 shrink-0 items-center justify-start">
+<!-- Placeholder for logo -->
+</div>
+<h1 class="flex-1 text-center text-lg font-bold tracking-tight text-slate-900 dark:text-white">Public Feed</h1>
+<div class="flex w-12 items-center justify-end">
+<button class="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-slate-900 dark:text-white">
+<span class="material-symbols-outlined text-2xl">search</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Feed -->
+<main class="flex flex-col gap-4 p-4">
+<!-- Note Card 1 -->
+<div class="flex flex-col rounded-xl bg-white dark:bg-slate-900/50 shadow-sm transition-shadow hover:shadow-md">
+<div class="flex flex-col p-5">
+<!-- List Item: User Info -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 shrink-0 rounded-full bg-cover bg-center" data-alt="Avatar of user Alex Johnson" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCEjQ_Ew42VTf4Bdd1_2j7gsNDywAJp4wT3NjGLRyaCHmw63_c_a7x53hh9eKzIc-Yk15ACVVHlQbXJUCzEpFA8Xd1u1hBHtty534-aPNggcIMoJliOI9gcZPckLCXpAnyHW4CUT-xGVVrWr2fb5U7PNm2gFrEqGEYPrdjUQ-RePNOVSixhK7uQEm8JvfH3l3m6-H0fQxeadL7Pdz2aFMvSlMMLhmT1qcIFlvfh-Q5o4BZOyrKH-EQU3k90vKHaFhAsDuuMNF5BrMYk");'></div>
+<p class="flex-1 truncate text-base font-medium text-slate-800 dark:text-slate-200">Alex Johnson</p>
+</div>
+<p class="shrink-0 text-sm text-slate-500 dark:text-slate-400">2h ago</p>
+</div>
+<!-- Headline & Body Text -->
+<div class="mt-4">
+<h2 class="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">The Art of Minimalism</h2>
+<p class="mt-2 text-base font-normal leading-relaxed text-slate-600 dark:text-slate-300">
+                            Minimalism isn't just about owning less; it's a mindset focused on intention and purpose. By decluttering our physical and digital spaces...
+                        </p>
+</div>
+</div>
+<!-- Actions Bar -->
+<div class="border-t border-slate-200/60 dark:border-slate-800/60 p-3">
+<div class="flex justify-end gap-2 px-2">
+<button class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 py-2.5 px-4 text-center transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">bookmark</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Save</p>
+</button>
+<button class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 py-2.5 px-4 text-center transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">ios_share</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Share</p>
+</button>
+</div>
+</div>
+</div>
+<!-- Note Card 2 -->
+<div class="flex flex-col rounded-xl bg-white dark:bg-slate-900/50 shadow-sm transition-shadow hover:shadow-md">
+<div class="flex flex-col p-5">
+<!-- List Item: User Info -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 shrink-0 rounded-full bg-cover bg-center" data-alt="Avatar of user Maria Garcia" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD6TLObtqcxMHf8CC10V8NEcrGhwb6YtUP8oCIzwElfRZBPEK5A6lkV1ENO34LrXFkomxW9-R4V04rZR-UKbE6lHAzNuffVNnFaQogeZHfT3J05I2pUbuaLwWDTglDKw3jSAMExdg2iaIomkzXgbtau1GnEnkxxr8kdh7YGmwDFW3V6mz2W5kH--1iRjiCGXmZc8YvMpJT9YJ54Nw0Lv71e3iAT9CpZOW04Xw9IG_h8LFXXpzTT5npfntflr7bwZaCgYmHoCMwJ8uVA");'></div>
+<p class="flex-1 truncate text-base font-medium text-slate-800 dark:text-slate-200">Maria Garcia</p>
+</div>
+<p class="shrink-0 text-sm text-slate-500 dark:text-slate-400">5h ago</p>
+</div>
+<!-- Headline & Body Text -->
+<div class="mt-4">
+<h2 class="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">Creative Brainstorming</h2>
+<p class="mt-2 text-base font-normal leading-relaxed text-slate-600 dark:text-slate-300">
+                            Unlock your creative potential with these brainstorming techniques. Start by setting a clear goal, then explore mind mapping, free association...
+                        </p>
+</div>
+</div>
+<!-- Actions Bar -->
+<div class="border-t border-slate-200/60 dark:border-slate-800/60 p-3">
+<div class="flex justify-end gap-2 px-2">
+<button class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 py-2.5 px-4 text-center transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">bookmark</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Save</p>
+</button>
+<button class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 py-2.5 px-4 text-center transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">ios_share</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Share</p>
+</button>
+</div>
+</div>
+</div>
+<!-- Note Card 3 -->
+<div class="flex flex-col rounded-xl bg-white dark:bg-slate-900/50 shadow-sm transition-shadow hover:shadow-md">
+<div class="flex flex-col p-5">
+<!-- List Item: User Info -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 shrink-0 rounded-full bg-cover bg-center" data-alt="Avatar of user Kenji Tanaka" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBlBMs_ExJVlxpldb_AGwO1Q9PkQUChE5FCVbIgMQLt9r6QtdjqoFZqLsgkNk-0AmLDjVURmklJik1e8HkM01p02T58mT0hiwj7T_ky3qYE6P0i1uPzK2kCHbuBLOOkbtON1XLBvM8AUWzoU8MCFxq6AUqKkNp8FuC4oZ3P4B5vb33tbst5X4hh9QY5Y_uJwaYWbdELGRTBPsGkC_GEjzta49ZMXuGYe_KlV6z9DMb39Qk3ogssKhi8tAXl99uEc-fODKhlDK1g9gEx");'></div>
+<p class="flex-1 truncate text-base font-medium text-slate-800 dark:text-slate-200">Kenji Tanaka</p>
+</div>
+<p class="shrink-0 text-sm text-slate-500 dark:text-slate-400">1d ago</p>
+</div>
+<!-- Headline & Body Text -->
+<div class="mt-4">
+<h2 class="text-xl font-bold leading-tight tracking-tight text-slate-900 dark:text-white">My Travel Log: Kyoto</h2>
+<p class="mt-2 text-base font-normal leading-relaxed text-slate-600 dark:text-slate-300">
+                            Wandering through the serene bamboo groves of Arashiyama and the golden splendor of Kinkaku-ji. Every corner of this city tells a story.
+                        </p>
+</div>
+</div>
+<!-- Actions Bar -->
+<div class="border-t border-slate-200/60 dark:border-slate-800/60 p-3">
+<div class="flex justify-end gap-2 px-2">
+<button class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 py-2.5 px-4 text-center transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">bookmark</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Save</p>
+</button>
+<button class="flex items-center gap-2 rounded-lg bg-slate-100 dark:bg-slate-800 py-2.5 px-4 text-center transition-colors hover:bg-slate-200 dark:hover:bg-slate-700">
+<span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">ios_share</span>
+<p class="text-sm font-medium text-slate-700 dark:text-slate-200">Share</p>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
