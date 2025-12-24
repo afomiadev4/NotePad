@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NotePad+ Empty Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1754cf",
+              "background-light": "#f6f6f8",
+              "background-dark": "#111621",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display">
+<div class="relative flex h-screen w-full flex-col bg-background-light dark:bg-background-dark group/design-root overflow-x-hidden">
+<!-- Top App Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 shrink-0">
+<div class="flex size-12 shrink-0 items-center justify-start">
+</div>
+<h1 class="flex-1 text-center text-lg font-bold leading-tight tracking-[-0.015em] text-[#18181B] dark:text-white">NotePad+</h1>
+<div class="flex w-12 items-center justify-end">
+<button class="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-transparent text-[#18181B] dark:text-white">
+<span class="material-symbols-outlined text-2xl">search</span>
+</button>
+</div>
+</div>
+<!-- Main Content: Empty State -->
+<main class="flex flex-1 flex-col items-center justify-center p-4">
+<div class="flex w-full max-w-sm flex-col items-center gap-6 text-center">
+<div class="flex size-32 items-center justify-center rounded-full bg-primary/10 text-primary">
+<span class="material-symbols-outlined !text-6xl">edit_note</span>
+</div>
+<div class="flex flex-col items-center gap-2">
+<p class="text-xl font-bold leading-tight tracking-[-0.015em] text-[#18181B] dark:text-white">Your canvas awaits.</p>
+<p class="text-sm font-normal leading-normal text-slate-600 dark:text-slate-400">Tap the + button to create your first note.</p>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<div class="fixed bottom-6 right-6">
+<button class="flex h-14 w-14 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-primary text-white shadow-lg">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+</div>
+</div>
+
+<script type="module" src="/frontend/js/dashboard.js"></script>
+
+</body></html>

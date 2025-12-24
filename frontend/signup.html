@@ -3,7 +3,7 @@
 <html class="dark" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>NotePad+ Login</title>
+<title>NotePad+ Sign-Up</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
@@ -47,44 +47,46 @@
 <!-- Logo and Header -->
 <div class="w-full text-center mb-10">
 <h1 class="text-gray-900 dark:text-white tracking-light text-[32px] font-bold leading-tight">NotePad+</h1>
-<h2 class="text-gray-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pt-5">Welcome Back</h2>
+<h2 class="text-gray-900 dark:text-white text-[22px] font-bold leading-tight tracking-[-0.015em] pt-5">Create Your Account</h2>
 </div>
 <!-- Login Form -->
 <div class="w-full flex flex-col gap-6">
 <!-- Email Field -->
 <label class="flex flex-col w-full">
 <p class="text-gray-800 dark:text-white text-base font-medium leading-normal pb-2">Email</p>
-<input id="login-email" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#344465] bg-white dark:bg-[#1a2232] focus:border-primary dark:focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#93a5c8] p-[15px] text-base font-normal leading-normal" placeholder="Enter your email address" type="email" value=""/>
+<input id="signup-email" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#344465] bg-white dark:bg-[#1a2232] focus:border-primary dark:focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#93a5c8] p-[15px] text-base font-normal leading-normal" placeholder="Enter your email address" type="email" value=""/>
 </label>
 <!-- Password Field -->
 <label class="flex flex-col w-full">
 <p class="text-gray-800 dark:text-white text-base font-medium leading-normal pb-2">Password</p>
 <div class="flex w-full flex-1 items-stretch rounded-lg">
-<input id="login-password" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#344465] bg-white dark:bg-[#1a2232] focus:border-primary dark:focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#93a5c8] p-[15px] rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal" placeholder="Enter your password" type="password" value=""/>
+<input id="signup-password" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-gray-900 dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border border-gray-300 dark:border-[#344465] bg-white dark:bg-[#1a2232] focus:border-primary dark:focus:border-primary h-14 placeholder:text-gray-400 dark:placeholder:text-[#93a5c8] p-[15px] rounded-r-none border-r-0 pr-2 text-base font-normal leading-normal" placeholder="Enter your password" type="password" value=""/>
 <div class="text-gray-400 dark:text-[#93a5c8] flex border border-gray-300 dark:border-[#344465] bg-white dark:bg-[#1a2232] items-center justify-center pr-[15px] rounded-r-lg border-l-0">
 <span class="material-symbols-outlined" style="font-size: 24px;">visibility</span>
 </div>
 </div>
 </label>
-<!-- Forgot Password Link -->
-<div class="w-full text-right">
-<a class="text-primary dark:text-primary text-sm font-normal leading-normal hover:underline" href="#">Forgot Password?</a>
-</div>
+
 <!-- Login Button -->
-<button id="login-btn" class="flex items-center justify-center whitespace-nowrap h-14 w-full rounded-lg bg-primary px-6 text-base font-semibold leading-6 text-white transition-colors duration-200 hover:bg-primary/90 active:bg-primary/80">
-                    Log In
+<button id="signup-btn" class="flex items-center justify-center whitespace-nowrap h-14 w-full rounded-lg bg-primary px-6 text-base font-semibold leading-6 text-white transition-colors duration-200 hover:bg-primary/90 active:bg-primary/80">
+                    Create Account
                 </button>
 </div>
 <!-- Create Account Link -->
 <div class="mt-8 text-center">
 <p class="text-gray-600 dark:text-[#93a5c8] text-sm font-normal leading-normal">
-                    Don't have an account? <a class="font-semibold text-primary dark:text-primary hover:underline" href="signup.html">Create new account</a>
+  Already have an account?
+  <a href="login.html" class="font-semibold text-primary hover:underline">
+    Log in
+  </a>
 </p>
+
 </div>
 </div>
 </div>
 
-<script type="module" src="/frontend/js/auth.js"></script>
+<script type="module" src="/frontend/js/signup.js"></script>
+
 
 </body></html>
 

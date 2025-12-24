@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NotePad+ Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#1754cf",
+              "background-light": "#f8f8f8",
+              "background-dark": "#111621",
+            },
+            fontFamily: {
+              "display": ["Manrope", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display">
+<div class="relative flex h-screen w-full flex-col items-center justify-between p-6">
+<!-- Spacer for top balance -->
+<div class="flex-grow"></div>
+<!-- Logo and Tagline Section -->
+<div class="flex flex-col items-center text-center w-full">
+<h1 class="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white">NotePad+</h1>
+<p class="mt-2 text-base font-normal leading-normal text-zinc-600 dark:text-zinc-400">Where ideas live forever...</p>
+</div>
+<!-- Spacer for centering -->
+<div class="flex-grow"></div>
+<!-- Action Buttons Section -->
+<div class="w-full max-w-sm">
+<div class="flex w-full px-4 py-3">
+ <a href="signup.html" class="flex min-w-[84px] w-full items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] text-center">
+    <span class="truncate">Get Started</span>
+  </a>
+</div>
+<p class="text-zinc-500 dark:text-zinc-400 text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center underline">
+  <a href="login.html">Sign In</a>
+</p>
+</div>
+</div>
+</body></html>
