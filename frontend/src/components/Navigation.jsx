@@ -32,9 +32,9 @@ export function Navigation() {
           h-full
         "
       >
-        <Link to="/notes" className={`${baseItem} ${isActive("/notes")}`}>
-          <i className="fa-solid fa-pen-to-square text-lg"></i>
-          <span className="text-xs lg:text-sm font-medium">Notes</span>
+        <Link to="/folders" className={`${baseItem} ${isActive("/folders")}`}>
+          <i className="fa-solid fa-folder-open text-lg"></i>
+          <span className="text-xs lg:text-sm font-medium">Folders</span>
         </Link>
 
         <Link to="/upload" className={`${baseItem} ${isActive("/upload")}`}>
