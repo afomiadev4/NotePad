@@ -17,39 +17,39 @@ export function Navigation() {
         border-t border-slate-200/10
         bg-background-dark/80 backdrop-blur-sm
 
-        md:static md:w-64 md:h-screen
-        md:border-t-0 md:border-r md:border-slate-200/10
+        lg:static lg:w-64 lg:h-screen
+        lg:border-t-0 lg:border-r lg:border-slate-200/10
       "
     >
       <nav
         className="
-          mx-auto flex max-w-md items-center justify-around
+          mx-auto flex max-w-lg items-center justify-around
           px-2 pb-2 pt-1.5
 
-          md:mx-0 md:max-w-none
-          md:flex-col md:items-stretch md:justify-center
-          md:gap-2 md:px-4 md:pt-10
+          lg:mx-0 lg:max-w-none lg:items-start
+          lg:flex-col lg:items-stretch lg:justify-center
+          lg:gap-2 lg:px-4 lg:pt-10
           h-full
         "
       >
         <Link to="/notes" className={`${baseItem} ${isActive("/notes")}`}>
           <i className="fa-solid fa-pen-to-square text-lg"></i>
-          <span className="text-xs md:text-sm font-medium">Notes</span>
+          <span className="text-xs lg:text-sm font-medium">Notes</span>
         </Link>
 
         <Link to="/upload" className={`${baseItem} ${isActive("/upload")}`}>
           <i className="fa-solid fa-upload text-lg"></i>
-          <span className="text-xs md:text-sm font-medium">Upload</span>
+          <span className="text-xs lg:text-sm font-medium">Upload</span>
         </Link>
 
         <Link to="/feed" className={`${baseItem} ${isActive("/feed")}`}>
           <i className="fa-solid fa-rss text-lg"></i>
-          <span className="text-xs md:text-sm font-medium">Feed</span>
+          <span className="text-xs lg:text-sm font-medium">Feed</span>
         </Link>
 
         <Link to="/account" className={`${baseItem} ${isActive("/account")}`}>
           <i className="fa-solid fa-user text-lg"></i>
-          <span className="text-xs md:text-sm font-medium">Account</span>
+          <span className="text-xs lg:text-sm font-medium">Account</span>
         </Link>
       </nav>
     </footer>
