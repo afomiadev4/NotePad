@@ -12,7 +12,7 @@ export function Welcome() {
         </div>
         <div>
           <Link
-            to="/signup"
+            to="/register"
             className="flex min-w-21 w-full items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-(--btn-primary) text-base font-bold leading-normal"
           >
             <span>Get Started</span>
