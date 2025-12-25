@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export function Welcome() {
   return (
     <div className="h-screen bg-(--bg-primary) box-border overflow-hidden text-(--text-primary)">
-      <div className="min-h-screen flex flex-col mx-auto w-[90%] max-w-96">
+      <div className="min-h-screen flex flex-col mx-auto w-[90%] max-w-md">
         <div className="flex-1 flex flex-col items-center justify-center">
           <h1 className="text-3xl font-bold tracking-tight">NotePad+</h1>
           <p className="mt-2 text-base font-normal leading-normal text-(--text-secondary)">
