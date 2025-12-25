@@ -1,3 +1,5 @@
+import { Welcome } from "./components/Welcome";
+
 export default function App() {
-  return <div className="text-3xl text-pink-600">Hire bikila</div>;
+  return <Welcome />;
 }

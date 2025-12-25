@@ -2,4 +2,7 @@
 
 :root {
   --bg-primary: #121421;
+  --text-primary: #fff;
+  --text-secondary: #67696e;
+  --btn-primary: #3d00d2;
 }
