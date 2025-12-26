@@ -37,7 +37,7 @@ export function Feed() {
   return (
     <div className="min-h-screen bg-(--bg-primary) text-(--text-primary) font-display flex">
       <Navigation />
-      <main className="flex-1 flex flex-col gap-4 p-4 justfy-center">
+      <main className="flex-1 flex flex-col gap-4 p-4 lg:ml-64 justfy-center">
         {notes.map((note) => (
           <div
             key={note.id}

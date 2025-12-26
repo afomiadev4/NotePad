@@ -5,6 +5,7 @@ import Register from "./components/Register.jsx";
 import { Folders } from "./components/Folders.jsx";
 import { Feed } from "./components/Feed.jsx";
 import { AccountPage } from "./components/AccountPage.jsx";
+import { Upload } from "./components/Upload.jsx";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       <Route path="/folders" element={<Folders />} />
       <Route path="/feed" element={<Feed />} />
+      <Route path="/upload" element={<Upload />} />
       <Route path="/account" element={<AccountPage />} />
     </Routes>
   );

@@ -17,7 +17,8 @@ export function Navigation() {
         border-t border-slate-200/10
         bg-background-dark/80 backdrop-blur-sm
 
-        lg:static lg:w-64 lg:h-screen
+        lg:fixed lg:top-0 lg:left-0 lg:z-30
+        lg:w-64 lg:h-screen
         lg:border-t-0 lg:border-r lg:border-slate-200/10
       "
     >
