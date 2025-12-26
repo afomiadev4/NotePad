@@ -4,7 +4,7 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    folderId: "",
+    folderId: "uncategorized",
   });
   const [folders, setFolders] = useState([]);
 
@@ -15,8 +15,14 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
         content: note.content,
         folderId: note.folderId,
       });
+    } else if (mode === "create") {
+      setFormData({
+        title: "",
+        content: "",
+        folderId: "uncategorized",
+      });
     }
-  }, [note]);
+  }, [note, mode]);
 
   useEffect(() => {
     fetch("http://localhost:3000/folders")
@@ -28,10 +34,29 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
   if (!isOpen) return null;
 
   const isEdit = mode === "edit";
+  const isCreate = mode === "create";
+  const isReadOnly = mode === "view";
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({ ...note, ...formData });
+  };
+
+  const getHeaderTitle = () => {
+    if (isCreate) return "New Note";
+    if (isEdit) return "Refine Note";
+    return "Note Details";
+  };
+
+  const getHeaderSub = () => {
+    if (isCreate) return "Capture your latest inspiration";
+    if (isEdit) return "Update your thoughts";
+    return "Reviewing your idea";
+  };
+
+  const getSubmitLabel = () => {
+    if (isCreate) return "Create Note";
+    return "Save Changes";
   };
 
   return (
@@ -41,10 +66,10 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight">
-              {isEdit ? "Refine Note" : "Note Details"}
+              {getHeaderTitle()}
             </h2>
             <p className="text-[11px] text-white/40 mt-0.5 font-medium tracking-wide uppercase">
-              {isEdit ? "Update your thoughts" : "Reviewing your idea"}
+              {getHeaderSub()}
             </p>
           </div>
           <button
@@ -64,7 +89,7 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
             <input
               type="text"
               className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 text-lg font-semibold placeholder:text-white/20 ${
-                !isEdit
+                isReadOnly
                   ? "bg-transparent border-transparent px-1 py-0 cursor-default"
                   : ""
               }`}
@@ -73,44 +98,46 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
               }
-              readOnly={!isEdit}
+              readOnly={isReadOnly}
               required
             />
           </div>
 
-          {/* Folder Selection */}
-          <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-              Category
-            </label>
-            <div className="relative group">
-              <select
-                value={formData.folderId}
-                onChange={(e) =>
-                  setFormData({ ...formData, folderId: e.target.value })
-                }
-                className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 cursor-pointer appearance-none text-white/80 font-medium text-sm ${
-                  !isEdit
-                    ? "bg-transparent border-transparent px-1 py-0 cursor-default pointer-events-none"
-                    : ""
-                }`}
-                disabled={!isEdit}
-              >
-                {folders.map((f) => (
-                  <option
-                    key={f.id}
-                    value={f.id}
-                    className="bg-[#0f172a] text-white"
-                  >
-                    {f.name}
-                  </option>
-                ))}
-              </select>
-              {isEdit && (
-                <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>
-              )}
+          {/* Folder Selection - Hidden in Create Mode per user request */}
+          {!isCreate && (
+            <div className="flex flex-col gap-2">
+              <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
+                Category
+              </label>
+              <div className="relative group">
+                <select
+                  value={formData.folderId}
+                  onChange={(e) =>
+                    setFormData({ ...formData, folderId: e.target.value })
+                  }
+                  className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 cursor-pointer appearance-none text-white/80 font-medium text-sm ${
+                    isReadOnly
+                      ? "bg-transparent border-transparent px-1 py-0 cursor-default pointer-events-none"
+                      : ""
+                  }`}
+                  disabled={isReadOnly}
+                >
+                  {folders.map((f) => (
+                    <option
+                      key={f.id}
+                      value={f.id}
+                      className="bg-[#0f172a] text-white"
+                    >
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+                {!isReadOnly && (
+                  <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Content Area */}
           <div className="flex flex-col gap-2">
@@ -120,7 +147,7 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
             <textarea
               rows="6"
               className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 leading-relaxed resize-none text-sm text-white/70 placeholder:text-white/20 ${
-                !isEdit
+                isReadOnly
                   ? "bg-transparent border-transparent px-1 py-0 cursor-default scrollbar-hide"
                   : ""
               }`}
@@ -129,7 +156,7 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
               onChange={(e) =>
                 setFormData({ ...formData, content: e.target.value })
               }
-              readOnly={!isEdit}
+              readOnly={isReadOnly}
               required
             ></textarea>
           </div>
@@ -141,14 +168,14 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
               onClick={onClose}
               className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              {isEdit ? "Discard" : "Done"}
+              {isReadOnly ? "Done" : "Discard"}
             </button>
-            {isEdit && (
+            {!isReadOnly && (
               <button
                 type="submit"
-                className="px-8 py-3 rounded-xl bg-linear-to-r bg-(--btn-primary) transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                className="px-8 py-3 rounded-xl bg-linear-to-r bg-(--btn-primary) transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white text-sm font-bold"
               >
-                Save Changes
+                {getSubmitLabel()}
               </button>
             )}
           </div>
