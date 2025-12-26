@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
+import { FolderModal } from "./FolderModal";
 
 export function Folders() {
   const [folders, setFolders] = useState([]);
@@ -12,6 +13,9 @@ export function Folders() {
   const [selectedNote, setSelectedNote] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("view");
+
+  // Folder Modal state
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
 
   const fetchData = () => {
     setLoading(true);
@@ -76,6 +80,28 @@ export function Folders() {
       });
   };
 
+  const handleCreateFolder = (newFolder) => {
+    fetch("http://localhost:3000/folders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newFolder),
+    })
+      .then((res) => {
+        if (res.ok) {
+          setIsFolderModalOpen(false);
+          fetchData(); // Refresh list
+        } else {
+          alert("Failed to create folder.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error creating folder:", err);
+        alert("An error occurred.");
+      });
+  };
+
   return (
     <div className="min-h-screen bg-(--bg-primary) text-(--text-primary) flex box-border">
       <Navigation />
@@ -99,8 +125,9 @@ export function Folders() {
 
             {!selectedFolder && (
               <button
+                onClick={() => setIsFolderModalOpen(true)}
                 className="flex items-center gap-2 rounded-xl bg-(--btn-primary) px-4 py-2
-                       text-sm font-semibold text-white hover:bg-blue-600 transition cursor-pointer"
+                       text-sm font-semibold text-white hover:bg-blue-600 transition cursor-pointer shadow-lg shadow-blue-500/20 active:scale-95"
               >
                 <i className="fa-solid fa-folder-plus"></i>
                 Add New Folder
@@ -137,9 +164,10 @@ export function Folders() {
               ))}
 
               <div
+                onClick={() => setIsFolderModalOpen(true)}
                 className="flex flex-col items-center justify-center gap-2 rounded-2xl
                        border border-dashed border-white/20 bg-white/5
-                       hover:bg-white/10 transition cursor-pointer h-32"
+                       hover:bg-white/10 cursor-pointer h-32 active:scale-95 transition-all"
               >
                 <i className="fa-solid fa-plus text-xl text-white/60"></i>
                 <span className="text-sm text-white/60">Add Folder</span>
@@ -195,6 +223,12 @@ export function Folders() {
           )}
         </div>
       </div>
+
+      <FolderModal
+        isOpen={isFolderModalOpen}
+        onClose={() => setIsFolderModalOpen(false)}
+        onCreate={handleCreateFolder}
+      />
 
       <NoteModal
         note={selectedNote}

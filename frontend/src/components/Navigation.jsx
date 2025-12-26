@@ -27,7 +27,7 @@ export function Navigation() {
           mx-auto flex max-w-lg items-center justify-around
           px-2 pb-2 pt-1.5
 
-          lg:mx-0 lg:max-w-none lg:items-start
+          lg:mx-0 lg:max-w-none
           lg:flex-col lg:items-stretch lg:justify-center
           lg:gap-2 lg:px-4 lg:pt-10
           h-full
