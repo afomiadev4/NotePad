@@ -5,7 +5,7 @@ export function AccountPage() {
     <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
       <Navigation />
       {/* Main content */}
-      <div className="flex-1 flex min-h-screen flex-col">
+      <div className="flex-1 flex min-h-screen flex-col lg:ml-64">
         <header className="sticky top-0 z-20 flex items-center bg-background-dark/80 p-4 backdrop-blur-sm shrink-0 border-b border-slate-200/10">
           <label
             htmlFor="nav-toggle"

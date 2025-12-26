@@ -4,7 +4,7 @@ export function Folders() {
   return (
     <div className="min-h-screen bg-(--bg-primary) text-(--text-primary) flex flex-reverse items-center justify-center box-border">
       <Navigation />
-      <div className="flex-1 h-screen box-border">
+      <div className="flex-1 h-screen box-border lg:ml-64">
         <div className="min-h-screen bg-[--bg-primary] text-white p-4 md:p-8">
           <div className="mb-6 flex items-center justify-between">
             <h1 className="text-2xl md:text-3xl font-bold">My Folders</h1>
