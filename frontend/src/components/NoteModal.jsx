@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
 
-export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
+export function NoteModal({
+  note,
+  isOpen,
+  onClose,
+  onSave,
+  mode = "view",
+  initialFolderId = "posted",
+}) {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    folderId: "uncategorized",
+    folderId: "posted",
   });
   const [folders, setFolders] = useState([]);
 
@@ -19,10 +26,10 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
       setFormData({
         title: "",
         content: "",
-        folderId: "uncategorized",
+        folderId: initialFolderId || "posted",
       });
     }
-  }, [note, mode]);
+  }, [note, mode, initialFolderId]);
 
   useEffect(() => {
     fetch("http://localhost:3000/folders")

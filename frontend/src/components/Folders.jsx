@@ -59,6 +59,38 @@ export function Folders() {
   };
 
   const handleSave = (updatedNote) => {
+    if (modalMode === "create") {
+      const freshNote = {
+        ...updatedNote,
+        user: "John Doe", // Mock current user
+        avatar:
+          "https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z",
+        time: "Just now",
+        createdAt: new Date().toISOString(),
+      };
+
+      fetch("http://localhost:3000/notes", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(freshNote),
+      })
+        .then((res) => {
+          if (res.ok) {
+            setIsModalOpen(false);
+            fetchData();
+          } else {
+            alert("Failed to create note.");
+          }
+        })
+        .catch((err) => {
+          console.error("Error creating note:", err);
+          alert("An error occurred.");
+        });
+      return;
+    }
+
     fetch(`http://localhost:3000/notes/${updatedNote.id}`, {
       method: "PUT",
       headers: {
@@ -78,6 +110,12 @@ export function Folders() {
         console.error("Error updating note:", err);
         alert("An error occurred.");
       });
+  };
+
+  const handleAddNewNote = () => {
+    setSelectedNote(null);
+    setModalMode("create");
+    setIsModalOpen(true);
   };
 
   const handleCreateFolder = (newFolder) => {
@@ -123,7 +161,7 @@ export function Folders() {
               </h1>
             </div>
 
-            {!selectedFolder && (
+            {!selectedFolder ? (
               <button
                 onClick={() => setIsFolderModalOpen(true)}
                 className="flex items-center gap-2 rounded-xl bg-(--btn-primary) px-4 py-2
@@ -131,6 +169,15 @@ export function Folders() {
               >
                 <i className="fa-solid fa-folder-plus"></i>
                 Add New Folder
+              </button>
+            ) : (
+              <button
+                onClick={handleAddNewNote}
+                className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2
+                       text-sm font-semibold text-white hover:bg-white/10 transition cursor-pointer active:scale-95"
+              >
+                <i className="fa-solid fa-plus"></i>
+                New Note
               </button>
             )}
           </div>
@@ -234,6 +281,7 @@ export function Folders() {
         note={selectedNote}
         isOpen={isModalOpen}
         mode={modalMode}
+        initialFolderId={selectedFolder?.id}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}
       />
