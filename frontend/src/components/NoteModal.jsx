@@ -35,30 +35,40 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-2xl bg-(--bg-secondary) rounded-3xl border border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
-          <h2 className="text-xl font-bold text-white">
-            {isEdit ? "Edit Note" : "View Note"}
-          </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300">
+      <div className="w-full max-w-lg bg-white/10 backdrop-blur-2xl rounded-4xl border border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in duration-300">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <div>
+            <h2 className="text-xl font-bold text-white tracking-tight">
+              {isEdit ? "Refine Note" : "Note Details"}
+            </h2>
+            <p className="text-[11px] text-white/40 mt-0.5 font-medium tracking-wide uppercase">
+              {isEdit ? "Update your thoughts" : "Reviewing your idea"}
+            </p>
+          </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/5 text-slate-400 hover:text-white transition"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-300 group"
           >
-            <i className="fa-solid fa-xmark"></i>
+            <i className="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform duration-300"></i>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-500 ml-1">
+        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+          {/* Title Input */}
+          <div className="flex flex-col gap-2 group">
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
               Title
             </label>
             <input
               type="text"
-              className={`w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition text-lg font-medium ${
-                !isEdit ? "pointer-events-none opacity-80" : ""
+              className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 text-lg font-semibold placeholder:text-white/20 ${
+                !isEdit
+                  ? "bg-transparent border-transparent px-1 py-0 cursor-default"
+                  : ""
               }`}
+              placeholder="Title..."
               value={formData.title}
               onChange={(e) =>
                 setFormData({ ...formData, title: e.target.value })
@@ -68,39 +78,53 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
             />
           </div>
 
+          {/* Folder Selection */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-500 ml-1">
-              Folder
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
+              Category
             </label>
-            <select
-              value={formData.folderId}
-              onChange={(e) =>
-                setFormData({ ...formData, folderId: e.target.value })
-              }
-              className={`w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition ${
-                !isEdit
-                  ? "pointer-events-none opacity-80 appearance-none"
-                  : "cursor-pointer"
-              }`}
-              disabled={!isEdit}
-            >
-              {folders.map((f) => (
-                <option key={f.id} value={f.id} className="bg-[#1a2232]">
-                  {f.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative group">
+              <select
+                value={formData.folderId}
+                onChange={(e) =>
+                  setFormData({ ...formData, folderId: e.target.value })
+                }
+                className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 cursor-pointer appearance-none text-white/80 font-medium text-sm ${
+                  !isEdit
+                    ? "bg-transparent border-transparent px-1 py-0 cursor-default pointer-events-none"
+                    : ""
+                }`}
+                disabled={!isEdit}
+              >
+                {folders.map((f) => (
+                  <option
+                    key={f.id}
+                    value={f.id}
+                    className="bg-[#0f172a] text-white"
+                  >
+                    {f.name}
+                  </option>
+                ))}
+              </select>
+              {isEdit && (
+                <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>
+              )}
+            </div>
           </div>
 
+          {/* Content Area */}
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-semibold text-slate-500 ml-1">
-              Content
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
+              Body Content
             </label>
             <textarea
-              rows="10"
-              className={`w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition leading-relaxed resize-none ${
-                !isEdit ? "pointer-events-none opacity-80" : ""
+              rows="6"
+              className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 leading-relaxed resize-none text-sm text-white/70 placeholder:text-white/20 ${
+                !isEdit
+                  ? "bg-transparent border-transparent px-1 py-0 cursor-default scrollbar-hide"
+                  : ""
               }`}
+              placeholder="Your thoughts..."
               value={formData.content}
               onChange={(e) =>
                 setFormData({ ...formData, content: e.target.value })
@@ -110,18 +134,19 @@ export function NoteModal({ note, isOpen, onClose, onSave, mode = "view" }) {
             ></textarea>
           </div>
 
-          <div className="mt-4 flex justify-end gap-3">
+          {/* Footer Actions */}
+          <div className="mt-2 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition font-medium"
+              className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              {isEdit ? "Cancel" : "Close"}
+              {isEdit ? "Discard" : "Done"}
             </button>
             {isEdit && (
               <button
                 type="submit"
-                className="px-8 py-2.5 rounded-xl bg-(--btn-primary) hover:bg-blue-600 transition font-bold shadow-lg"
+                className="px-8 py-3 rounded-xl bg-linear-to-r bg-(--btn-primary) transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
               >
                 Save Changes
               </button>
