@@ -1,0 +1,47 @@
+{
+  "folders": [
+    {
+      "id": "uncategorized",
+      "name": "Uncategorized",
+      "type": "system",
+      "icon": "fa-folder",
+      "color": "text-gray-400"
+    },
+    {
+      "id": "saved",
+      "name": "Saved",
+      "type": "system",
+      "icon": "fa-bookmark",
+      "color": "text-green-400"
+    },
+    {
+      "id": "posted",
+      "name": "Posted",
+      "type": "system",
+      "icon": "fa-paper-plane",
+      "color": "text-blue-400"
+    }
+  ],
+  "notes": [
+    {
+      "id": "1",
+      "user": "Alex Johnson",
+      "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuCEjQ_Ew42VTf4Bdd1_2j7gsNDywAJp4wT3NjGLRyaCHmw63_c_a7x53hh9eKzIc-Yk15ACVVHlQbXJUCzEpFA8Xd1u1hBHtty534-aPNggcIMoJliOI9gcZPckLCXpAnyHW4CUT-xGVVrWr2fb5U7PNm2gFrEqGEYPrdjUQ-RePNOVSixhK7uQEm8JvfH3l3m6-H0fQxeadL7Pdz2aFMvSlMMLhmT1qcIFlvfh-Q5o4BZOyrKH-EQU3k90vKHaFhAsDuuMNF5BrMYk",
+      "time": "2h ago",
+      "title": "The Art of Minimalism",
+      "content": "Minimalism isn't just about owning less; it's a mindset focused on intention and purpose. By decluttering our physical and digital spaces...",
+      "folderId": "posted",
+      "createdAt": "2025-12-26T07:15:20Z"
+    },
+    {
+      "id": "2",
+      "user": "Maria Garcia",
+      "avatar": "https://lh3.googleusercontent.com/aida-public/AB6AXuD6TLObtqcxMHf8CC10V8NEcrGhwb6YtUP8oCIzwElfRZBPEK5A6lkV1ENO34LrXFkomxW9-R4V04rZR-UKbE6lHAzNuffVNnFaQogeZHfT3J05I2pUbuaLwWDTglDKw3jSAMExdg2iaIomkzXgbtau1GnEnkxxr8kdh7YGmwDFW3V6mz2W5kH--1iRjiCGXmZc8YvMpJT9YJ54Nw0Lv71e3iAT9CpZOW04Xw9IG_h8LFXXpzTT5npfntflr7bwZaCgYmHoCMwJ8uVA",
+      "time": "5h ago",
+      "title": "Creative Brainstorming",
+      "content": "Unlock your creative potential with these brainstorming techniques. Start by setting a clear goal, then explore mind mapping, free association...",
+      "folderId": "saved",
+      "createdAt": "2025-12-26T04:15:20Z"
+    }
+  ]
+}
