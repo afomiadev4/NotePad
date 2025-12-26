@@ -1,19 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "./Navigation";
 
 export function Upload() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [category, setCategory] = useState("Uncategorized");
+  const [category, setCategory] = useState("uncategorized");
+  const [folders, setFolders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:3000/folders")
+      .then((res) => res.json())
+      .then((data) => {
+        setFolders(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching folders:", err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Uploading note:", { title, content, category });
-    // Reset form
-    setTitle("");
-    setContent("");
-    setCategory("Uncategorized");
-    alert("Note created successfully! (Mock)");
+
+    const newNote = {
+      title,
+      content,
+      folderId: category,
+      user: "John Doe", // Mock current user
+      avatar:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z",
+      time: "Just now",
+      createdAt: new Date().toISOString(),
+    };
+
+    fetch("http://localhost:3000/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newNote),
+    })
+      .then((res) => {
+        if (res.ok) {
+          alert("Note created successfully!");
+          setTitle("");
+          setContent("");
+          setCategory("uncategorized");
+        } else {
+          alert("Failed to create note.");
+        }
+      })
+      .catch((err) => {
+        console.error("Error creating note:", err);
+        alert("An error occurred.");
+      });
   };
 
   return (
@@ -60,19 +102,17 @@ export function Upload() {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition cursor-pointer appearance-none"
+                  disabled={loading}
                 >
-                  <option value="Uncategorized" className="bg-[#1a2232]">
-                    Uncategorized
-                  </option>
-                  <option value="Posted" className="bg-[#1a2232]">
-                    Posted
-                  </option>
-                  <option value="Saved" className="bg-[#1a2232]">
-                    Saved
-                  </option>
-                  <option value="Ideas" className="bg-[#1a2232]">
-                    Ideas
-                  </option>
+                  {folders.map((folder) => (
+                    <option
+                      key={folder.id}
+                      value={folder.id}
+                      className="bg-[#1a2232]"
+                    >
+                      {folder.name}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -106,7 +146,7 @@ export function Upload() {
                   onClick={() => {
                     setTitle("");
                     setContent("");
-                    setCategory("Uncategorized");
+                    setCategory("uncategorized");
                   }}
                   className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition font-medium cursor-pointer"
                 >
