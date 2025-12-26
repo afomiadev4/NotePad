@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
 
-export function Upload() {
+export function CreateNote({ defaultFolder = "posted", hideFolder = true }) {
   const navigate = useNavigate();
 
   const handleSave = (newNoteData) => {
@@ -25,7 +24,7 @@ export function Upload() {
     })
       .then((res) => {
         if (res.ok) {
-          navigate("/feed"); // Redirect after creation
+          navigate(defaultFolder === "posted" ? "/feed" : "/folders");
         } else {
           alert("Failed to create note.");
         }
@@ -37,7 +36,7 @@ export function Upload() {
   };
 
   const handleClose = () => {
-    navigate("/feed"); // Redirect on close/discard
+    navigate(-1); // Go back
   };
 
   return (
@@ -45,7 +44,6 @@ export function Upload() {
       <Navigation />
 
       <div className="flex-1 flex min-h-screen flex-col lg:ml-64 relative bg-(--bg-primary)">
-        {/* Abstract background elements to make the page feel less empty while the modal is open */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[20%] left-[10%] w-160 h-160 bg-blue-500/5 rounded-full blur-[100px] animate-pulse"></div>
           <div className="absolute bottom-[20%] right-[10%] w-120 h-120 bg-indigo-500/5 rounded-full blur-[100px] animate-pulse delay-700"></div>
@@ -54,6 +52,8 @@ export function Upload() {
         <NoteModal
           isOpen={true}
           mode="create"
+          initialFolderId={defaultFolder}
+          hideFolderSelection={hideFolder}
           onClose={handleClose}
           onSave={handleSave}
         />

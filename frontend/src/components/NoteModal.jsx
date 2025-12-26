@@ -7,6 +7,7 @@ export function NoteModal({
   onSave,
   mode = "view",
   initialFolderId = "posted",
+  hideFolderSelection,
 }) {
   const [formData, setFormData] = useState({
     title: "",
@@ -46,7 +47,7 @@ export function NoteModal({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave({ ...note, ...formData });
+    onSave(note ? { ...note, ...formData } : formData);
   };
 
   const getHeaderTitle = () => {
@@ -110,8 +111,8 @@ export function NoteModal({
             />
           </div>
 
-          {/* Folder Selection - Hidden in Create Mode per user request */}
-          {!isCreate && (
+          {/* Folder Selection - Hidden in Create Mode or if explicitly requested */}
+          {(!isCreate || !hideFolderSelection) && !isReadOnly && (
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
                 Category

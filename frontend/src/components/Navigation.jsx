@@ -38,9 +38,17 @@ export function Navigation() {
           <span className="text-xs lg:text-sm font-medium">Folders</span>
         </Link>
 
-        <Link to="/upload" className={`${baseItem} ${isActive("/upload")}`}>
-          <i className="fa-solid fa-upload text-lg"></i>
-          <span className="text-xs lg:text-sm font-medium">Upload</span>
+        <Link to="/add-note" className={`${baseItem} ${isActive("/add-note")}`}>
+          <i className="fa-solid fa-circle-plus text-lg"></i>
+          <span className="text-xs lg:text-sm font-medium">Add Note</span>
+        </Link>
+
+        <Link
+          to="/post-note"
+          className={`${baseItem} ${isActive("/post-note")}`}
+        >
+          <i className="fa-solid fa-paper-plane text-lg"></i>
+          <span className="text-xs lg:text-sm font-medium">Post Note</span>
         </Link>
 
         <Link to="/feed" className={`${baseItem} ${isActive("/feed")}`}>
