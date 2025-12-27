@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 const ICONS = [
   "fa-folder",
@@ -21,6 +21,7 @@ const COLORS = [
 
 export function FolderModal({ isOpen, onClose, onCreate }) {
   const [name, setName] = useState("");
+  const folderRef = useRef();
   const [selectedIcon, setSelectedIcon] = useState(ICONS[0]);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
 
@@ -43,9 +44,19 @@ export function FolderModal({ isOpen, onClose, onCreate }) {
     setSelectedColor(COLORS[0]);
   };
 
+  const validateClick = (e) => {
+    if (!folderRef.current.contains(e.target)) onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300 font-display">
-      <div className="w-full max-w-md bg-white/10 backdrop-blur-2xl rounded-4xl border border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in duration-300">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300 font-display"
+      onClick={validateClick}
+    >
+      <div
+        className="w-full max-w-md bg-white/10 backdrop-blur-2xl rounded-4xl border border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in duration-300"
+        ref={folderRef}
+      >
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight">
