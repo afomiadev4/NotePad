@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -19,12 +19,14 @@ export default function Register() {
     });
   };
 
+  const navigate = useNavigate();
+
   const validate = () => {
     let newErrors = {};
 
     if (!form.name.trim()) newErrors.name = "Name is required";
     if (!form.username.trim()) newErrors.username = "Username is required";
-    if (form.includes(" "))
+    if (form.username.trim().includes(" "))
       newErrors.username = "Username cannot contain spaces";
     if (!form.email.includes("@")) newErrors.email = "Valid email is required";
     if (form.password.length < 8)
@@ -40,10 +42,11 @@ export default function Register() {
     e.preventDefault();
     if (!validate()) return;
     console.log(form);
+    navigate("/folders");
   };
 
   return (
-    <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary)">
+    <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary) overflow-hidden">
       <title>Sign Up</title>
 
       <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-white/20">
