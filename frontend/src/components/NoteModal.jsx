@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function NoteModal({
   note,
@@ -9,6 +9,7 @@ export function NoteModal({
   initialFolderId = "posted",
   hideFolderSelection,
 }) {
+  const noteRef = useRef();
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -67,9 +68,19 @@ export function NoteModal({
     return "Save Changes";
   };
 
+  const validateClick = (e) => {
+    if (!noteRef.current.contains(e.target)) onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300">
-      <div className="w-full max-w-lg bg-white/10 backdrop-blur-2xl rounded-4xl border border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in duration-300">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300"
+      onClick={validateClick}
+    >
+      <div
+        className="w-full max-w-lg bg-white/10 backdrop-blur-2xl rounded-4xl border border-white/20 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in duration-300"
+        ref={noteRef}
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
