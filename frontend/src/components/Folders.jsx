@@ -196,7 +196,7 @@ export function Folders() {
                   className="group rounded-2xl border border-white/10 bg-white/5 p-4
                             hover:bg-white/10 transition cursor-pointer h-32"
                 >
-                  <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center justify-between mb-4 text-blue-400">
                     <i
                       className={`fa-solid ${folder.icon} text-3xl ${folder.color}`}
                     ></i>
