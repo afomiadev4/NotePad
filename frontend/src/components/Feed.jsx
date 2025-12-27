@@ -114,19 +114,19 @@ export function Feed() {
               {/* Actions bar */}
               <div className="border-t border-white/5 p-2 bg-black/10 rounded-b-xl flex items-center justify-between w-full">
                 <div className="flex gap-2 w-full">
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5 transition text-xs text-slate-400">
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-red-400 transition text-xs cursor-pointer">
                     <i className="fa-regular fa-heart"></i>
                     Like
                   </button>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5 transition text-xs text-slate-400">
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-blue-400 transition text-xs cursor-pointer">
                     <i className="fa-regular fa-comment"></i>
                     Comment
                   </button>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5 transition text-xs text-slate-400">
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-green-400 transition text-xs cursor-pointer">
                     <i className="fa-regular fa-bookmark"></i>
                     Save
                   </button>
-                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5 transition text-xs text-slate-400 ml-auto">
+                  <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-white/5 transition text-xs text-slate-400 ml-auto cursor-pointer">
                     <i className="fa-solid fa-share"></i>
                     Share
                   </button>
