@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../Context/UserContext";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -9,7 +11,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
-
+  let { addUser } = useContext(UserContext);
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -41,8 +43,24 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log(form);
-    navigate("/folders");
+    let res = await fetch("http://localhost:3000/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    try {
+      if (!res.ok) {
+        alert("Registration Failed!");
+        return;
+      }
+      console.log(form);
+      let data = await res.json();
+      addUser(data);
+      alert("Registration Successful!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.log("Error during registration:", error);
+    }
   };
 
   return (
