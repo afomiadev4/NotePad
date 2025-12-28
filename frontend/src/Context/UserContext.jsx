@@ -3,6 +3,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [userData, setUserData] = useState([]);
+  const [user, setUser] = useState(null);
 
   const allUsers = async () => {
     try {
@@ -27,10 +28,12 @@ export const UserProvider = ({ children }) => {
     if (!user) {
       return false;
     }
+    setUser(user);
+    localStorage.setItem("userLoggedIn", JSON.stringify(user));
     return true;
   };
   return (
-    <UserContext.Provider value={{ userData, loginUser, addUser }}>
+    <UserContext.Provider value={{ userData, loginUser, addUser, user }}>
       {children}
     </UserContext.Provider>
   );

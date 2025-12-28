@@ -31,6 +31,7 @@ export default function App() {
         />
         <Route path="/account" element={<AccountPage />} />
       </Routes>
+      {/* <CreateNote /> */}
     </div>
   );
 }

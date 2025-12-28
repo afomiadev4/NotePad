@@ -3,8 +3,15 @@ import EmptyNote from "../pages/EmptyNote";
 import ALLNotes from "../pages/AllNotes";
 import MenuIcon from "./MenuIcon";
 import { useContext } from "react";
+import { NoteContext } from "../Context/NoteContext";
+import { Navigation } from "./Navigation";
 
 const DashBoard = () => {
+  const userString = localStorage.getItem("userLoggedIn");
+  const currentUser = userString ? JSON.parse(userString) : null;
+  const { notes } = useContext(NoteContext);
+  const userNotes = notes.filter((note) => note.userId === currentUser?.id);
+
   return (
     <div>
       <div className="flex flex-row  bg-(--bg-primary) items-center text-white justify-between p-4">
@@ -25,8 +32,8 @@ const DashBoard = () => {
           />
         </svg>
       </div>
-      <EmptyNote />
-      <ALLNotes />
+      {userNotes.length === 0 ? <EmptyNote /> : <ALLNotes />}
+      <Navigation />
     </div>
   );
 };
