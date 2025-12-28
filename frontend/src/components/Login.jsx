@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { UserContext } from "../Context/UserContext";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { loginUser } = useContext(UserContext);
 
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log({ email, password });
-    navigate("/folders");
+    loginUser(email, password)
+      ? navigate("/dashboard")
+      : alert("Invalid credentials try again!");
   };
 
   return (
