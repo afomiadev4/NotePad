@@ -131,6 +131,24 @@ export function Folders() {
       });
   };
 
+  const handleDeleteNote = (e, noteId) => {
+    e.stopPropagation();
+    if (window.confirm("Are you sure you want to delete this note?")) {
+      fetch(`http://localhost:3000/notes/${noteId}`, { method: "DELETE" })
+        .then((res) => {
+          if (res.ok) {
+            fetchData();
+          } else {
+            alert("Failed to delete note.");
+          }
+        })
+        .catch((err) => {
+          console.error("Error deleting note:", err);
+          alert("An error occurred.");
+        });
+    }
+  };
+
   const handleAddNewNote = () => {
     setSelectedNote(null);
     setModalMode("create");
@@ -388,7 +406,8 @@ export function Folders() {
                     {folderNotes.map((note) => (
                       <div
                         key={note.id}
-                        className="bg-(--bg-secondary) rounded-2xl border border-white/5 p-5 hover:border-white/10 transition group"
+                        onClick={() => handleView(note)}
+                        className="bg-(--bg-secondary) rounded-2xl border border-white/5 p-5 hover:border-white/10 transition group cursor-pointer"
                       >
                         <div className="flex justify-between items-start mb-3">
                           <h3 className="text-lg font-bold truncate">
@@ -396,16 +415,19 @@ export function Folders() {
                           </h3>
                           <div className="flex gap-1">
                             <button
-                              onClick={() => handleView(note)}
-                              className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white"
-                            >
-                              <i className="fa-regular fa-eye"></i>
-                            </button>
-                            <button
-                              onClick={() => handleEdit(note)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEdit(note);
+                              }}
                               className="p-1.5 rounded-lg hover:bg-white/5 text-slate-400 hover:text-blue-400"
                             >
                               <i className="fa-regular fa-pen-to-square"></i>
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteNote(e, note.id)}
+                              className="p-1.5 rounded-lg hover:bg-red-500/10 text-slate-400 hover:text-red-400"
+                            >
+                              <i className="fa-regular fa-trash-can"></i>
                             </button>
                           </div>
                         </div>
