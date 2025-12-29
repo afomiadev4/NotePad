@@ -126,54 +126,46 @@ export function NoteModal({
               required
             />
           </div>
-          <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-            Category
-          </label>
-          <input
-            type="text"
-            className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 text-lg font-semibold placeholder:text-white/20 ${
-              isReadOnly
-                ? "bg-transparent border-transparent px-1 py-0 cursor-default"
-                : ""
-            }`}
-            placeholder="Category"
-            name="category"
-            id="category-input"
-            list="category-suggestions"
-          />
-          <datalist id="category-suggestions">
-            <option value="Work"></option>
-            <option value="Personal"></option>
-            <option value="Urgent"></option>
-            <option value="Shopping"></option>
-            <option value="Health"></option>
-          </datalist>
-
-          {/* Folder Selection - Hidden in Create Mode or if explicitly requested */}
-          {(!isCreate || !hideFolderSelection) && !isReadOnly && (
-            <div className="flex flex-col gap-2">
+          {freezeSelection ? (
+            <>
               <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-                Select Folder
+                Category
               </label>
-              <div className="relative group">
-                <select
-                  value={formData.folderId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, folderId: e.target.value })
-                  }
-                  className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 cursor-pointer appearance-none text-white/80 font-medium text-sm ${
-                    isReadOnly
-                      ? "bg-transparent border-transparent px-1 py-0 cursor-default pointer-events-none"
-                      : ""
-                  }`}
-                  disabled={isReadOnly}
-                >
-                  {freezeSelection ? (
-                    <option value={initialFolderId}>
-                      {folders.find((f) => f.id === initialFolderId)?.name}
-                    </option>
-                  ) : (
-                    folders.map((f) => (
+              <input
+                type="text"
+                className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 text-lg font-semibold placeholder:text-white/20 ${
+                  isReadOnly
+                    ? "bg-transparent border-transparent px-1 py-0 cursor-default"
+                    : ""
+                }`}
+                value={folders.find((f) => f.id === initialFolderId)?.name}
+                name="category"
+                id="category-input"
+                list="category-suggestions"
+                readOnly={true}
+              />
+            </>
+          ) : (
+            (!isCreate || !hideFolderSelection) &&
+            !isReadOnly && (
+              <div className="flex flex-col gap-2">
+                <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
+                  Select Folder
+                </label>
+                <div className="relative group">
+                  <select
+                    value={formData.folderId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, folderId: e.target.value })
+                    }
+                    className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 cursor-pointer appearance-none text-white/80 font-medium text-sm ${
+                      isReadOnly
+                        ? "bg-transparent border-transparent px-1 py-0 cursor-default pointer-events-none"
+                        : ""
+                    }`}
+                    disabled={isReadOnly}
+                  >
+                    {folders.map((f) => (
                       <option
                         key={f.id}
                         value={f.id}
@@ -181,14 +173,14 @@ export function NoteModal({
                       >
                         {f.name}
                       </option>
-                    ))
+                    ))}
+                  </select>
+                  {!isReadOnly && (
+                    <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>
                   )}
-                </select>
-                {!isReadOnly && (
-                  <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>
-                )}
+                </div>
               </div>
-            </div>
+            )
           )}
 
           {/* Content Area */}
