@@ -340,6 +340,7 @@ export function Folders() {
         note={selectedNote}
         isOpen={isModalOpen}
         mode={modalMode}
+        freezeSelection={true}
         initialFolderId={selectedFolder?.id}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSave}

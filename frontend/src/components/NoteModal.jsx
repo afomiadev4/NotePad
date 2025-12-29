@@ -7,6 +7,7 @@ export function NoteModal({
   onSave,
   mode = "view",
   initialFolderId = "posted",
+  freezeSelection = false,
   hideFolderSelection,
 }) {
   const noteRef = useRef();
@@ -141,15 +142,21 @@ export function NoteModal({
                   }`}
                   disabled={isReadOnly}
                 >
-                  {folders.map((f) => (
-                    <option
-                      key={f.id}
-                      value={f.id}
-                      className="bg-[#0f172a] text-white"
-                    >
-                      {f.name}
+                  {freezeSelection ? (
+                    <option value={initialFolderId}>
+                      {folders.find((f) => f.id === initialFolderId)?.name}
                     </option>
-                  ))}
+                  ) : (
+                    folders.map((f) => (
+                      <option
+                        key={f.id}
+                        value={f.id}
+                        className="bg-[#0f172a] text-white"
+                      >
+                        {f.name}
+                      </option>
+                    ))
+                  )}
                 </select>
                 {!isReadOnly && (
                   <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>
