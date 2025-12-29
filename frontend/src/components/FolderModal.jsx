@@ -68,7 +68,7 @@ export function FolderModal({ isOpen, onClose, onCreate }) {
           </div>
           <button
             onClick={onClose}
-            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-300 group"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-300 group cursor-pointer"
           >
             <i className="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform duration-300"></i>
           </button>

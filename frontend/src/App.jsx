@@ -29,7 +29,13 @@ export default function App() {
         />
         <Route
           path="/post-note"
-          element={<CreateNote defaultFolder="posted" hideFolder={true} />}
+          element={
+            <CreateNote
+              defaultFolder="posted"
+              hideFolder={true}
+              isPost={true}
+            />
+          }
         />
         <Route path="/account" element={<AccountPage />} />
       </Route>
