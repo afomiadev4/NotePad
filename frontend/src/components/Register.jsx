@@ -1,7 +1,10 @@
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     username: "",
@@ -41,7 +44,12 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    console.log(form);
+
+    // Simulate API registration and auto-login
+    const userData = { email: form.email, name: form.name };
+    const token = "dummy-token-" + Date.now();
+
+    dispatch(login({ user: userData, token }));
     navigate("/folders");
   };
 
