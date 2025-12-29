@@ -1,9 +1,10 @@
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { UserContext } from "../Context/UserContext";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Register() {
+  const dispatch = useDispatch();
   const [form, setForm] = useState({
     name: "",
     username: "",
@@ -11,7 +12,7 @@ export default function Register() {
     password: "",
     confirmPassword: "",
   });
-  let { addUser } = useContext(UserContext);
+
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -43,24 +44,13 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    let res = await fetch("http://localhost:3000/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    try {
-      if (!res.ok) {
-        alert("Registration Failed!");
-        return;
-      }
-      console.log(form);
-      let data = await res.json();
-      addUser(data);
-      alert("Registration Successful!");
-      navigate("/dashboard");
-    } catch (error) {
-      console.log("Error during registration:", error);
-    }
+
+    // Simulate API registration and auto-login
+    const userData = { email: form.email, name: form.name };
+    const token = "dummy-token-" + Date.now();
+
+    dispatch(login({ user: userData, token }));
+    navigate("/folders");
   };
 
   return (
@@ -73,9 +63,12 @@ export default function Register() {
         </h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Name</label>
+            <label className=" font-semibold mb-1" htmlFor="name">
+              Name
+            </label>
             <input
               type="text"
+              id="name"
               name="name"
               value={form.name}
               onChange={handleChange}
@@ -86,9 +79,12 @@ export default function Register() {
             )}
           </div>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Username</label>
+            <label className=" font-semibold mb-1" htmlFor="username">
+              Username
+            </label>
             <input
               type="text"
+              id="username"
               name="username"
               value={form.username}
               onChange={handleChange}
@@ -99,9 +95,12 @@ export default function Register() {
             )}
           </div>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Email</label>
+            <label className=" font-semibold mb-1" htmlFor="email">
+              Email
+            </label>
             <input
               type="email"
+              id="email"
               name="email"
               value={form.email}
               onChange={handleChange}
@@ -113,9 +112,12 @@ export default function Register() {
           </div>
 
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Password</label>
+            <label className=" font-semibold mb-1" htmlFor="password">
+              Password
+            </label>
             <input
               type="password"
+              id="password"
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -127,11 +129,15 @@ export default function Register() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-(--text-primary) font-semibold mb-1">
+            <label
+              className="text-(--text-primary) font-semibold mb-1"
+              htmlFor="confirmPassword"
+            >
               Confirm Password
             </label>
             <input
               type="password"
+              id="confirmPassword"
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}

@@ -5,8 +5,10 @@ export function NoteModal({
   isOpen,
   onClose,
   onSave,
+  isPost,
   mode = "view",
   initialFolderId = "posted",
+  freezeSelection = false,
   hideFolderSelection,
 }) {
   const noteRef = useRef();
@@ -52,18 +54,21 @@ export function NoteModal({
   };
 
   const getHeaderTitle = () => {
+    if (isPost) return "Post Note";
     if (isCreate) return "New Note";
     if (isEdit) return "Refine Note";
     return "Note Details";
   };
 
   const getHeaderSub = () => {
+    if (isPost) return "Share your thoughts with the world";
     if (isCreate) return "Capture your latest inspiration";
     if (isEdit) return "Update your thoughts";
     return "Reviewing your idea";
   };
 
   const getSubmitLabel = () => {
+    if (isPost) return "Post Note";
     if (isCreate) return "Create Note";
     return "Save Changes";
   };
@@ -163,15 +168,21 @@ export function NoteModal({
                   }`}
                   disabled={isReadOnly}
                 >
-                  {folders.map((f) => (
-                    <option
-                      key={f.id}
-                      value={f.id}
-                      className="bg-[#0f172a] text-white"
-                    >
-                      {f.name}
+                  {freezeSelection ? (
+                    <option value={initialFolderId}>
+                      {folders.find((f) => f.id === initialFolderId)?.name}
                     </option>
-                  ))}
+                  ) : (
+                    folders.map((f) => (
+                      <option
+                        key={f.id}
+                        value={f.id}
+                        className="bg-[#0f172a] text-white"
+                      >
+                        {f.name}
+                      </option>
+                    ))
+                  )}
                 </select>
                 {!isReadOnly && (
                   <i className="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none group-focus-within:text-blue-500/50 transition-colors text-xs"></i>

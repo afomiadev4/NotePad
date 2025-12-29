@@ -1,25 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
-import { useContext } from "react";
-import { NoteContext } from "../Context/NoteContext";
-export function CreateNote({ defaultFolder = "posted", hideFolder = true }) {
-  const navigate = useNavigate();
-  const { renderAllNotes } = useContext(NoteContext);
 
-  const user = localStorage.getItem("userLoggedIn");
-  let currentUser = JSON.parse(user);
+export function CreateNote({
+  defaultFolder = "posted",
+  hideFolder = true,
+  isPost = false,
+}) {
+  const navigate = useNavigate();
 
   const handleSave = (newNoteData) => {
     const freshNote = {
       ...newNoteData,
-      user: currentUser?.name || "Anonymous",
+      user: "John Doe", // Mock current user
       avatar:
-        currentUser?.avatar ||
-        "https://ui-avatars.com/api/?name=" + (currentUser?.name || "A"),
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z",
       time: "Just now",
       createdAt: new Date().toISOString(),
-      userId: currentUser?.id,
     };
 
     fetch("http://localhost:3000/notes", {
@@ -31,7 +28,7 @@ export function CreateNote({ defaultFolder = "posted", hideFolder = true }) {
     })
       .then((res) => {
         if (res.ok) {
-          navigate(defaultFolder === "posted" ? "/dashboard" : "/folders");
+          navigate(defaultFolder === "posted" ? "/feed" : "/folders");
         } else {
           alert("Failed to create note.");
         }
@@ -63,6 +60,7 @@ export function CreateNote({ defaultFolder = "posted", hideFolder = true }) {
           hideFolderSelection={hideFolder}
           onClose={handleClose}
           onSave={handleSave}
+          isPost={isPost}
         />
       </div>
     </div>
