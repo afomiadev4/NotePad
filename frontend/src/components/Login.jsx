@@ -1,5 +1,7 @@
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -7,10 +9,15 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log({ email, password });
+    // Simulate API call
+    const userData = { email, name: email.split("@")[0] };
+    const token = "dummy-token-" + Date.now();
+
+    dispatch(login({ user: userData, token }));
     navigate("/folders");
   };
 
