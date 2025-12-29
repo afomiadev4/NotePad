@@ -1,0 +1,58 @@
+{
+  "notes": [
+    {
+      "id": "7ba6",
+      "title": "Helu's Note",
+      "content": "Note of user Helen",
+      "folderId": "uncategorized",
+      "user": "helen",
+      "avatar": "https://ui-avatars.com/api/?name=helen",
+      "time": "Just now",
+      "createdAt": "2025-12-28T09:41:13.720Z",
+      "userId": "c4ae"
+    },
+    {
+      "id": "449a",
+      "title": "Nardis's note",
+      "content": "personal personal",
+      "folderId": "uncategorized",
+      "user": "Nardos",
+      "avatar": "https://ui-avatars.com/api/?name=Nardos",
+      "time": "Just now",
+      "createdAt": "2025-12-28T12:15:50.406Z",
+      "userId": "29c3"
+    },
+    {
+      "id": "cdb9",
+      "title": " part 2",
+      "content": "part 2 part2",
+      "folderId": "uncategorized",
+      "user": "Nardos",
+      "avatar": "https://ui-avatars.com/api/?name=Nardos",
+      "time": "Just now",
+      "createdAt": "2025-12-28T12:17:19.558Z",
+      "userId": "29c3"
+    }
+  ],
+  "folders": [],
+  "users": [
+    {
+      "id": "29c3",
+      "name": "Nardos",
+      "username": "nardos",
+      "email": "nasrdos@gmail.com",
+      "password": "12345678",
+      "confirmPassword": "12345678"
+    },
+    {
+      "id": "c4ae",
+      "name": "helen",
+      "username": "helen",
+      "email": "helen@gmail.com",
+      "password": "12345678",
+      "confirmPassword": "12345678"
+    }
+  ],
+  "posts": [],
+  "comment": []
+}
