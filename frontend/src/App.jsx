@@ -19,6 +19,7 @@ export default function App() {
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/folders" element={<Folders />} />
+        <Route path="/folders/:folderId" element={<Folders />} />
         <Route path="/feed" element={<Feed />} />
         <Route
           path="/add-note"
