@@ -63,9 +63,12 @@ export default function Register() {
         </h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Name</label>
+            <label className=" font-semibold mb-1" htmlFor="name">
+              Name
+            </label>
             <input
               type="text"
+              id="name"
               name="name"
               value={form.name}
               onChange={handleChange}
@@ -76,9 +79,12 @@ export default function Register() {
             )}
           </div>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Username</label>
+            <label className=" font-semibold mb-1" htmlFor="username">
+              Username
+            </label>
             <input
               type="text"
+              id="username"
               name="username"
               value={form.username}
               onChange={handleChange}
@@ -89,9 +95,12 @@ export default function Register() {
             )}
           </div>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Email</label>
+            <label className=" font-semibold mb-1" htmlFor="email">
+              Email
+            </label>
             <input
               type="email"
+              id="email"
               name="email"
               value={form.email}
               onChange={handleChange}
@@ -103,9 +112,12 @@ export default function Register() {
           </div>
 
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1">Password</label>
+            <label className=" font-semibold mb-1" htmlFor="password">
+              Password
+            </label>
             <input
               type="password"
+              id="password"
               name="password"
               value={form.password}
               onChange={handleChange}
@@ -117,11 +129,15 @@ export default function Register() {
           </div>
 
           <div className="flex flex-col">
-            <label className="text-(--text-primary) font-semibold mb-1">
+            <label
+              className="text-(--text-primary) font-semibold mb-1"
+              htmlFor="confirmPassword"
+            >
               Confirm Password
             </label>
             <input
               type="password"
+              id="confirmPassword"
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
