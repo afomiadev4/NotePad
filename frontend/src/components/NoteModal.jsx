@@ -79,7 +79,7 @@ export function NoteModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/40 backdrop-blur-md transition-all duration-300"
       onClick={validateClick}
     >
       <div
@@ -104,7 +104,7 @@ export function NoteModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-2">
           {/* Title Input */}
           <div className="flex flex-col gap-2 group">
             <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
@@ -126,12 +126,34 @@ export function NoteModal({
               required
             />
           </div>
+          <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
+            Category
+          </label>
+          <input
+            type="text"
+            className={`w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-(--btn-primary) outline-none transition-all duration-300 text-lg font-semibold placeholder:text-white/20 ${
+              isReadOnly
+                ? "bg-transparent border-transparent px-1 py-0 cursor-default"
+                : ""
+            }`}
+            placeholder="Category"
+            name="category"
+            id="category-input"
+            list="category-suggestions"
+          />
+          <datalist id="category-suggestions">
+            <option value="Work"></option>
+            <option value="Personal"></option>
+            <option value="Urgent"></option>
+            <option value="Shopping"></option>
+            <option value="Health"></option>
+          </datalist>
 
           {/* Folder Selection - Hidden in Create Mode or if explicitly requested */}
           {(!isCreate || !hideFolderSelection) && !isReadOnly && (
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-                Category
+                Select Folder
               </label>
               <div className="relative group">
                 <select
