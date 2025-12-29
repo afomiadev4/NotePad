@@ -2,7 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
 
-export function CreateNote({ defaultFolder = "posted", hideFolder = true }) {
+export function CreateNote({
+  defaultFolder = "posted",
+  hideFolder = true,
+  isPost = false,
+}) {
   const navigate = useNavigate();
 
   const handleSave = (newNoteData) => {
@@ -56,6 +60,7 @@ export function CreateNote({ defaultFolder = "posted", hideFolder = true }) {
           hideFolderSelection={hideFolder}
           onClose={handleClose}
           onSave={handleSave}
+          isPost={isPost}
         />
       </div>
     </div>

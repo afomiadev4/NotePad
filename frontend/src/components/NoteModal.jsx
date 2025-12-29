@@ -5,6 +5,7 @@ export function NoteModal({
   isOpen,
   onClose,
   onSave,
+  isPost,
   mode = "view",
   initialFolderId = "posted",
   freezeSelection = false,
@@ -53,18 +54,21 @@ export function NoteModal({
   };
 
   const getHeaderTitle = () => {
+    if (isPost) return "Post Note";
     if (isCreate) return "New Note";
     if (isEdit) return "Refine Note";
     return "Note Details";
   };
 
   const getHeaderSub = () => {
+    if (isPost) return "Share your thoughts with the world";
     if (isCreate) return "Capture your latest inspiration";
     if (isEdit) return "Update your thoughts";
     return "Reviewing your idea";
   };
 
   const getSubmitLabel = () => {
+    if (isPost) return "Post Note";
     if (isCreate) return "Create Note";
     return "Save Changes";
   };
