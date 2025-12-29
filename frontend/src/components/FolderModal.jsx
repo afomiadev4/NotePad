@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const ICONS = [
   "fa-folder",
@@ -19,11 +19,25 @@ const COLORS = [
   { name: "Purple", class: "text-purple-400", bg: "bg-purple-400/10" },
 ];
 
-export function FolderModal({ isOpen, onClose, onCreate }) {
+export function FolderModal({ isOpen, onClose, onCreate, folder }) {
   const [name, setName] = useState("");
   const folderRef = useRef();
   const [selectedIcon, setSelectedIcon] = useState(ICONS[0]);
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+
+  useEffect(() => {
+    if (folder) {
+      setName(folder.name || "");
+      setSelectedIcon(folder.icon || ICONS[0]);
+      const colorMatch =
+        COLORS.find((c) => c.class === folder.color) || COLORS[0];
+      setSelectedColor(colorMatch);
+    } else {
+      setName("");
+      setSelectedIcon(ICONS[0]);
+      setSelectedColor(COLORS[0]);
+    }
+  }, [folder, isOpen]);
 
   if (!isOpen) return null;
 
@@ -32,16 +46,19 @@ export function FolderModal({ isOpen, onClose, onCreate }) {
     if (!name.trim()) return;
 
     onCreate({
+      ...folder,
       name,
       icon: selectedIcon,
       color: selectedColor.class,
-      type: "custom",
+      type: folder?.type || "custom",
     });
 
-    // Reset state
-    setName("");
-    setSelectedIcon(ICONS[0]);
-    setSelectedColor(COLORS[0]);
+    if (!folder) {
+      // Reset state only if creating new
+      setName("");
+      setSelectedIcon(ICONS[0]);
+      setSelectedColor(COLORS[0]);
+    }
   };
 
   const validateClick = (e) => {
@@ -60,7 +77,7 @@ export function FolderModal({ isOpen, onClose, onCreate }) {
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight">
-              New Folder
+              {folder ? "Edit Folder" : "New Folder"}
             </h2>
             <p className="text-[11px] text-white/40 mt-0.5 font-medium tracking-wide uppercase">
               Organize your thoughts
@@ -68,7 +85,7 @@ export function FolderModal({ isOpen, onClose, onCreate }) {
           </div>
           <button
             onClick={onClose}
-            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-300 group"
+            className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all duration-300 group cursor-pointer"
           >
             <i className="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform duration-300"></i>
           </button>
@@ -159,7 +176,7 @@ export function FolderModal({ isOpen, onClose, onCreate }) {
               type="submit"
               className="px-8 py-3 rounded-xl bg-linear-to-r bg-(--btn-primary) transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-white text-sm font-bold shadow-[0_8px_16px_-4px_rgba(59,130,246,0.4)]"
             >
-              Create Folder
+              {folder ? "Save Changes" : "Create Folder"}
             </button>
           </div>
         </form>
