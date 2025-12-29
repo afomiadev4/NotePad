@@ -19,6 +19,7 @@ export function Folders() {
 
   // Folder Modal state
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [folderToEdit, setFolderToEdit] = useState(null);
 
   const fetchData = () => {
     setLoading(true);
@@ -137,8 +138,14 @@ export function Folders() {
   };
 
   const handleCreateFolder = (newFolder) => {
-    fetch("http://localhost:3000/folders", {
-      method: "POST",
+    const isUpdate = !!folderToEdit;
+    const url = isUpdate
+      ? `http://localhost:3000/folders/${folderToEdit.id}`
+      : "http://localhost:3000/folders";
+    const method = isUpdate ? "PUT" : "POST";
+
+    fetch(url, {
+      method,
       headers: {
         "Content-Type": "application/json",
       },
@@ -147,15 +154,63 @@ export function Folders() {
       .then((res) => {
         if (res.ok) {
           setIsFolderModalOpen(false);
+          setFolderToEdit(null);
           fetchData(); // Refresh list
         } else {
-          alert("Failed to create folder.");
+          alert(`Failed to ${isUpdate ? "update" : "create"} folder.`);
         }
       })
       .catch((err) => {
-        console.error("Error creating folder:", err);
+        console.error(
+          `Error ${isUpdate ? "updating" : "creating"} folder:`,
+          err
+        );
         alert("An error occurred.");
       });
+  };
+
+  const handleEditFolder = (e, folder) => {
+    e.stopPropagation();
+    setFolderToEdit(folder);
+    setIsFolderModalOpen(true);
+  };
+
+  const handleDeleteFolder = (e, folderIdToDelete) => {
+    e.stopPropagation();
+    if (
+      window.confirm(
+        "Are you sure you want to delete this folder and all its notes?"
+      )
+    ) {
+      const folderNotesToDelete = notes.filter(
+        (n) => n.folderId === folderIdToDelete
+      );
+
+      const deleteNotesPromises = folderNotesToDelete.map((note) =>
+        fetch(`http://localhost:3000/notes/${note.id}`, { method: "DELETE" })
+      );
+
+      Promise.all(deleteNotesPromises)
+        .then(() =>
+          fetch(`http://localhost:3000/folders/${folderIdToDelete}`, {
+            method: "DELETE",
+          })
+        )
+        .then((res) => {
+          if (res.ok) {
+            fetchData();
+            if (folderIdToDelete === folderId) {
+              navigate("/folders");
+            }
+          } else {
+            alert("Failed to delete folder.");
+          }
+        })
+        .catch((err) => {
+          console.error("Error deleting folder/notes:", err);
+          alert("An error occurred during deletion.");
+        });
+    }
   };
 
   return (
@@ -193,7 +248,10 @@ export function Folders() {
                 ))}
               </div>
               <button
-                onClick={() => setIsFolderModalOpen(true)}
+                onClick={() => {
+                  setFolderToEdit(null);
+                  setIsFolderModalOpen(true);
+                }}
                 className="mt-4 mx-4 flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20 text-white/40 hover:text-white hover:border-white/40 transition text-sm"
               >
                 <i className="fa-solid fa-plus"></i>
@@ -221,7 +279,10 @@ export function Folders() {
 
               {!selectedFolder ? (
                 <button
-                  onClick={() => setIsFolderModalOpen(true)}
+                  onClick={() => {
+                    setFolderToEdit(null);
+                    setIsFolderModalOpen(true);
+                  }}
                   className="flex items-center gap-2 rounded-xl bg-(--btn-primary) px-4 py-2
                          text-sm font-semibold text-white hover:bg-blue-600 transition cursor-pointer shadow-lg shadow-blue-500/20 active:scale-95"
                 >
@@ -229,14 +290,32 @@ export function Folders() {
                   Add New Folder
                 </button>
               ) : (
-                <button
-                  onClick={handleAddNewNote}
-                  className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2
-                         text-sm font-semibold text-white hover:bg-white/10 transition cursor-pointer active:scale-95"
-                >
-                  <i className="fa-solid fa-plus"></i>
-                  New Note
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={(e) => handleEditFolder(e, selectedFolder)}
+                    className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2
+                           text-sm font-semibold text-white hover:bg-white/10 transition cursor-pointer active:scale-95"
+                  >
+                    <i className="fa-solid fa-pen-to-square"></i>
+                    Edit Folder
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteFolder(e, selectedFolder.id)}
+                    className="flex items-center gap-2 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-2
+                           text-sm font-semibold text-red-400 hover:bg-red-500/20 transition cursor-pointer active:scale-95"
+                  >
+                    <i className="fa-solid fa-trash-can"></i>
+                    Delete Folder
+                  </button>
+                  <button
+                    onClick={handleAddNewNote}
+                    className="flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2
+                           text-sm font-semibold text-white hover:bg-white/10 transition cursor-pointer active:scale-95"
+                  >
+                    <i className="fa-solid fa-plus"></i>
+                    New Note
+                  </button>
+                </div>
               )}
             </div>
 
@@ -258,7 +337,20 @@ export function Folders() {
                       <i
                         className={`fa-solid ${folder.icon} text-3xl ${folder.color}`}
                       ></i>
-                      <i className="fa-solid fa-ellipsis-vertical text-white/60 opacity-0 group-hover:opacity-100 transition"></i>
+                      <div className="flex gap-2 transition">
+                        <button
+                          onClick={(e) => handleEditFolder(e, folder)}
+                          className="p-1 px-2 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition"
+                        >
+                          <i className="fa-solid fa-pen-to-square text-sm"></i>
+                        </button>
+                        <button
+                          onClick={(e) => handleDeleteFolder(e, folder.id)}
+                          className="p-1 px-2 rounded-lg hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition"
+                        >
+                          <i className="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                      </div>
                     </div>
 
                     <h3 className="font-semibold truncate">{folder.name}</h3>
@@ -269,10 +361,13 @@ export function Folders() {
                 ))}
 
                 <div
-                  onClick={() => setIsFolderModalOpen(true)}
+                  onClick={() => {
+                    setFolderToEdit(null);
+                    setIsFolderModalOpen(true);
+                  }}
                   className="flex flex-col items-center justify-center gap-2 rounded-2xl
-                         border border-dashed border-white/20 bg-white/5
-                         hover:bg-white/10 cursor-pointer h-32 active:scale-95 transition-all"
+                       border border-dashed border-white/20 bg-white/5
+                       hover:bg-white/10 cursor-pointer h-32 active:scale-95 transition-all"
                 >
                   <i className="fa-solid fa-plus text-xl text-white/60"></i>
                   <span className="text-sm text-white/60">Add Folder</span>
@@ -332,7 +427,11 @@ export function Folders() {
 
       <FolderModal
         isOpen={isFolderModalOpen}
-        onClose={() => setIsFolderModalOpen(false)}
+        folder={folderToEdit}
+        onClose={() => {
+          setIsFolderModalOpen(false);
+          setFolderToEdit(null);
+        }}
         onCreate={handleCreateFolder}
       />
 
