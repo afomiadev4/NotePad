@@ -395,7 +395,10 @@ export function Folders() {
               /* Notes Dashboard within selected folder */
               <div className="flex flex-col gap-4">
                 {folderNotes.length === 0 ? (
-                  <div className="flex h-64 flex-col items-center justify-center p-8 bg-white/5 rounded-2xl border border-dashed border-white/20">
+                  <div
+                    className="flex h-64 flex-col items-center justify-center p-8 bg-white/5 rounded-2xl border border-dashed border-white/20 hover:border-white/50"
+                    onClick={handleAddNewNote}
+                  >
                     <i className="fa-regular fa-note-sticky text-4xl text-slate-500 mb-4"></i>
                     <p className="text-xl font-medium text-slate-400">
                       No notes in this folder
