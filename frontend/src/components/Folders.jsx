@@ -302,7 +302,7 @@ export function Folders() {
                     setIsFolderModalOpen(true);
                   }}
                   className="flex items-center gap-2 rounded-xl bg-(--btn-primary) px-4 py-2
-                         text-sm font-semibold text-white hover:bg-blue-600 transition cursor-pointer shadow-lg shadow-blue-500/20 active:scale-95"
+                         text-sm font-semibold text-(--text-primary) hover:bg-blue-600 transition cursor-pointer shadow-lg shadow-blue-500/20 active:scale-95"
                 >
                   <i className="fa-solid fa-folder-plus"></i>
                   Add New Folder
@@ -384,11 +384,13 @@ export function Folders() {
                     setIsFolderModalOpen(true);
                   }}
                   className="flex flex-col items-center justify-center gap-2 rounded-2xl
-                       border border-dashed border-white/20 bg-white/5
-                       hover:bg-white/10 cursor-pointer h-32 active:scale-95 transition-all"
+                      border border-dashed border-( --border-color) bg-( --bg-card)
+                      hover:bg-white/10 cursor-pointer h-32 active:scale-95 transition-all"
                 >
-                  <i className="fa-solid fa-plus text-xl text-white/60"></i>
-                  <span className="text-sm text-white/60">Add Folder</span>
+                  <i className="fa-solid fa-plus text-xl text-(--text-primary)"></i>
+                  <span className="text-sm text-(--text-primary)">
+                    Add Folder
+                  </span>
                 </div>
               </div>
             ) : (

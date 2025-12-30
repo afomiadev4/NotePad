@@ -8,37 +8,45 @@ import { AccountPage } from "./components/AccountPage.jsx";
 import { CreateNote } from "./components/CreateNote.jsx";
 
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import EditProfile from "./components/EditProfile.jsx";
+import { ThemeProvider } from "./Context/ThemeContext.jsx";
 
 export default function App() {
   return (
-    <Routes>
-      <Route index element={<Welcome />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <div>
+      <ThemeProvider>
+        <EditProfile />
 
-      {/* Protected Routes */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/folders" element={<Folders />} />
-        <Route path="/folders/:folderId" element={<Folders />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route
-          path="/add-note"
-          element={
-            <CreateNote defaultFolder="uncategorized" hideFolder={false} />
-          }
-        />
-        <Route
-          path="/post-note"
-          element={
-            <CreateNote
-              defaultFolder="posted"
-              hideFolder={true}
-              isPost={true}
+        <Routes>
+          <Route index element={<Welcome />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/folders" element={<Folders />} />
+            <Route path="/folders/:folderId" element={<Folders />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route
+              path="/add-note"
+              element={
+                <CreateNote defaultFolder="uncategorized" hideFolder={false} />
+              }
             />
-          }
-        />
-        <Route path="/account" element={<AccountPage />} />
-      </Route>
-    </Routes>
+            <Route
+              path="/post-note"
+              element={
+                <CreateNote
+                  defaultFolder="posted"
+                  hideFolder={true}
+                  isPost={true}
+                />
+              }
+            />
+            <Route path="/account" element={<AccountPage />} />
+          </Route>
+        </Routes>
+      </ThemeProvider>
+    </div>
   );
 }

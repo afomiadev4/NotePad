@@ -72,7 +72,7 @@ export default function Register() {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-white/20 border border-(--border-color) focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
             />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name}</p>
@@ -88,7 +88,7 @@ export default function Register() {
               name="username"
               value={form.username}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-white/20 border border-(--border-color) focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
             />
             {errors.username && (
               <p className="text-red-500 text-sm mt-1">{errors.username}</p>
@@ -104,7 +104,7 @@ export default function Register() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-white/20 border border-(--border-color) focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -121,7 +121,7 @@ export default function Register() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-white/20 border border-(--border-color) focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -141,7 +141,7 @@ export default function Register() {
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="px-4 py-2 text-(--text-primary) rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 text-(--text-primary) rounded-xl bg-white/20 border border-(--border-color) focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
             />
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">

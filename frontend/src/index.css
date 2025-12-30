@@ -1,9 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #111621;
-  --bg-secondary: #1a2232;
-  --text-primary: #fff;
+  --bg-primary: #ffffff;
+  --text-primary: #1a1a1a;
+  --bg-card: #f8fafc;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --text-secondary: #67696e;
+  --btn-primary: #3668ce;
+  --hover-color: #f1f5f9;
+}
+
+.dark {
+  --bg-primary: #0f172a;
+  --text-primary: #f8fafc;
+  --bg-card: #1e293b;
+  --border-color: rgba(255, 255, 255, 0.1);
   --text-secondary: #67696e;
   --btn-primary: #1754cf;
+  --hover-color: #1e293b;
 }
