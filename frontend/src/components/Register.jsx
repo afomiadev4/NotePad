@@ -2,6 +2,8 @@ import { useDispatch } from "react-redux";
 import { login } from "../store/authSlice";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+
 
 export default function Register() {
   const dispatch = useDispatch();
@@ -42,16 +44,29 @@ export default function Register() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
+  e.preventDefault();
+  if (!validate()) return;
 
-    // Simulate API registration and auto-login
-    const userData = { email: form.email, name: form.name };
-    const token = "dummy-token-" + Date.now();
+  const { data, error } = await supabase.auth.signUp({
+    email: form.email,
+    password: form.password,
+    options: {
+      data: {
+        name: form.name,
+        username: form.username,
+      },
+    },
+  });
 
-    dispatch(login({ user: userData, token }));
-    navigate("/folders");
-  };
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("Check your email to verify your account!");
+  navigate("/login");
+};
+
 
   return (
     <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary) overflow-hidden">
