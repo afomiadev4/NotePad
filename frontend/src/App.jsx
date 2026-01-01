@@ -1,13 +1,14 @@
 import { Routes, Route } from "react-router-dom";
 import { Welcome } from "./components/Welcome";
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
-import { Folders } from "./components/Folders.jsx";
-import { Feed } from "./components/Feed.jsx";
-import { AccountPage } from "./components/AccountPage.jsx";
-import { CreateNote } from "./components/CreateNote.jsx";
+import Login from "./components/Login";
+import Register from "./components/Register";
+import { Folders } from "./components/Folders";
+import { Feed } from "./components/Feed";
+import { AccountPage } from "./components/AccountPage";
+import { CreateNote } from "./components/CreateNote";
+import { Dashboard } from "./components/Dashboard";
 
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
   return (
@@ -23,21 +24,14 @@ export default function App() {
         <Route path="/feed" element={<Feed />} />
         <Route
           path="/add-note"
-          element={
-            <CreateNote defaultFolder="uncategorized" hideFolder={false} />
-          }
+          element={<CreateNote defaultFolder="uncategorized" hideFolder={false} />}
         />
         <Route
           path="/post-note"
-          element={
-            <CreateNote
-              defaultFolder="posted"
-              hideFolder={true}
-              isPost={true}
-            />
-          }
+          element={<CreateNote defaultFolder="posted" hideFolder={true} isPost={true} />}
         />
         <Route path="/account" element={<AccountPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Route>
     </Routes>
   );
