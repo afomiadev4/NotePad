@@ -1,6 +1,20 @@
 import { Navigation } from "./Navigation";
+import { supabase } from "../supabaseClient";
+import { useNavigate } from "react-router-dom";
+
 
 export function AccountPage() {
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error(error);
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
       <Navigation />
@@ -95,6 +109,8 @@ export function AccountPage() {
                 </a>
               </div>
             </div>
+
+            <button onClick={handleLogout}>Logout</button>
           </div>
         </main>
       </div>
