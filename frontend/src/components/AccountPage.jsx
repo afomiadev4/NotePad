@@ -1,5 +1,6 @@
 import { Navigation } from "./Navigation";
 import { supabase } from "../supabaseClient";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -14,6 +15,20 @@ export function AccountPage() {
       navigate("/login");
     }
   };
+
+  const [user, setUser] = useState(null);
+
+
+  useEffect(() => {
+  const getUser = async () => {
+    const { data, error } = await supabase.auth.getUser();
+    if (!error) {
+      setUser(data.user);
+    }
+  };
+
+  getUser();
+}, []);
 
   return (
     <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
@@ -53,8 +68,8 @@ export function AccountPage() {
                 </button>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold">John</p>
-                <p className="text-base">john.doe@example.com</p>
+                <p className="text-2xl font-bold"> {user?.user_metadata?.name || user?.email?.split("@")[0]}</p>
+                <p className="text-base"> {user?.email}</p>
               </div>
               <button className="mt-2 rounded-full bg-blue-400 px-6 py-2.5 text-sm font-semibold">
                 Edit Profile
@@ -110,7 +125,9 @@ export function AccountPage() {
               </div>
             </div>
 
-            <button onClick={handleLogout}>Logout</button>
+            <button onClick={handleLogout} className="mt-12 w-full rounded-xl border border-red-500 bg-red-500/10 px-6 py-3 text-red-500 font-semibold transition hover:bg-red-500 hover:text-white"
+>Logout</button>
+
           </div>
         </main>
       </div>
