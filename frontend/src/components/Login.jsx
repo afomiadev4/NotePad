@@ -1,7 +1,9 @@
+console.log("Login component loaded!");
 import { useDispatch } from "react-redux";
 import { login } from "../store/authSlice";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -11,15 +13,29 @@ export default function Login() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    // Simulate API call
-    const userData = { email, name: email.split("@")[0] };
-    const token = "dummy-token-" + Date.now();
+  const handleLogin = async (e) => {
+  e.preventDefault();
 
-    dispatch(login({ user: userData, token }));
-    navigate("/folders");
-  };
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  dispatch(
+    login({
+      user: data.user,
+      token: data.session.access_token,
+    })
+  );
+
+  navigate("/folders");
+};
+
 
   return (
     <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary)">
