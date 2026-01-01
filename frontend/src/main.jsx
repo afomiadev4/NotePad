@@ -1,18 +1,21 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+
 import "./index.css";
 import App from "./App.jsx";
+import { store } from "./store";
+import { initAuthListener } from "./authListener";
 
-import { Provider } from "react-redux";
-import { store } from "./store/index.js";
+initAuthListener(store);
 
 createRoot(document.getElementById("root")).render(
-  <Provider store={store}>
-    <BrowserRouter>
-      <StrictMode>
+  <StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
         <App />
-      </StrictMode>
-    </BrowserRouter>
-  </Provider>
+      </BrowserRouter>
+    </Provider>
+  </StrictMode>
 );
