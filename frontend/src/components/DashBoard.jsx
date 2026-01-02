@@ -1,10 +1,5 @@
-import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
+import React, { useEffect, useState } from "react";
 import { Navigation } from "./Navigation";
-import { FolderModal } from "./FolderModal";
-import { NoteModal } from "./NoteModal";
-=======
->>>>>>> 9cb5ffd7828fb3d29cb53b8b2b57c8e7e4cb3978
 import "./Dashboard.css";
 
 export default function Dashboard() {
@@ -12,13 +7,9 @@ export default function Dashboard() {
     const [notes, setNotes] = useState([]);
     const [selectedFolder, setSelectedFolder] = useState(null);
     const [selectedNote, setSelectedNote] = useState(null);
-    const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
-    const [folderToEdit, setFolderToEdit] = useState(null);
-    const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
-    const [noteModalMode, setNoteModalMode] = useState("view");
+    const [loading, setLoading] = useState(true);
 
-    // Fetch folders and notes from backend
-    const fetchData = () => {
+    useEffect(() => {
         Promise.all([
             fetch("http://localhost:3000/folders").then((res) => res.json()),
             fetch("http://localhost:3000/notes").then((res) => res.json()),
@@ -26,107 +17,77 @@ export default function Dashboard() {
             .then(([foldersData, notesData]) => {
                 setFolders(foldersData);
                 setNotes(notesData);
+                setLoading(false);
             })
-            .catch((err) => console.error("Error fetching data:", err));
-    };
-
-    useEffect(() => {
-        fetchData();
+            .catch((err) => {
+                console.error(err);
+                setLoading(false);
+            });
     }, []);
 
-    const handleFolderClick = (folder) => {
-        setSelectedFolder(folder);
-        setSelectedNote(null);
-    };
-
     const folderNotes = selectedFolder
-        ? notes.filter((note) => note.folderId === selectedFolder.id)
+        ? notes.filter((n) => n.folderId === selectedFolder.id)
         : [];
 
     return (
         <div className="dashboard-container">
-            {/* Left navigation */}
+            {/* LEFT SIDEBAR */}
             <Navigation />
 
-            {/* Main content */}
+            {/* MAIN CONTENT */}
             <main className="dashboard-main">
-                <h1 className="dashboard-title">
-                    {selectedNote
-                        ? selectedNote.title
-                        : selectedFolder
-                            ? selectedFolder.name
-                            : "Dashboard"}
-                </h1>
-
-                {selectedNote ? (
-                    <div className="note-content">{selectedNote.content}</div>
+                {loading ? (
+                    <p>Loading...</p>
+                ) : selectedNote ? (
+                    <>
+                        <h2>{selectedNote.title}</h2>
+                        <div className="note-content">{selectedNote.content}</div>
+                    </>
                 ) : selectedFolder ? (
-                    <div className="notes-list">
-                        {folderNotes.length > 0 ? (
-                            folderNotes.map((note) => (
-                                <div
-                                    key={note.id}
-                                    className="note-card"
-                                    onClick={() => setSelectedNote(note)}
-                                >
-                                    {note.title}
-                                </div>
-                            ))
-                        ) : (
+                    <>
+                        <h2>{selectedFolder.name}</h2>
+                        {folderNotes.length === 0 ? (
                             <p>No notes in this folder</p>
+                        ) : (
+                            <div className="notes-list">
+                                {folderNotes.map((note) => (
+                                    <div
+                                        key={note.id}
+                                        className="note-card"
+                                        onClick={() => setSelectedNote(note)}
+                                    >
+                                        {note.title}
+                                    </div>
+                                ))}
+                            </div>
                         )}
-                    </div>
+                    </>
                 ) : (
-                    <p>Select a folder on the right to view notes</p>
+                    <p>Select a folder from the right</p>
                 )}
             </main>
 
-            {/* Right sidebar */}
+            {/* RIGHT SIDEBAR (FOLDERS) */}
             <aside className="dashboard-right">
-                <h2 className="folders-title">Folders</h2>
-                <ul className="folders-list">
+                <h3>Folders</h3>
+                <ul>
                     {folders.map((folder) => (
                         <li
                             key={folder.id}
-                            className={`folder-item ${selectedFolder?.id === folder.id ? "active" : ""
-                                }`}
-                            onClick={() => handleFolderClick(folder)}
+                            className={
+                                selectedFolder?.id === folder.id ? "active" : ""
+                            }
+                            onClick={() => {
+                                setSelectedFolder(folder);
+                                setSelectedNote(null);
+                            }}
                         >
-                            <i
-                                className={`fa-solid ${folder.icon || "fa-folder"} folder-icon ${folder.color || "text-blue-400"
-                                    }`}
-                            ></i>
+                            <i className="fa-solid fa-folder"></i>
                             {folder.name}
                         </li>
                     ))}
                 </ul>
-
-                <button
-                    className="new-folder-btn"
-                    onClick={() => {
-                        setFolderToEdit(null);
-                        setIsFolderModalOpen(true);
-                    }}
-                >
-                    <i className="fa-solid fa-plus"></i> New Folder
-                </button>
             </aside>
-
-            {/* Folder Modal */}
-            <FolderModal
-                isOpen={isFolderModalOpen}
-                onClose={() => setIsFolderModalOpen(false)}
-                folder={folderToEdit}
-                onCreate={() => fetchData()} // refresh after creation/edit
-            />
-
-            {/* Note Modal */}
-            <NoteModal
-                isOpen={isNoteModalOpen}
-                note={selectedNote}
-                mode={noteModalMode}
-                onClose={() => setIsNoteModalOpen(false)}
-            />
         </div>
     );
 }
