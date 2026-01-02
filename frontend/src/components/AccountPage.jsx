@@ -5,6 +5,11 @@ import { useNavigate } from "react-router-dom";
 
 
 export function AccountPage() {
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [name, setName] = useState("");
+
+
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -21,14 +26,31 @@ export function AccountPage() {
 
   useEffect(() => {
   const getUser = async () => {
-    const { data, error } = await supabase.auth.getUser();
-    if (!error) {
+    const { data } = await supabase.auth.getUser();
+    if (data?.user) {
       setUser(data.user);
+      setName(
+        data.user.user_metadata?.name ||
+        data.user.email.split("@")[0]
+      );
     }
   };
 
   getUser();
 }, []);
+
+const handleSave = async () => {
+  const { data, error } = await supabase.auth.updateUser({
+    data: { name },
+  });
+
+  if (!error) {
+    setUser(data.user);
+    setIsEditing(false);
+  }
+};
+
+
 
   return (
     <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
@@ -68,12 +90,49 @@ export function AccountPage() {
                 </button>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold"> {user?.user_metadata?.name || user?.email?.split("@")[0]}</p>
+                {isEditing ? (
+  <input
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    className="rounded-lg bg-white/10 px-4 py-2 text-center text-xl font-bold outline-none border border-white/20"
+  />
+) : (
+  <p className="text-2xl font-bold">{name}</p>
+)}
+
                 <p className="text-base"> {user?.email}</p>
               </div>
-              <button className="mt-2 rounded-full bg-blue-400 px-6 py-2.5 text-sm font-semibold">
-                Edit Profile
-              </button>
+
+              {isEditing ? (
+  <div className="flex gap-3 mt-3">
+    <button
+      onClick={handleSave}
+      className="rounded-full bg-green-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-600"
+    >
+      Save
+    </button>
+    <button
+      onClick={() => {
+        setIsEditing(false);
+        setName(
+          user?.user_metadata?.name ||
+          user?.email.split("@")[0]
+        );
+      }}
+      className="rounded-full bg-slate-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-700"
+    >
+      Cancel
+    </button>
+  </div>
+) : (
+  <button
+    onClick={() => setIsEditing(true)}
+    className="mt-2 rounded-full bg-blue-400 px-6 py-2.5 text-sm font-semibold"
+  >
+    Edit Profile
+  </button>
+)}
+
             </div>
 
             {/* General settings */}

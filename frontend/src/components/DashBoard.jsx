@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { Navigation } from "./Navigation";
 import { FolderModal } from "./FolderModal";
 import { NoteModal } from "./NoteModal";
+=======
+>>>>>>> 9cb5ffd7828fb3d29cb53b8b2b57c8e7e4cb3978
 import "./Dashboard.css";
 
 export default function Dashboard() {
