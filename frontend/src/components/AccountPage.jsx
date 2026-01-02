@@ -50,6 +50,42 @@ const handleSave = async () => {
   }
 };
 
+const handleAvatarUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${user.id}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("avatars")
+    .upload(fileName, file, { upsert: true });
+
+  if (uploadError) {
+    console.error(uploadError);
+    return;
+  }
+
+  const { data } = supabase.storage
+    .from("avatars")
+    .getPublicUrl(fileName);
+
+  const avatarUrl = `${data.publicUrl}?t=${Date.now()}`;
+
+  await supabase.auth.updateUser({
+    data: { avatar_url: avatarUrl },
+  });
+
+  setUser((prev) => ({
+    ...prev,
+    user_metadata: {
+      ...prev.user_metadata,
+      avatar_url: avatarUrl,
+    },
+  }));
+};
+
+
 
 
   return (
@@ -83,11 +119,27 @@ const handleSave = async () => {
                 <img
                   alt="User Avatar"
                   className="h-28 w-28 rounded-full object-cover"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z"
+                  src={
+                    user?.user_metadata?.avatar_url ||
+                    "https://ui-avatars.com/api/?name=" + name
+                  }
                 />
-                <button className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 bg-(--bg-secondary)">
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="avatar-upload"
+                  hidden
+                  onChange={handleAvatarUpload}
+                />
+
+                <button
+                  onClick={() => document.getElementById("avatar-upload").click()}
+                  className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 bg-(--bg-secondary)"
+                >
                   <i className="fa-solid fa-pen text-sm"></i>
                 </button>
+
               </div>
               <div className="text-center">
                 {isEditing ? (
