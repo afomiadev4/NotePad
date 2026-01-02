@@ -6,7 +6,7 @@ import { Folders } from "./components/Folders";
 import { Feed } from "./components/Feed";
 import { AccountPage } from "./components/AccountPage";
 import { CreateNote } from "./components/CreateNote";
-import { Dashboard } from "./components/Dashboard";
+import Dashboard from "./components/Dashboard"; // match the filename
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
