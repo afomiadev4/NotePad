@@ -1,91 +1,93 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { Navigation } from "./Navigation";
 import "./Dashboard.css";
 
-export const Dashboard = () => {
-    const [activeMenu, setActiveMenu] = useState("Overview");
+export default function Dashboard() {
     const [folders, setFolders] = useState([]);
     const [notes, setNotes] = useState([]);
+    const [selectedFolder, setSelectedFolder] = useState(null);
+    const [selectedNote, setSelectedNote] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // Fetch folders and notes from backend
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const foldersRes = await axios.get("http://localhost:3000/folders");
-                const notesRes = await axios.get("http://localhost:3000/notes");
-                setFolders(foldersRes.data);
-                setNotes(notesRes.data);
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
+        Promise.all([
+            fetch("http://localhost:3000/folders").then((res) => res.json()),
+            fetch("http://localhost:3000/notes").then((res) => res.json()),
+        ])
+            .then(([foldersData, notesData]) => {
+                setFolders(foldersData);
+                setNotes(notesData);
+                setLoading(false);
+            })
+            .catch((err) => {
+                console.error(err);
+                setLoading(false);
+            });
     }, []);
 
-    const menuItems = ["Overview", "Folders", "Notes", "Settings"];
+    const folderNotes = selectedFolder
+        ? notes.filter((n) => n.folderId === selectedFolder.id)
+        : [];
 
     return (
         <div className="dashboard-container">
-            <aside className="dashboard-sidebar">
-                <h2>Dashboard</h2>
+            {/* LEFT SIDEBAR */}
+            <Navigation />
+
+            {/* MAIN CONTENT */}
+            <main className="dashboard-main">
+                {loading ? (
+                    <p>Loading...</p>
+                ) : selectedNote ? (
+                    <>
+                        <h2>{selectedNote.title}</h2>
+                        <div className="note-content">{selectedNote.content}</div>
+                    </>
+                ) : selectedFolder ? (
+                    <>
+                        <h2>{selectedFolder.name}</h2>
+                        {folderNotes.length === 0 ? (
+                            <p>No notes in this folder</p>
+                        ) : (
+                            <div className="notes-list">
+                                {folderNotes.map((note) => (
+                                    <div
+                                        key={note.id}
+                                        className="note-card"
+                                        onClick={() => setSelectedNote(note)}
+                                    >
+                                        {note.title}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <p>Select a folder from the right</p>
+                )}
+            </main>
+
+            {/* RIGHT SIDEBAR (FOLDERS) */}
+            <aside className="dashboard-right">
+                <h3>Folders</h3>
                 <ul>
-                    {menuItems.map((item) => (
+                    {folders.map((folder) => (
                         <li
-                            key={item}
-                            className={activeMenu === item ? "active" : ""}
-                            onClick={() => setActiveMenu(item)}
+                            key={folder.id}
+                            className={
+                                selectedFolder?.id === folder.id ? "active" : ""
+                            }
+                            onClick={() => {
+                                setSelectedFolder(folder);
+                                setSelectedNote(null);
+                            }}
                         >
-                            {item}
+                            <i className="fa-solid fa-folder"></i>
+                            {folder.name}
                         </li>
                     ))}
                 </ul>
             </aside>
-
-            <main className="dashboard-main">
-                <h1>{activeMenu}</h1>
-
-                {activeMenu === "Overview" && (
-                    <div className="dashboard-cards">
-                        <div className="dashboard-card">
-                            <h3>Total Notes</h3>
-                            <p>{notes.length}</p>
-                        </div>
-                        <div className="dashboard-card">
-                            <h3>Total Folders</h3>
-                            <p>{folders.length}</p>
-                        </div>
-                        <div className="dashboard-card">
-                            <h3>Recent Activity</h3>
-                            <p>{notes.length} notes updated today</p>
-                        </div>
-                    </div>
-                )}
-
-                {activeMenu === "Folders" && (
-                    <div className="folders-list">
-                        {folders.map((folder) => (
-                            <div key={folder.id} className="folder-card">
-                                <h3>{folder.name}</h3>
-                                <p>{folder.description || "No description"}</p>
-                                <p>{notes.filter((n) => n.folderId === folder.id).length} notes</p>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {activeMenu === "Notes" && (
-                    <div className="notes-list">
-                        {notes.map((note) => (
-                            <div key={note.id} className="note-card">
-                                <h4>{note.title}</h4>
-                                <p>{note.content.slice(0, 100)}...</p>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {activeMenu === "Settings" && <p>Update your account settings here.</p>}
-            </main>
         </div>
     );
-};
+}
