@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
+import { supabase } from "../supabaseClient";
+
 
 export function Feed() {
   const [notes, setNotes] = useState([]);
@@ -9,57 +11,37 @@ export function Feed() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("view");
 
-  const fetchNotes = () => {
-    setLoading(true);
-    fetch("http://localhost:3000/notes?folderId=posted")
-      .then((res) => res.json())
-      .then((data) => {
-        setNotes(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching notes:", err);
-        setLoading(false);
-      });
-  };
+const fetchNotes = async () => {
+  setLoading(true);
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select(`
+      id,
+      content,
+      created_at,
+      profiles (
+        username,
+        avatar_url
+      )
+    `)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching posts:", error);
+  } else {
+    setNotes(data);
+  }
+
+  setLoading(false);
+};
+
 
   useEffect(() => {
     fetchNotes();
   }, []);
 
-  const handleEdit = (note) => {
-    setSelectedNote(note);
-    setModalMode("edit");
-    setIsModalOpen(true);
-  };
 
-  const handleView = (note) => {
-    setSelectedNote(note);
-    setModalMode("view");
-    setIsModalOpen(true);
-  };
-
-  const handleSave = (updatedNote) => {
-    fetch(`http://localhost:3000/notes/${updatedNote.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedNote),
-    })
-      .then((res) => {
-        if (res.ok) {
-          setIsModalOpen(false);
-          fetchNotes(); // Refresh list
-        } else {
-          alert("Failed to update note.");
-        }
-      })
-      .catch((err) => {
-        console.error("Error updating note:", err);
-        alert("An error occurred.");
-      });
-  };
 
   return (
     <div className="min-h-screen bg-(--bg-primary) text-(--text-primary) font-display flex">
@@ -87,15 +69,26 @@ export function Feed() {
                 {/* User Info */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div
-                      className="h-10 w-10 shrink-0 rounded-full bg-cover bg-center border border-white/10"
-                      style={{ backgroundImage: `url(${note.avatar})` }}
-                    ></div>
+                  <div className="h-10 w-10 shrink-0 rounded-full bg-cover bg-center border border-white/10"
+                  style={{
+                    backgroundImage: note.profiles?.avatar_url ? `url(${note.profiles.avatar_url})`: "none",
+                  }}
+                >{!note.profiles?.avatar_url && (
+                    <span className="flex h-full w-full items-center justify-center text-sm font-bold">
+                      {note.profiles?.username?.slice(0, 2).toUpperCase()}
+                    </span>
+                  )}
+                </div>
+
                     <div>
                       <p className="text-base font-medium leading-none">
-                        {note.user}
+                        {note.profiles?.username || "Unknown User"}
                       </p>
-                      <p className="text-xs text-slate-500 mt-1">{note.time}</p>
+
+                     <p className="text-xs text-slate-500 mt-1">
+                         {new Date(note.created_at).toLocaleString()}
+                      </p>
+
                     </div>
                   </div>
                 </div>
@@ -108,6 +101,7 @@ export function Feed() {
                   <p className="mt-2 text-base font-normal leading-relaxed text-slate-400 line-clamp-3">
                     {note.content}
                   </p>
+
                 </div>
               </div>
 
@@ -137,13 +131,6 @@ export function Feed() {
         )}
       </main>
 
-      <NoteModal
-        note={selectedNote}
-        isOpen={isModalOpen}
-        mode={modalMode}
-        onClose={() => setIsModalOpen(false)}
-        onSave={handleSave}
-      />
     </div>
   );
 }
