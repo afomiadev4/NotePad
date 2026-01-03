@@ -1,18 +1,35 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
 
-export function CreateNote({
-  defaultFolder = "posted",
-  hideFolder = true,
-  isPost = false,
-}) {
+export function CreateNote({ defaultFolder = "", hideFolder = false, isPost = false }) {
   const navigate = useNavigate();
+  const [folders, setFolders] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch user-created folders from backend/Supabase
+  useEffect(() => {
+    async function fetchFolders() {
+      try {
+        const res = await fetch("http://localhost:3000/folders"); // adjust URL to your API
+        if (!res.ok) throw new Error("Failed to fetch folders");
+        const data = await res.json();
+        setFolders(data);
+      } catch (err) {
+        console.error("Error fetching folders:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchFolders();
+  }, []);
 
   const handleSave = (newNoteData) => {
     const freshNote = {
       ...newNoteData,
-      user: "John Doe", // Mock current user
+      user: "John Doe",
       avatar:
         "https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z",
       time: "Just now",
@@ -28,7 +45,7 @@ export function CreateNote({
     })
       .then((res) => {
         if (res.ok) {
-          navigate(defaultFolder === "posted" ? "/feed" : "/folders");
+          navigate("/feed");
         } else {
           alert("Failed to create note.");
         }
@@ -40,8 +57,10 @@ export function CreateNote({
   };
 
   const handleClose = () => {
-    navigate(-1); // Go back
+    navigate(-1);
   };
+
+  if (loading) return <div>Loading folders...</div>;
 
   return (
     <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
@@ -56,7 +75,8 @@ export function CreateNote({
         <NoteModal
           isOpen={true}
           mode="create"
-          initialFolderId={defaultFolder}
+          folders={folders} // pass fetched folders
+          initialFolderId={defaultFolder || folders[0]?.id} // default to first folder if none specified
           hideFolderSelection={hideFolder}
           onClose={handleClose}
           onSave={handleSave}
