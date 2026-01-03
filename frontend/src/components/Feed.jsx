@@ -18,6 +18,7 @@ const fetchNotes = async () => {
     .from("posts")
     .select(`
       id,
+      title,
       content,
       created_at,
       profiles (
@@ -82,7 +83,7 @@ const fetchNotes = async () => {
 
                     <div>
                       <p className="text-base font-medium leading-none">
-                        {note.profiles?.username || "Unknown User"}
+                        {note.profiles?.username ?? "Unknown User"}
                       </p>
 
                      <p className="text-xs text-slate-500 mt-1">
