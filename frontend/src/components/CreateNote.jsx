@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { NoteModal } from "./NoteModal";
+import { useEffect, useState } from "react";
 
 export function CreateNote({
   defaultFolder = "posted",
@@ -8,40 +9,86 @@ export function CreateNote({
   isPost = false,
 }) {
   const navigate = useNavigate();
+  const [folders, setFolders] = useState([]);
 
-  const handleSave = (newNoteData) => {
+  const ensureUncategorizedFolder = async () => {
+  const res = await fetch("http://localhost:3000/folders?id=uncategorized");
+  const existing = await res.json();
+
+    if (existing.length === 0) {
+      await fetch("http://localhost:3000/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: "uncategorized",
+          name: "Uncategorized",
+          icon: "fa-folder",
+          color: "text-slate-400",
+          type: "system",
+        }),
+      });
+    }
+  };
+
+  const handleSave = async (newNoteData) => {
+    let folderId = newNoteData.folderId || "uncategorized";
+
+    // Check if Uncategorized exists
+    const folderRes = await fetch(
+      "http://localhost:3000/folders?id=uncategorized"
+    );
+    const existing = await folderRes.json();
+
+    // If not, create it
+    if (existing.length === 0) {
+      await fetch("http://localhost:3000/folders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: "uncategorized",
+          name: "Uncategorized",
+          icon: "fa-folder",
+          color: "text-slate-400",
+          type: "system",
+        }),
+      });
+    }
+
+    // 3️⃣ Save the note
     const freshNote = {
       ...newNoteData,
-      user: "John Doe", // Mock current user
-      avatar:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuBxnMVuj5nEyLEn0WopcnfrvaGHqG9U4hVQA_LuhtYILWOqY644_1X1nAIRl43W12_D9BGhW5Et67QTPIArWvDPBtpzPvOrVtXnBdIDqZaPEo9axzID04FmubeoSu1YcRu0OfNTCl9vHEFKBNKhUmNeLoVoRak71naeZW9ZnDWV_L7cQR3H87WdeTnv_G5Etzu13RjBJrrnEsl3juANvYFAHad_Zcv9LYSWSEgGOS0mQxWgdCLF8GM9PA7QyArxgXBhtXGwmGdoO81Z",
+      folderId,
+      user: "John Doe",
+      avatar: "https://ui-avatars.com/api/?name=John+Doe",
       time: "Just now",
       createdAt: new Date().toISOString(),
     };
 
-    fetch("http://localhost:3000/notes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(freshNote),
-    })
-      .then((res) => {
-        if (res.ok) {
-          navigate(defaultFolder === "posted" ? "/feed" : "/folders");
-        } else {
-          alert("Failed to create note.");
-        }
-      })
-      .catch((err) => {
-        console.error("Error creating note:", err);
-        alert("An error occurred.");
-      });
-  };
+  const res = await fetch("http://localhost:3000/notes", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(freshNote),
+  });
+
+  if (res.ok) {
+    navigate(folderId === "posted" ? "/feed" : "/folders");
+  } else {
+    alert("Failed to create note.");
+  }
+};
+
 
   const handleClose = () => {
     navigate(-1); // Go back
   };
+
+    useEffect(() => {
+    fetch("http://localhost:3000/folders")
+      .then(res => res.json())
+      .then(data => setFolders(data))
+      .catch(err => console.error("Failed to load folders", err));
+  }, []);
+
 
   return (
     <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
@@ -56,6 +103,7 @@ export function CreateNote({
         <NoteModal
           isOpen={true}
           mode="create"
+          folders={folders}
           initialFolderId={defaultFolder}
           hideFolderSelection={hideFolder}
           onClose={handleClose}

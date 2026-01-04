@@ -21,10 +21,10 @@ export function Feed() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-(--bg-primary) flex text-(--text-primary)">
+    <div className="min-h-[100dvh] bg-(--bg-primary) flex text-(--text-primary)">
       <Navigation />
 
-      <main className="flex-1 lg:ml-64 p-4 space-y-4">
+      <main className="flex-1 lg:ml-64 p-4 pb-24 space-y-4">
         {loading && <p>Loading...</p>}
 
         {!loading && notes.length === 0 && (
