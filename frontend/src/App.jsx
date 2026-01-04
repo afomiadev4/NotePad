@@ -7,6 +7,7 @@ import { Feed } from "./components/Feed";
 import { AccountPage } from "./components/AccountPage";
 import { CreateNote } from "./components/CreateNote";
 import Dashboard from "./components/Dashboard"; // match the filename
+import { EditNote } from "./components/EditComponent";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -19,6 +20,7 @@ export default function App() {
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
+
         <Route path="/folders" element={<Folders />} />
         <Route path="/folders/:folderId" element={<Folders />} />
         <Route path="/feed" element={<Feed />} />
@@ -30,6 +32,8 @@ export default function App() {
           path="/post-note"
           element={<CreateNote defaultFolder="posted" hideFolder={true} isPost={true} />}
         />
+        <Route path="/notes/:noteId" element={<EditNote/>} />
+
         <Route path="/account" element={<AccountPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
       </Route>

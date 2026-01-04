@@ -21,21 +21,51 @@ export function Folders() {
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [folderToEdit, setFolderToEdit] = useState(null);
 
-  const fetchData = () => {
-    setLoading(true);
-    Promise.all([
-      fetch("http://localhost:3000/folders").then((res) => res.json()),
-      fetch("http://localhost:3000/notes").then((res) => res.json()),
-    ])
-      .then(([foldersData, notesData]) => {
+  const fetchData = async () => {
+      setLoading(true);
+
+      try {
+        const [foldersRes, notesRes] = await Promise.all([
+          fetch("http://localhost:3000/folders"),
+          fetch("http://localhost:3000/notes"),
+        ]);
+
+        const foldersData = await foldersRes.json();
+        const notesData = await notesRes.json();
+
+        const hasUncategorizedNotes = notesData.some(
+          (note) => note.folderId === "uncategorized"
+        );
+
+        const hasUncategorizedFolder = foldersData.some(
+          (folder) => folder.id === "uncategorized"
+        );
+
+        if (hasUncategorizedNotes && !hasUncategorizedFolder) {
+          const uncategorizedFolder = {
+            id: "uncategorized",
+            name: "Uncategorized",
+            icon: "fa-folder-open",
+            color: "text-slate-400",
+            type: "system",
+          };
+
+          await fetch("http://localhost:3000/folders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(uncategorizedFolder),
+          });
+
+          foldersData.push(uncategorizedFolder);
+        }
+
         setFolders(foldersData);
         setNotes(notesData);
+      } catch (err) {
+        console.error("Error fetching folders/notes:", err);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching data:", err);
-        setLoading(false);
-      });
+      }
   };
 
   useEffect(() => {
