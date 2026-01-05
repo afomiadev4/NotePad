@@ -71,7 +71,7 @@ export function CreateNote({
   });
 
   if (res.ok) {
-    navigate(folderId === "posted" ? "/feed" : "/folders");
+    navigate(folderId === "posted" ? "/feed" : `/folders/${folderId}`);
   } else {
     alert("Failed to create note.");
   }
