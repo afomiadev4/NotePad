@@ -83,6 +83,8 @@ export function CreateNote({
   };
 
     useEffect(() => {
+    ensureUncategorizedFolder();
+
     fetch("http://localhost:3000/folders")
       .then(res => res.json())
       .then(data => setFolders(data))

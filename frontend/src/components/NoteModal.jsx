@@ -139,10 +139,25 @@ export function NoteModal({
                 onChange={(e) =>
                   setFormData({ ...formData, folderId: e.target.value })
                 }
-                className="px-4 py-2 rounded-lg bg-white/5 border border-white/10"
+                className="w-full
+                  px-4 py-2.5
+                  rounded-xl
+                  bg-white/5
+                  text-white
+                  border border-white/10
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-(--btn-primary)/40
+                  focus:border-(--btn-primary)
+                  transition
+                  apperance-none"
               >
                 {folders.map((f) => (
-                  <option key={f.id} value={f.id}>
+                  <option 
+                    key={f.id} 
+                    value={f.id}
+                    className="bg-[#0b1220] text-white"
+                    >
                     {f.name}
                   </option>
                 ))}
