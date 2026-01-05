@@ -67,14 +67,16 @@ const handleAvatarUpload = async (e) => {
   }
 
   const { data } = supabase.storage
-    .from("avatars")
-    .getPublicUrl(fileName);
+  .from("avatars")
+  .getPublicUrl(filePath);
 
-  const avatarUrl = `${data.publicUrl}?t=${Date.now()}`;
+const publicUrl = data.publicUrl;
 
-  await supabase.auth.updateUser({
-    data: { avatar_url: avatarUrl },
-  });
+// then save THIS
+await supabase
+  .from("profiles")
+  .update({ avatar_url: publicUrl })
+  .eq("id", user.id);
 
   setUser((prev) => ({
     ...prev,
