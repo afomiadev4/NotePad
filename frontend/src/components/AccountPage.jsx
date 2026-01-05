@@ -200,36 +200,8 @@ const handleAvatarUpload = async (e) => {
                 </a>
                 <a className="flex items-center justify-between p-4" href="#">
                   <div className="flex items-center gap-4">
-                    <i className="fa-solid fa-palette text-slate-400"></i>
-                    <span className="font-medium">Appearance</span>
-                  </div>
-                  <i className="fa-solid fa-chevron-right text-slate-500"></i>
-                </a>
-                <a className="flex items-center justify-between p-4" href="#">
-                  <div className="flex items-center gap-4">
                     <i className="fa-solid fa-lock text-slate-400"></i>
                     <span className="font-medium">Privacy & Security</span>
-                  </div>
-                  <i className="fa-solid fa-chevron-right text-slate-500"></i>
-                </a>
-              </div>
-            </div>
-
-            {/* Support */}
-            <div className="mt-8 space-y-2">
-              <h2 className="px-4 text-xs font-bold uppercase">Support</h2>
-              <div className="divide-y divide-slate-200/10 rounded-xl bg-slate-900/60">
-                <a className="flex items-center justify-between p-4" href="#">
-                  <div className="flex items-center gap-4">
-                    <i className="fa-solid fa-circle-question w-5 text-center"></i>
-                    <span className="font-medium">Help Center</span>
-                  </div>
-                  <i className="fa-solid fa-chevron-right text-slate-500"></i>
-                </a>
-                <a className="flex items-center justify-between p-4" href="#">
-                  <div className="flex items-center gap-4">
-                    <i className="fa-solid fa-info w-5 text-center"></i>
-                    <span className="font-medium">About NotePad+</span>
                   </div>
                   <i className="fa-solid fa-chevron-right text-slate-500"></i>
                 </a>
