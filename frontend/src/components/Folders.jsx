@@ -101,6 +101,12 @@ export function Folders() {
     setIsModalOpen(true);
   };
 
+  const handleCloseModal = () => {
+  setIsModalOpen(false);
+  setModalMode("view");   
+  setSelectedNote(null);  
+};
+
   const handleView = (note) => {
     setSelectedNote(note);
     setModalMode("view");
@@ -108,6 +114,9 @@ export function Folders() {
   };
 
   const handleSave = (updatedNote) => {
+    if (reason === "edit") {
+      setModalMode("edit");
+    }
     if (modalMode === "create") {
       const freshNote = {
         ...updatedNote,
@@ -402,6 +411,43 @@ export function Folders() {
                     </div>
 
                     <h3 className="font-semibold truncate">{folder.name}</h3>
+                    {selectedNote && (
+                      <div className="mt-6 border border-white/10 rounded-xl bg-black/30 p-6">
+                        
+                        {/* Title */}
+                        <div className="mb-4">
+                          <p className="text-xs uppercase text-white/40">Title</p>
+                          <p className="text-white text-lg font-semibold">
+                            {selectedNote.title}
+                          </p>
+                        </div>
+
+                        {/* Content */}
+                        <div className="mb-4">
+                          <p className="text-xs uppercase text-white/40">Content</p>
+                          <p className="text-white/80 whitespace-pre-wrap">
+                            {selectedNote.content}
+                          </p>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-3 mt-6">
+                          <button
+                            onClick={() => setMode("edit")}
+                            className="px-4 py-2 rounded-lg bg-white/5 border border-white/10"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={handleDelete}
+                            className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     <p className="text-xs text-white/60 mt-1">
                       {getNoteCount(folder.id)} notes
                     </p>
@@ -421,8 +467,17 @@ export function Folders() {
                   <span className="text-sm text-white/60">Add Folder</span>
                 </div>
               </div>
+            ) : selectedNote ? (
+              /* READ-ONLY NOTE VIEW (center panel) */
+              <div className="max-w-3xl mx-auto pt-10">
+
+
+                <div className="text-lg text-white/80 leading-relaxed whitespace-pre-wrap">
+                  {selectedNote.content || "No content"}
+                </div>
+              </div>
             ) : (
-              /* Notes Dashboard within selected folder */
+              /* NOTES GRID */
               <div className="flex flex-col gap-4">
                 {folderNotes.length === 0 ? (
                   <div
@@ -443,9 +498,7 @@ export function Folders() {
                         className="bg-(--bg-secondary) rounded-2xl border border-white/5 p-5 hover:border-white/10 transition group cursor-pointer"
                       >
                         <div className="flex justify-between items-start mb-3">
-                          <h3 className="text-lg font-bold truncate">
-                            {note.title}
-                          </h3>
+                          <h3 className="text-lg font-bold truncate">{note.title}</h3>
                           <div className="flex gap-1">
                             <button
                               onClick={(e) => {
@@ -491,12 +544,14 @@ export function Folders() {
       />
 
       <NoteModal
-        note={selectedNote}
         isOpen={isModalOpen}
         mode={modalMode}
+        folders={folders}
         freezeSelection={true}
         initialFolderId={selectedFolder?.id}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleCloseModal}
+        onEdit={() => setModalMode("edit")}
+        onDelete={() => handleDeleteNote(selectedNote.id)}
         onSave={handleSave}
       />
     </div>
