@@ -193,14 +193,14 @@ await supabase
             <div className="mt-10 space-y-2">
               <h2 className="px-4 text-xs font-bold uppercase">General</h2>
               <div className="divide-y divide-slate-200/10 rounded-xl bg-slate-900/60">
-                <a className="flex items-center justify-between p-4" href="">
+                <a className="flex items-center justify-between p-4" href="/settings/notifications">
                   <div className="flex items-center gap-4">
                     <i className="fa-solid fa-bell text-slate-400"></i>
                     <span className="font-medium">Notifications</span>
                   </div>
                   <i className="fa-solid fa-chevron-right text-slate-500"></i>
                 </a>
-                <a className="flex items-center justify-between p-4" href="#">
+                <a className="flex items-center justify-between p-4" href="/settings/privacy">
                   <div className="flex items-center gap-4">
                     <i className="fa-solid fa-lock text-slate-400"></i>
                     <span className="font-medium">Privacy & Security</span>
