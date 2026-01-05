@@ -124,66 +124,66 @@ const handleAvatarUpload = async (e) => {
                     "https://ui-avatars.com/api/?name=" + name
                   }
                 />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            id="avatar-upload"
+                            hidden
+                            onChange={handleAvatarUpload}
+                          />
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="avatar-upload"
-                  hidden
-                  onChange={handleAvatarUpload}
-                />
+                          <button
+                            onClick={() => document.getElementById("avatar-upload").click()}
+                            className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 bg-(--bg-secondary)"
+                          >
+                            <i className="fa-solid fa-pen text-sm"></i>
+                          </button>
 
+                          </div>
+                          <div className="text-center">
+                            {isEditing ? (
+                          <input
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="rounded-lg bg-white/10 px-4 py-2 text-center text-xl font-bold outline-none border border-white/20"
+                          />
+                        ) : (
+                            <p className="text-2xl font-bold">
+                              {user?.user_metadata?.name || name}</p>
+                            )}
+                            <p className="text-base tex-slate-400"> 
+                              @{user?.user_metadata?.username}</p>
+                          </div>
+
+                          {isEditing ? (
+              <div className="flex gap-3 mt-3">
                 <button
-                  onClick={() => document.getElementById("avatar-upload").click()}
-                  className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 bg-(--bg-secondary)"
+                  onClick={handleSave}
+                  className="rounded-full bg-green-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-600"
                 >
-                  <i className="fa-solid fa-pen text-sm"></i>
+                  Save
                 </button>
-
+                <button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setName(
+                      user?.user_metadata?.name ||
+                      user?.email.split("@")[0]
+                    );
+                  }}
+                  className="rounded-full bg-slate-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-700"
+                >
+                  Cancel
+                </button>
               </div>
-              <div className="text-center">
-                {isEditing ? (
-  <input
-    value={name}
-    onChange={(e) => setName(e.target.value)}
-    className="rounded-lg bg-white/10 px-4 py-2 text-center text-xl font-bold outline-none border border-white/20"
-  />
-) : (
-  <p className="text-2xl font-bold">{name}</p>
-)}
-
-                <p className="text-base"> {user?.email}</p>
-              </div>
-
-              {isEditing ? (
-  <div className="flex gap-3 mt-3">
-    <button
-      onClick={handleSave}
-      className="rounded-full bg-green-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-600"
-    >
-      Save
-    </button>
-    <button
-      onClick={() => {
-        setIsEditing(false);
-        setName(
-          user?.user_metadata?.name ||
-          user?.email.split("@")[0]
-        );
-      }}
-      className="rounded-full bg-slate-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-700"
-    >
-      Cancel
-    </button>
-  </div>
-) : (
-  <button
-    onClick={() => setIsEditing(true)}
-    className="mt-2 rounded-full bg-blue-400 px-6 py-2.5 text-sm font-semibold"
-  >
-    Edit Profile
-  </button>
-)}
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="mt-2 rounded-full bg-blue-400 px-6 py-2.5 text-sm font-semibold"
+              >
+                Edit Profile
+              </button>
+            )}
 
             </div>
 
