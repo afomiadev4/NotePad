@@ -10,16 +10,20 @@ export function Welcome() {
             Where ideas live forever...
           </p>
         </div>
-        <div>
+        <div className="pb-10 space-y-3">
           <Link
             to="/register"
-            className="flex min-w-21 w-full items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-(--btn-primary) text-base font-bold leading-normal"
+            className="flex h-12 w-full items-center justify-center rounded-lg bg-(--btn-primary) text-base font-bold"
           >
-            <span>Get Started</span>
+            Get Started
           </Link>
-          <p className="text-(--text-secondary) text-sm font-normal leading-normal pb-10 pt-5 px-4 text-center underline">
-            <Link to="/login">Sign In</Link>
-          </p>
+
+          <Link
+            to="/login"
+            className="flex h-12 w-full items-center justify-center rounded-lg border border-white/20 text-base font-medium text-white/90 hover:bg-white/5 transition"
+          >
+            Sign In
+          </Link>
         </div>
       </div>
     </div>
