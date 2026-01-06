@@ -16,11 +16,7 @@ export function Feed() {
       const { data, error } = await supabase
         .from("notes")
         .select(`
-          id,
-          title,
-          content,
-          created_at,
-          user_id,
+          *,
           profiles (
             username,
             avatar_url

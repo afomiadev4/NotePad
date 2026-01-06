@@ -52,6 +52,19 @@ export function FolderModal({ isOpen, onClose, onCreate, folder }) {
     }
   };
 
+  const handleSaveFolder = async (name) => {
+  const { error } = await supabase
+    .from("folders")
+    .insert([{ name: name, user_id: user.id }]);
+
+  if (error) {
+    console.error("Folder Error:", error);
+    alert("Folder creation failed");
+  } else {
+    fetchData(); // Refresh both folders and notes
+  }
+};
+
   const validateClick = (e) => {
     if (folderRef.current && !folderRef.current.contains(e.target)) onClose();
   };

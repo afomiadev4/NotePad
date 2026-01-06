@@ -44,17 +44,17 @@ export function CreateNote({ defaultFolder = "uncategorized", hideFolderSelectio
 
     setLoading(true);
 
-    const noteData = {
-      title,
-      content,
-      user_id: user.id,
-      // If folder is 'uncategorized', we store NULL in DB
-      folder_id: folderId === "uncategorized" ? null : folderId,
-      // If it's a post, set visibility to Public
-      visibility: isPost ? "Public" : "Private",
-      word_count: wordCount,
-      updated_at: new Date().toISOString(),
-    };
+    // Inside CreateNote.jsx handleSave function
+const noteData = {
+  title: title,
+  content: content,
+  user_id: user.id,
+  // FIX: Ensure this is a real ID or null, NEVER a string like "posted"
+  folder_id: (folderId && folderId !== "uncategorized" && folderId !== "posted") ? folderId : null,
+  visibility: isPost ? "Public" : "Private",
+  word_count: content.trim().split(/\s+/).length,
+  updated_at: new Date().toISOString()
+};
 
     try {
       const { error } = await supabase.from("notes").insert([noteData]);
@@ -69,6 +69,61 @@ export function CreateNote({ defaultFolder = "uncategorized", hideFolderSelectio
       setLoading(false);
     }
   };
+
+  const handlePostNote = async () => {
+  // 1. Word Count Validation (SRS Requirement)
+  const words = content.trim().split(/\s+/);
+  if (words.length > 300) {
+    alert("Public posts cannot exceed 300 words! Current count: " + words.length);
+    return;
+  }
+
+  setLoading(true);
+  
+  const postData = {
+    title: title,
+    content: content,
+    user_id: user.id,
+    visibility: "Public", // This is the magic key for the Feed
+    word_count: words.length,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = await supabase.from("notes").insert([postData]);
+
+  if (error) {
+    console.error("Post Error:", error);
+    alert("Post failed: " + error.message);
+  } else {
+    alert("Posted successfully to the community feed!");
+    navigate("/feed"); // Send them straight to see their post!
+  }
+  setLoading(false);
+};
+
+const handlePost = async () => {
+  const { error } = await supabase
+    .from("notes")
+    .insert([
+      {
+        title: title,
+        content: content,
+        // Only use the column name that matches your Supabase table exactly
+        folder_id: folderId && folder_id !== "uncategorized" ? folderId : null, 
+        user_id: user.id,
+        visibility: "Public",
+        word_count: content.trim().split(/\s+/).length,
+        updated_at: new Date().toISOString(),
+      },
+    ]);
+
+  if (error) {
+    console.error("Post Error:", error.message);
+    alert("Post failed: " + error.message);
+  } else {
+    navigate("/feed");
+  }
+};
 
   return (
     <div className="min-h-screen bg-(--bg-primary) text-white flex">

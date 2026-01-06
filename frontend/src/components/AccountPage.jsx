@@ -3,215 +3,192 @@ import { supabase } from "../supabaseClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 export function AccountPage() {
-
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
-
-
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        setUser(data.user);
+        setName(
+          data.user.user_metadata?.name ||
+          data.user.email.split("@")[0]
+        );
+      }
+    };
+    getUser();
+  }, []);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error(error);
-    } else {
-      navigate("/login");
-    }
+    if (error) console.error(error);
+    else navigate("/login");
   };
 
-  const [user, setUser] = useState(null);
+  const handleSave = async () => {
+    const { data, error } = await supabase.auth.updateUser({
+      data: { name },
+    });
 
+    if (!error) {
+      // Sync with the profiles table so the Feed shows the new name
+      await supabase
+        .from("profiles")
+        .update({ full_name: name })
+        .eq("id", user.id);
 
-  useEffect(() => {
-  const getUser = async () => {
-    const { data } = await supabase.auth.getUser();
-    if (data?.user) {
       setUser(data.user);
-      setName(
-        data.user.user_metadata?.name ||
-        data.user.email.split("@")[0]
-      );
+      setIsEditing(false);
     }
   };
 
-  getUser();
-}, []);
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-const handleSave = async () => {
-  const { data, error } = await supabase.auth.updateUser({
-    data: { name },
-  });
+    try {
+      const fileExt = file.name.split(".").pop();
+      const filePath = `${user.id}-${Math.random()}.${fileExt}`; // Added unique path
 
-  if (!error) {
-    setUser(data.user);
-    setIsEditing(false);
-  }
-};
+      // 1. Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
 
-const handleAvatarUpload = async (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+      if (uploadError) throw uploadError;
 
-  const fileExt = file.name.split(".").pop();
-  const fileName = `${user.id}.${fileExt}`;
+      // 2. Get Public URL
+      const { data: urlData } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
 
-  const { error: uploadError } = await supabase.storage
-    .from("avatars")
-    .upload(fileName, file, { upsert: true });
+      const publicUrl = urlData.publicUrl;
 
-  if (uploadError) {
-    console.error(uploadError);
-    return;
-  }
+      // 3. Update Auth Metadata
+      const { data: authData, error: authError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+      });
 
-  const { data } = supabase.storage
-  .from("avatars")
-  .getPublicUrl(filePath);
+      if (authError) throw authError;
 
-const publicUrl = data.publicUrl;
+      // 4. Update Profiles Table (Crucial for the Feed)
+      await supabase
+        .from("profiles")
+        .upsert({ 
+            id: user.id, 
+            avatar_url: publicUrl,
+            username: user.user_metadata?.username || user.email.split("@")[0] 
+        });
 
-// then save THIS
-await supabase
-  .from("profiles")
-  .update({ avatar_url: publicUrl })
-  .eq("id", user.id);
-
-  setUser((prev) => ({
-    ...prev,
-    user_metadata: {
-      ...prev.user_metadata,
-      avatar_url: avatarUrl,
-    },
-  }));
-};
-
-
-
+      setUser(authData.user);
+      alert("Avatar updated!");
+    } catch (err) {
+      console.error("Upload failed:", err.message);
+      alert("Error uploading image");
+    }
+  };
 
   return (
-    <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-(--text-primary)">
+    <div className="relative w-full min-h-screen bg-(--bg-primary) font-display flex text-white">
       <Navigation />
-      {/* main content */}
+      
       <div className="flex-1 flex min-h-screen flex-col lg:ml-64">
-        <header className="sticky top-0 z-20 flex items-center bg-background-dark/80 p-4 backdrop-blur-sm shrink-0 border-b border-slate-200/10">
-          <label
-            htmlFor="nav-toggle"
-            className="flex size-12 cursor-pointer items-center justify-start -ml-2"
-          >
-            <button className="flex h-10 w-10 items-center justify-center rounded-full">
-              <i className="fa-solid fa-bars text-2xl"></i>
-            </button>
-          </label>
-          <h1 className="flex-1 text-center text-lg font-bold leading-tight tracking-[-0.015em]">
-            Account
-          </h1>
-          <div className="flex w-12 items-center justify-end">
-            <button className="flex h-12 w-12 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-transparent">
-              <i className="fa-solid fa-ellipsis-vertical text-2xl"></i>
-            </button>
-          </div>
+        <header className="sticky top-0 z-20 flex items-center bg-black/40 p-4 backdrop-blur-md border-b border-white/10">
+          <h1 className="flex-1 text-center text-lg font-bold tracking-tight">Account</h1>
         </header>
 
-        <main className="flex-1 px-4 pb-24 pt-4 bg-background-dark">
+        <main className="flex-1 px-4 pb-24 pt-10">
           <div className="mx-auto max-w-md">
-            <div className="flex flex-col items-center gap-4">
-              <div className="relative">
-                <img
-                  alt="User Avatar"
-                  className="h-28 w-28 rounded-full object-cover"
-                  src={
-                    user?.user_metadata?.avatar_url ||
-                    "https://ui-avatars.com/api/?name=" + name
-                  }
+            <div className="flex flex-col items-center gap-6">
+              
+              {/* Avatar Section */}
+              <div className="relative group">
+                <div className="h-32 w-32 rounded-3xl overflow-hidden border-2 border-white/10 bg-white/5">
+                  <img
+                    alt="User Avatar"
+                    className="h-full w-full object-cover"
+                    src={
+                      user?.user_metadata?.avatar_url ||
+                      `https://ui-avatars.com/api/?name=${name}&background=random`
+                    }
+                  />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="avatar-upload"
+                  hidden
+                  onChange={handleAvatarUpload}
                 />
-                          <input
-                            type="file"
-                            accept="image/*"
-                            id="avatar-upload"
-                            hidden
-                            onChange={handleAvatarUpload}
-                          />
-
-                          <button
-                            onClick={() => document.getElementById("avatar-upload").click()}
-                            className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full border-2 bg-(--bg-secondary)"
-                          >
-                            <i className="fa-solid fa-pen text-sm"></i>
-                          </button>
-
-                          </div>
-                          <div className="text-center">
-                            {isEditing ? (
-                          <input
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="rounded-lg bg-white/10 px-4 py-2 text-center text-xl font-bold outline-none border border-white/20"
-                          />
-                        ) : (
-                            <p className="text-2xl font-bold">
-                              {user?.user_metadata?.name || name}</p>
-                            )}
-                            <p className="text-base tex-slate-400"> 
-                              @{user?.user_metadata?.username}</p>
-                          </div>
-
-                          {isEditing ? (
-              <div className="flex gap-3 mt-3">
                 <button
-                  onClick={handleSave}
-                  className="rounded-full bg-green-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-600"
+                  onClick={() => document.getElementById("avatar-upload").click()}
+                  className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500 border-4 border-(--bg-primary) text-white hover:scale-110 transition shadow-xl cursor-pointer"
                 >
-                  Save
-                </button>
-                <button
-                  onClick={() => {
-                    setIsEditing(false);
-                    setName(
-                      user?.user_metadata?.name ||
-                      user?.email.split("@")[0]
-                    );
-                  }}
-                  className="rounded-full bg-slate-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-slate-700"
-                >
-                  Cancel
+                  <i className="fa-solid fa-camera text-sm"></i>
                 </button>
               </div>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="mt-2 rounded-full bg-blue-400 px-6 py-2.5 text-sm font-semibold"
-              >
-                Edit Profile
-              </button>
-            )}
 
+              {/* Name Section */}
+              <div className="text-center space-y-1">
+                {isEditing ? (
+                  <div className="flex flex-col gap-3">
+                    <input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="rounded-xl bg-white/5 px-4 py-2 text-center text-xl font-bold outline-none border border-blue-500/50"
+                      autoFocus
+                    />
+                    <div className="flex gap-2 justify-center">
+                      <button onClick={handleSave} className="text-xs font-bold text-green-400 uppercase tracking-widest bg-green-400/10 px-3 py-1 rounded-lg">Save</button>
+                      <button onClick={() => setIsEditing(false)} className="text-xs font-bold text-white/40 uppercase tracking-widest bg-white/5 px-3 py-1 rounded-lg">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-center gap-2">
+                      <p className="text-2xl font-bold">{user?.user_metadata?.name || name}</p>
+                      <button onClick={() => setIsEditing(true)} className="text-white/20 hover:text-blue-400 transition">
+                        <i className="fa-solid fa-pen-to-square text-sm"></i>
+                      </button>
+                    </div>
+                    <p className="text-blue-400/60 font-medium tracking-tight">@{user?.email.split("@")[0]}</p>
+                  </>
+                )}
+              </div>
             </div>
 
-            {/* General settings */}
-            <div className="mt-10 space-y-2">
-              <h2 className="px-4 text-xs font-bold uppercase">General</h2>
-              <div className="divide-y divide-slate-200/10 rounded-xl bg-slate-900/60">
-                <a className="flex items-center justify-between p-4" href="/settings/notifications">
+            {/* General Settings */}
+            <div className="mt-12 space-y-4">
+              <h2 className="px-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Preferences</h2>
+              <div className="overflow-hidden rounded-2xl bg-white/5 border border-white/10 divide-y divide-white/5">
+                <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition">
                   <div className="flex items-center gap-4">
-                    <i className="fa-solid fa-bell text-slate-400"></i>
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><i className="fa-solid fa-bell"></i></div>
                     <span className="font-medium">Notifications</span>
                   </div>
-                  <i className="fa-solid fa-chevron-right text-slate-500"></i>
-                </a>
-                <a className="flex items-center justify-between p-4" href="/settings/privacy">
+                  <i className="fa-solid fa-chevron-right text-white/20 text-xs"></i>
+                </button>
+                <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition">
                   <div className="flex items-center gap-4">
-                    <i className="fa-solid fa-lock text-slate-400"></i>
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400"><i className="fa-solid fa-shield-halved"></i></div>
                     <span className="font-medium">Privacy & Security</span>
                   </div>
-                  <i className="fa-solid fa-chevron-right text-slate-500"></i>
-                </a>
+                  <i className="fa-solid fa-chevron-right text-white/20 text-xs"></i>
+                </button>
               </div>
             </div>
 
-            <button onClick={handleLogout} className="mt-12 w-full rounded-xl border border-red-500 bg-red-500/10 px-6 py-3 text-red-500 font-semibold transition hover:bg-red-500 hover:text-white"
-              >Logout</button>
+            <button 
+              onClick={handleLogout} 
+              className="mt-10 w-full rounded-2xl border border-red-500/20 bg-red-500/5 px-6 py-4 text-red-500 font-bold transition hover:bg-red-500 hover:text-white flex items-center justify-center gap-3"
+            >
+              <i className="fa-solid fa-right-from-bracket"></i>
+              Logout
+            </button>
 
           </div>
         </main>

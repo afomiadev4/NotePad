@@ -114,27 +114,46 @@ export function Folders() {
     setSelectedNote(null);
   };
 
-  // Logic: Save Note (Create or Update)
-  const handleSave = async (updatedNote) => {
-    const noteData = {
-      title: updatedNote.title,
-      content: updatedNote.content,
-      folder_id: updatedNote.folderId === "uncategorized" ? null : updatedNote.folderId,
-      user_id: user.id,
-      updated_at: new Date().toISOString()
-    };
+const handleSave = async (updatedNote) => {
+  // 1. Ensure folder_id is a valid UUID or NULL
+  const cleanFolderId = 
+    updatedNote.folderId && updatedNote.folderId !== "uncategorized" && updatedNote.folderId !== "" 
+    ? updatedNote.folderId 
+    : null;
 
-    if (modalMode === "edit") {
-      const { error } = await supabase.from("notes").update(noteData).eq("id", updatedNote.id);
-      if (error) alert("Update failed");
-    } else {
-      const { error } = await supabase.from("notes").insert([noteData]);
-      if (error) alert("Creation failed");
-    }
-    
-    setIsModalOpen(false);
-    fetchData();
+  const noteData = {
+    title: updatedNote.title || "Untitled", // Fallback title
+    content: updatedNote.content || "",
+    folder_id: cleanFolderId,
+    user_id: user.id,
+    // Add visibility if you are using the Feed feature
+    visibility: updatedNote.visibility || "Private", 
+    updated_at: new Date().toISOString()
   };
+
+  try {
+    if (modalMode === "edit") {
+      const { error } = await supabase
+        .from("notes")
+        .update(noteData)
+        .eq("id", updatedNote.id);
+        
+      if (error) throw error;
+    } else {
+      const { error } = await supabase
+        .from("notes")
+        .insert([noteData]);
+        
+      if (error) throw error;
+    }
+
+    setIsModalOpen(false);
+    fetchData(); // Make sure this function exists to refresh your UI
+  } catch (error) {
+    console.error("Database Error Details:", error); // LOOK AT YOUR CONSOLE FOR THIS
+    alert(`Action failed: ${error.message}`);
+  }
+};
 
   // Logic: Delete Note (with confirmation)
   const handleDeleteNote = async (e, noteId) => {
