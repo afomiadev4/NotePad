@@ -155,7 +155,9 @@ export function AccountPage() {
                         <i className="fa-solid fa-pen-to-square text-sm"></i>
                       </button>
                     </div>
-                    <p className="text-blue-400/60 font-medium tracking-tight">@{user?.email.split("@")[0]}</p>
+                    <p className="text-blue-400/60 font-medium tracking-tight">
+                      @{user?.user_metadata?.username}
+                    </p>
                   </>
                 )}
               </div>
@@ -165,16 +167,26 @@ export function AccountPage() {
             <div className="mt-12 space-y-4">
               <h2 className="px-2 text-[10px] font-bold uppercase tracking-[0.2em] text-white/30">Preferences</h2>
               <div className="overflow-hidden rounded-2xl bg-white/5 border border-white/10 divide-y divide-white/5">
-                <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition">
+                <button
+                  onClick={() => navigate("/settings/notifications")}
+                  className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><i className="fa-solid fa-bell"></i></div>
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                      <i className="fa-solid fa-bell"></i>
+                    </div>
                     <span className="font-medium">Notifications</span>
                   </div>
                   <i className="fa-solid fa-chevron-right text-white/20 text-xs"></i>
                 </button>
-                <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition">
+                <button
+                  onClick={() => navigate("/settings/privacy")}
+                  className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400"><i className="fa-solid fa-shield-halved"></i></div>
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
+                      <i className="fa-solid fa-shield-halved"></i>
+                    </div>
                     <span className="font-medium">Privacy & Security</span>
                   </div>
                   <i className="fa-solid fa-chevron-right text-white/20 text-xs"></i>
