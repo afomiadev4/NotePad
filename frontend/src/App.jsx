@@ -10,7 +10,8 @@ import Dashboard from "./components/Dashboard"; // match the filename
 import { EditNote } from "./components/EditComponent";
 import { NotificationsSettings } from "./components/NotificationsSettings";
 import { PrivacySettings } from "./components/PrivacySettings";
-import { Search } from "./components/Search";
+
+import { SavedNotes } from "./components/SavedNotes";
 
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -22,7 +23,8 @@ export default function App() {
       <Route index element={<Welcome />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/search" element={<Search />} />
+      
+      <Route path="/saved" element={<SavedNotes />} />
 
       <Route path="/settings/notifications" element={<NotificationsSettings />} />
       <Route path="/settings/privacy" element={<PrivacySettings />} />
