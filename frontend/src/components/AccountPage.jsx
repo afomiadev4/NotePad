@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 export function AccountPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
-  const [bio, setBio] = useState(""); // Bio state integrated
+  const [bio, setBio] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState(""); // New Avatar State
   const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,15 +18,21 @@ export function AccountPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        setName(user.user_metadata?.name || user.email.split("@")[0]);
         
-        // Fetch bio from profiles table
+        // Fetch profile data (including avatar_url)
         const { data: profile } = await supabase
           .from("profiles")
-          .select("bio")
+          .select("username, bio, avatar_url")
           .eq("id", user.id)
-          .single();
-        if (profile) setBio(profile.bio || "");
+          .maybeSingle(); // maybeSingle prevents crashing if no profile exists yet
+
+        if (profile) {
+          setName(profile.username || user.user_metadata?.name || user.email.split("@")[0]);
+          setBio(profile.bio || "");
+          setAvatarUrl(profile.avatar_url || "");
+        } else {
+          setName(user.user_metadata?.name || user.email.split("@")[0]);
+        }
 
         await fetchUserPosts(user.id);
       }
@@ -46,7 +53,7 @@ export function AccountPage() {
           reactions (id)
         `)
         .eq("user_id", userId)
-        .eq("visibility", "Public") // ONLY PUBLIC POSTS
+        .eq("visibility", "Public")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -56,27 +63,76 @@ export function AccountPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
+  const uploadAvatar = async (event) => {
+    try {
+      setLoading(true);
+      if (!event.target.files || event.target.files.length === 0) return;
+      
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+
+      // 1. Upload to Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // 3. Update Profile Table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      alert("Avatar updated!");
+    } catch (error) {
+      alert('Error uploading avatar: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSave = async () => {
-    const { error: authError } = await supabase.auth.updateUser({
-      data: { name: name },
-    });
+    setLoading(true);
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const finalName = name.trim() || authUser.email.split("@")[0];
 
-    if (!authError) {
-      // Update both name and bio in profiles table
-      await supabase
+      const { error: profileError } = await supabase
         .from("profiles")
-        .update({ full_name: name, bio: bio })
-        .eq("id", user.id);
-        
+        .upsert({ 
+          id: authUser.id, 
+          username: finalName, 
+          full_name: finalName, 
+          bio: bio || "",
+          updated_at: new Date()
+        }, { onConflict: 'id' });
+
+      if (profileError) throw profileError;
+      
       setIsEditing(false);
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+      setName(finalName);
+      alert("Profile saved!");
+    } catch (err) {
+      console.error("Error saving profile:", err.message);
+      alert(`Save failed: ${err.message}`);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
   };
 
   const handlePasswordReset = async () => {
@@ -90,7 +146,6 @@ export function AccountPage() {
   const handleDeleteAccount = async () => {
     const confirmed = window.confirm("PERMANENTLY DELETE ACCOUNT? This cannot be undone.");
     if (confirmed) {
-      alert("Account deletion request sent. You will be signed out.");
       await supabase.auth.signOut();
       navigate("/login");
     }
@@ -99,7 +154,6 @@ export function AccountPage() {
   const handleDelete = async (noteId) => {
     const confirmed = window.confirm("Are you sure you want to delete this post?");
     if (!confirmed) return;
-
     try {
       const { error } = await supabase
         .from("notes")
@@ -126,15 +180,11 @@ export function AccountPage() {
       <Navigation />
       
       <div className="flex-1 flex flex-col lg:ml-64">
-        {/* Updated Header with NotePad+ branding */}
         <header className="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-(--bg-primary)/80 backdrop-blur-md z-10">
           <div className="flex items-center gap-2">
             <i className="fa-solid fa-file-lines text-blue-500 text-xl"></i>
             <span className="font-black tracking-tighter text-lg">NotePad+</span>
           </div>
-          <button className="text-white/40 hover:text-white transition">
-             <i className="fa-solid fa-bell text-lg"></i>
-          </button>
         </header>
 
         <div className="h-40 bg-gradient-to-b from-blue-600/20 to-transparent w-full border-b border-white/5"></div>
@@ -143,13 +193,22 @@ export function AccountPage() {
           <div className="max-w-2xl mx-auto -mt-12">
             
             <div className="flex justify-between items-end mb-6">
-              <div className="h-24 w-24 rounded-3xl overflow-hidden border-4 border-(--bg-primary) bg-zinc-900 shadow-xl">
+              {/* Avatar Section with Upload Overlay */}
+              <div className="group relative h-24 w-24 rounded-3xl overflow-hidden border-4 border-(--bg-primary) bg-zinc-900 shadow-xl">
                 <img
                   alt="Avatar"
                   className="h-full w-full object-cover"
-                  src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=random`}
+                  src={avatarUrl || user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=random`}
                 />
+                {isEditing && (
+                  <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <i className="fa-solid fa-camera text-white text-xl mb-1"></i>
+                    <span className="text-[10px] text-white font-black uppercase tracking-tighter">Change</span>
+                    <input type="file" className="hidden" accept="image/*" onChange={uploadAvatar} />
+                  </label>
+                )}
               </div>
+
               <button 
                 onClick={() => setIsEditing(!isEditing)}
                 className="px-6 py-2 rounded-xl border border-white/10 text-sm font-bold hover:bg-white/5 transition active:scale-95"
@@ -163,13 +222,13 @@ export function AccountPage() {
                 <div className="flex flex-col gap-3 max-w-sm">
                   <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Display Name</label>
                   <input 
-                    className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm"
+                    className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-white"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
                   <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Bio</label>
                   <textarea 
-                    className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none"
+                    className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none text-white"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell us about yourself..."
@@ -180,7 +239,7 @@ export function AccountPage() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <h1 className="text-3xl font-black tracking-tight">{user?.user_metadata?.name || name}</h1>
+                  <h1 className="text-3xl font-black tracking-tight">{name}</h1>
                   <p className="text-blue-400 font-medium mb-2">@{user?.email?.split('@')[0]}</p>
                   <p className="text-white/60 text-sm max-w-lg leading-relaxed">{bio || "Add a bio to tell the community about yourself..."}</p>
                 </div>
@@ -203,7 +262,6 @@ export function AccountPage() {
                       <button 
                         onClick={() => handleDelete(post.id)}
                         className="text-white/10 hover:text-red-500 transition-colors p-2"
-                        title="Delete Post"
                       >
                         <i className="fa-solid fa-trash-can text-sm"></i>
                       </button>
@@ -229,22 +287,13 @@ export function AccountPage() {
             </div>
 
             <div className="mt-20 pt-10 border-t border-white/5 space-y-4">
-              <button 
-                onClick={handlePasswordReset} 
-                className="w-full text-white/30 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition"
-              >
+              <button onClick={handlePasswordReset} className="w-full text-white/30 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition">
                 <i className="fa-solid fa-key"></i> Reset Password
               </button>
-              <button 
-                onClick={handleDeleteAccount} 
-                className="w-full text-red-500/40 hover:text-red-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition"
-              >
+              <button onClick={handleDeleteAccount} className="w-full text-red-500/40 hover:text-red-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition">
                 <i className="fa-solid fa-user-xmark"></i> Delete Account
               </button>
-              <button 
-                onClick={handleLogout} 
-                className="w-full text-white/60 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition pt-4"
-              >
+              <button onClick={handleLogout} className="w-full text-white/60 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition pt-4">
                 <i className="fa-solid fa-right-from-bracket"></i> Sign Out
               </button>
             </div>
