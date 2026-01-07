@@ -110,12 +110,6 @@ export function Feed() {
                 <h1 className="text-2xl font-black text-white tracking-tight flex items-center gap-2">
                   <i className="fa-solid fa-file-lines text-blue-500"></i> NotePad+
                 </h1>
-                <button 
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-5 py-2 rounded-full bg-blue-600 hover:bg-blue-500 text-sm font-bold transition-all shadow-lg shadow-blue-500/20 active:scale-95"
-                >
-                  Post
-                </button>
               </div>
               <div className="w-full flex justify-center">
                 <SearchBar />
@@ -178,7 +172,18 @@ export function Feed() {
       </main>
 
       <NoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isPost={true} onSave={fetchPosts} />
-      <CommentModal isOpen={isCommentModalOpen} onClose={() => setIsCommentModalOpen(false)} note={selectedNote} />
+      <CommentModal 
+        isOpen={isCommentModalOpen} 
+        onClose={() => setIsCommentModalOpen(false)} 
+        note={selectedNote} 
+        onCommentAdded={(noteId) => {
+          setNotes(prev => prev.map(n => 
+            n.id === noteId 
+              ? { ...n, comments: [...(n.comments || []), { id: Date.now() }] } 
+              : n
+          ));
+        }}
+      />
     </div>
   );
 }

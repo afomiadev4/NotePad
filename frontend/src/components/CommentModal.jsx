@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 
-export function CommentModal({ isOpen, onClose, note }) {
+export function CommentModal({ isOpen, onClose, note, onCommentAdded }) {
   const user = useSelector((state) => state.auth.user);
+  const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -15,99 +15,124 @@ export function CommentModal({ isOpen, onClose, note }) {
   }, [isOpen, note]);
 
   const fetchComments = async () => {
+    setLoading(true);
     const { data, error } = await supabase
       .from("comments")
-      .select(`*, profiles(username, avatar_url)`)
+      .select(`
+        id,
+        content,
+        created_at,
+        profiles (username, avatar_url)
+      `)
       .eq("note_id", note.id)
       .order("created_at", { ascending: true });
 
-    if (!error) setComments(data);
+    if (!error) setComments(data || []);
+    setLoading(false);
   };
 
-  const handlePostComment = async () => {
-    if (!newComment.trim()) return;
-    setLoading(true);
+  const handleSendComment = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim() || !user) return;
 
-    const { error } = await supabase.from("comments").insert([
-      {
-        note_id: note.id,
-        user_id: user.id,
-        content: newComment,
-      },
-    ]);
+    const newComment = {
+      note_id: note.id,
+      user_id: user.id,
+      content: commentText.trim(),
+    };
+
+    // 1. Save to Database
+    const { data, error } = await supabase
+      .from("comments")
+      .insert([newComment])
+      .select(`
+        id,
+        content,
+        created_at,
+        profiles (username, avatar_url)
+      `)
+      .single();
 
     if (!error) {
-      setNewComment("");
-      fetchComments(); // Refresh the list
+      // 2. Update local list of comments in the modal
+      setComments([...comments, data]);
+      setCommentText("");
+
+      // 3. OPTIMISTIC UPDATE: Update the count on the Feed instantly
+      if (onCommentAdded) {
+        onCommentAdded(note.id);
+      }
+    } else {
+      console.error("Error sending comment:", error.message);
     }
-    setLoading(false);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm">
-      <div className="bg-(--bg-secondary) w-full max-w-xl rounded-t-3xl sm:rounded-2xl border border-white/10 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="bg-zinc-900 border border-white/10 w-full max-w-lg rounded-3xl flex flex-col max-h-[80vh] shadow-2xl">
+        
         {/* Header */}
-        <div className="p-4 border-b border-white/5 flex justify-between items-center">
-          <h2 className="font-bold">Post Details</h2>
-          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full">
-            <i className="fa-solid fa-xmark"></i>
+        <div className="p-6 border-b border-white/5 flex justify-between items-center">
+          <div>
+            <h3 className="text-xl font-black">Comments</h3>
+            <p className="text-white/40 text-xs">Replying to @{note?.profiles?.username}</p>
+          </div>
+          <button onClick={onClose} className="text-white/20 hover:text-white transition">
+            <i className="fa-solid fa-xmark text-xl"></i>
           </button>
         </div>
 
-        <div className="overflow-y-auto flex-1 p-4 space-y-6">
-          {/* Original Post (Twitter Style) */}
-          <div className="flex gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-500 shrink-0 flex items-center justify-center font-bold">
-              {note.profiles?.username?.[0]}
+        {/* Comments List */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
             </div>
-            <div>
-              <p className="font-bold text-sm">@{note.profiles?.username}</p>
-              <p className="text-white/80 mt-1">{note.content}</p>
+          ) : comments.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-white/20 text-sm italic">No comments yet. Start the conversation!</p>
             </div>
-          </div>
-
-          <div className="border-l-2 border-white/5 ml-5 pl-8 space-y-6">
-            {comments.map((comment) => (
-              <div key={comment.id} className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-purple-500 shrink-0 flex items-center justify-center text-xs font-bold">
-                  {comment.profiles?.username?.[0]}
+          ) : (
+            comments.map((c) => (
+              <div key={c.id} className="flex gap-3">
+                <div className="h-8 w-8 rounded-full bg-zinc-800 flex-shrink-0 flex items-center justify-center text-[10px] font-bold border border-white/5">
+                  {c.profiles?.username?.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1">
-                  <div className="bg-white/5 p-3 rounded-2xl rounded-tl-none">
-                    <p className="text-blue-400 text-xs font-bold mb-1">@{comment.profiles?.username}</p>
-                    <p className="text-sm text-white/90">{comment.content}</p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-bold text-white/90">@{c.profiles?.username}</span>
+                    <span className="text-[10px] text-white/20">
+                      {new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
-                  <p className="text-[10px] text-white/20 mt-1 ml-1 uppercase">
-                    {new Date(comment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                  <p className="text-white/70 text-sm leading-relaxed">{c.content}</p>
                 </div>
               </div>
-            ))}
-          </div>
+            ))
+          )}
         </div>
 
-        {/* Reply Bar */}
-        <div className="p-4 bg-black/20 border-t border-white/5">
-          <div className="flex items-center gap-3 bg-white/5 rounded-2xl p-2 border border-white/10 focus-within:border-blue-500/50 transition">
+        {/* Input Area */}
+        <form onSubmit={handleSendComment} className="p-4 bg-white/[0.02] border-t border-white/5">
+          <div className="relative flex items-center">
             <input
               type="text"
-              placeholder="Post your reply..."
-              className="bg-transparent flex-1 px-2 outline-none text-sm"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handlePostComment()}
+              placeholder="Write a comment..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-4 pr-12 outline-none focus:border-blue-500/50 transition text-sm"
             />
             <button 
-              onClick={handlePostComment}
-              disabled={loading || !newComment.trim()}
-              className="bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded-xl text-xs font-bold disabled:opacity-50"
+              type="submit"
+              disabled={!commentText.trim()}
+              className="absolute right-2 p-2 text-blue-500 hover:text-blue-400 disabled:text-white/10 transition-colors"
             >
-              Reply
+              <i className="fa-solid fa-paper-plane"></i>
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
