@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigation } from "./Navigation";
-import { SearchBar } from "./Search"; // <--- Make sure this is imported!
+import { SearchBar } from "./Search";
 import { supabase } from "../supabaseClient";
 import { NoteModal } from "./NoteModal";
 import { CommentModal } from "./CommentModal";
@@ -21,7 +21,7 @@ export function Feed() {
         .from("notes")
         .select(`
           *,
-          profiles (username, avatar_url),
+          profiles (username, avatar_url, bio),
           reactions (user_id),
           saves (user_id),
           comments (id)
@@ -103,7 +103,6 @@ export function Feed() {
       <main className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="max-w-2xl mx-auto space-y-6 pb-20 lg:pb-0">
           
-          {/* SINGLE CLEAN HEADER */}
           <header className="sticky top-0 bg-(--bg-primary)/80 backdrop-blur-md z-30 pb-4 border-b border-white/5">
             <div className="flex flex-col gap-6 pt-4">
               <div className="flex justify-between items-center">
@@ -129,19 +128,32 @@ export function Feed() {
             notes.map((note) => (
               <article key={note.id} className="bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/10 p-5 hover:bg-white/[0.05] transition-all">
                 <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex-shrink-0 flex items-center justify-center font-bold text-lg shadow-inner">
-                    {note.profiles?.username?.charAt(0).toUpperCase() || "U"}
-                  </div>
+                  {/* DYNAMIC AVATAR ADDED HERE */}
+                  <img 
+                    src={note.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${note.profiles?.username || 'U'}&background=random`} 
+                    alt="User Avatar"
+                    className="w-12 h-12 rounded-full object-cover border border-white/10 shadow-lg flex-shrink-0"
+                  />
+                  
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold truncate hover:underline cursor-pointer text-white/90">
-                        @{note.profiles?.username || "anonymous"}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="font-bold truncate hover:underline cursor-pointer text-white/90">
+                          @{note.profiles?.username || "anonymous"}
+                        </span>
+                        {/* BIO SNIPPET ADDED HERE */}
+                        {note.profiles?.bio && (
+                          <span className="text-[10px] text-white/30 italic line-clamp-1 max-w-[200px]">
+                            {note.profiles.bio}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-white/30 lowercase">
                         {new Date(note.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                    <h2 className="text-lg font-bold text-white mb-2">{note.title}</h2>
+
+                    <h2 className="text-lg font-bold text-white mb-2 mt-2">{note.title}</h2>
                     <p className="text-white/70 leading-relaxed mb-4 whitespace-pre-wrap">{note.content}</p>
                     
                     <div className="flex items-center justify-between max-w-md text-white/40">
