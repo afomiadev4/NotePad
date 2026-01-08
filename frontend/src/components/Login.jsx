@@ -14,27 +14,41 @@ export default function Login() {
   const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    if (authError) {
+      alert(authError.message);
+      return;
+    }
 
-  dispatch(
-    login({
-      user: data.user,
-      token: data.session.access_token,
-    })
-  );
+    // This is the crucial part:
+    // We ignore the metadata (which is often empty or just email) 
+    // and grab the REAL username you stored in your 'profiles' table.
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("username, avatar_url")
+      .eq("id", authData.user.id)
+      .single();
 
-  navigate("/folders");
-};
+    dispatch(
+      login({
+        user: { 
+          ...authData.user, 
+          // We FORCE the username to be the one from your DB profile
+          username: profileData?.username || "User", 
+          avatar_url: profileData?.avatar_url 
+        },
+        token: authData.session.access_token,
+      })
+    );
+
+    navigate("/folders");
+  };
 
 
   return (

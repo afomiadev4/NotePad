@@ -44,28 +44,38 @@ export default function Register() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validate()) return;
+    e.preventDefault();
+    if (!validate()) return;
 
-  const { data, error } = await supabase.auth.signUp({
-    email: form.email,
-    password: form.password,
-    options: {
-      data: {
-        name: form.name,
-        username: form.username,
-      },
-    },
-  });
+    // 1. Sign up the user
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.password,
+    });
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
-  alert("Check your email to verify your account!");
-  navigate("/login");
-};
+    // 2. Insert into the 'profiles' table immediately
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert([
+          { 
+            id: data.user.id, 
+            username: form.username, // This saves the CLEAN username
+            full_name: form.name 
+          }
+        ]);
+        
+      if (profileError) console.error("Profile creation error:", profileError.message);
+    }
+
+    alert("Check your email to verify your account!");
+    navigate("/login");
+  };
 
 
   return (
