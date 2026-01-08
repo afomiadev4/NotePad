@@ -114,7 +114,6 @@ export function AccountPage() {
           username: finalName, 
           full_name: finalName, 
           bio: bio || "",
-          updated_at: new Date()
         }, { onConflict: 'id' });
 
       if (profileError) throw profileError;
