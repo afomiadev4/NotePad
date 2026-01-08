@@ -14,7 +14,7 @@ export function Feed() {
   const [selectedNote, setSelectedNote] = useState(null);
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [viewingProfile, setViewingProfile] = useState(null);
-  const [filterUser, setFilterUser] = useState(null); 
+  const [filterUser, setFilterUser] = useState(null);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -63,19 +63,24 @@ export function Feed() {
 
   const handleToggleSave = async (noteId) => {
     if (!user) return alert("Login to save notes!");
-    const { data: existingSave } = await supabase
-      .from("saves")
-      .select("id")
-      .eq("note_id", noteId)
-      .eq("user_id", user.id)
-      .single();
+    const noteIndex = notes.findIndex(n => n.id === noteId);
+    const note = notes[noteIndex];
+    const isSaved = note.saves?.some(s => s.user_id === user.id);
 
-    if (existingSave) {
-      await supabase.from("saves").delete().eq("id", existingSave.id);
+    // Optimistic UI Update
+    const updatedNotes = [...notes];
+    if (isSaved) {
+      updatedNotes[noteIndex].saves = note.saves.filter(s => s.user_id !== user.id);
+    } else {
+      updatedNotes[noteIndex].saves = [...(note.saves || []), { user_id: user.id }];
+    }
+    setNotes(updatedNotes);
+
+    if (isSaved) {
+      await supabase.from("saves").delete().eq("note_id", noteId).eq("user_id", user.id);
     } else {
       await supabase.from("saves").insert([{ note_id: noteId, user_id: user.id }]);
     }
-    fetchPosts();
   };
 
   const handleShare = async (note) => {
@@ -99,7 +104,7 @@ export function Feed() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-(--bg-primary) flex text-white">
+    <div className="min-h-screen bg-(--bg-primary) flex text-white font-sans">
       <Navigation />
 
       <main className="flex-1 lg:ml-64 p-4 md:p-8">
@@ -128,7 +133,6 @@ export function Feed() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Step A: Show "Clear Filter" bar if a filter is active */}
               {filterUser && (
                 <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl mb-6">
                   <p className="text-sm">
@@ -143,67 +147,93 @@ export function Feed() {
                 </div>
               )}
 
-              {/* Step B: The Filter and Map Logic (This is where your red line likely was) */}
               {notes
                 .filter((note) => !filterUser || note.profiles?.username === filterUser)
-                .map((note) => (
-                  <article 
-                    key={note.id} 
-                    className="bg-white/[0.03] backdrop-blur-md rounded-2xl border border-white/10 p-5 hover:bg-white/[0.05] transition-all"
-                  >
-                    <div className="flex gap-4">
-                      <img 
-                        src={note.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${note.profiles?.username || 'U'}&background=random`} 
-                        className="w-12 h-12 rounded-full object-cover border border-white/10 cursor-pointer"
-                        onClick={() => setViewingProfile(note.profiles)}
-                      />
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <div 
-                            className="flex flex-col cursor-pointer group/user"
-                            onClick={() => setViewingProfile(note.profiles)}
-                          >
-                            <span className="font-bold group-hover/user:text-blue-400 transition-colors">
-                              @{note.profiles?.username || "anonymous"}
-                            </span>
-                            {note.profiles?.bio && (
-                              <span className="text-[10px] text-white/30 italic line-clamp-1">
-                                {note.profiles.bio}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-xs text-white/30 uppercase">
-                            {new Date(note.created_at).toLocaleDateString()}
-                          </span>
-                        </div>
+                .map((note) => {
+                  const hasLiked = note.reactions?.some(r => r.user_id === user?.id);
+                  const hasSaved = note.saves?.some(s => s.user_id === user?.id);
 
-                        <h2 className="text-lg font-bold text-white mb-2 mt-2">{note.title}</h2>
-                        <p className="text-white/70 leading-relaxed mb-4 whitespace-pre-wrap">{note.content}</p>
+                  return (
+                    <article 
+                      key={note.id} 
+                      className="group bg-white/[0.03] backdrop-blur-md rounded-3xl border border-white/10 p-5 hover:bg-white/[0.05] hover:border-white/20 transition-all duration-300"
+                    >
+                      <div className="flex gap-4">
+                        <img 
+                          src={note.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${note.profiles?.username || 'U'}&background=random`} 
+                          className="w-12 h-12 rounded-2xl object-cover border border-white/10 cursor-pointer hover:scale-105 transition"
+                          onClick={() => setViewingProfile(note.profiles)}
+                          alt="avatar"
+                        />
                         
-                        {/* Rest of your action buttons (Like, Comment, etc) go here */}
-                        <div className="flex items-center justify-between max-w-md text-white/40">
-                          <button onClick={() => { setSelectedNote(note); setIsCommentModalOpen(true); }} className="hover:text-blue-400">
-                            <i className="fa-regular fa-comment p-2"></i> {note.comments?.length || 0}
-                          </button>
-                          <button onClick={() => handleToggleLike(note.id)} className={note.reactions?.some(r => r.user_id === user?.id) ? 'text-red-500' : 'hover:text-red-500'}>
-                            <i className="fa-regular fa-heart p-2"></i> {note.reactions?.length || 0}
-                          </button>
-                          <button onClick={() => handleToggleSave(note.id)} className="hover:text-yellow-500">
-                            <i className="fa-regular fa-bookmark p-2"></i>
-                          </button>
-                          <button onClick={() => handleShare(note)} className="hover:text-green-400">
-                            <i className="fa-solid fa-arrow-up-from-bracket p-2"></i>
-                          </button>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <div 
+                              className="flex flex-col cursor-pointer"
+                              onClick={() => setViewingProfile(note.profiles)}
+                            >
+                              <span className="font-bold text-white hover:text-blue-400 transition-colors flex items-center gap-2">
+                                @{note.profiles?.username || "anonymous"}
+                                {note.category && (
+                                  <span className="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full uppercase tracking-widest font-black">
+                                    {note.category}
+                                  </span>
+                                )}
+                              </span>
+                              <span className="text-xs text-white/30 uppercase font-medium">
+                                {new Date(note.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+
+                          <h2 className="text-lg font-bold text-white mb-2 mt-2">{note.title}</h2>
+                          <p className="text-white/70 leading-relaxed mb-4 whitespace-pre-wrap line-clamp-5">{note.content}</p>
+                          
+                          <div className="flex items-center justify-between max-w-sm pt-2">
+                            <button 
+                              onClick={() => { setSelectedNote(note); setIsCommentModalOpen(true); }} 
+                              className="flex items-center gap-2 text-white/40 hover:text-blue-400 transition"
+                            >
+                              <div className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 group-hover:bg-blue-500/10 transition">
+                                <i className="fa-regular fa-comment"></i>
+                              </div>
+                              <span className="text-xs font-bold">{note.comments?.length || 0}</span>
+                            </button>
+
+                            <button 
+                              onClick={() => handleToggleLike(note.id)} 
+                              className={`flex items-center gap-2 transition ${hasLiked ? 'text-red-500' : 'text-white/40 hover:text-red-500'}`}
+                            >
+                              <div className={`w-9 h-9 flex items-center justify-center rounded-xl transition ${hasLiked ? 'bg-red-500/10' : 'bg-white/5'}`}>
+                                <i className={`${hasLiked ? 'fa-solid' : 'fa-regular'} fa-heart`}></i>
+                              </div>
+                              <span className="text-xs font-bold">{note.reactions?.length || 0}</span>
+                            </button>
+
+                            <button 
+                              onClick={() => handleToggleSave(note.id)} 
+                              className={`flex items-center gap-2 transition ${hasSaved ? 'text-yellow-500' : 'text-white/40 hover:text-yellow-500'}`}
+                            >
+                              <div className={`w-9 h-9 flex items-center justify-center rounded-xl transition ${hasSaved ? 'bg-yellow-500/10' : 'bg-white/5'}`}>
+                                <i className={`${hasSaved ? 'fa-solid' : 'fa-regular'} fa-bookmark`}></i>
+                              </div>
+                            </button>
+
+                            <button 
+                              onClick={() => handleShare(note)} 
+                              className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 text-white/40 hover:text-green-400 transition"
+                            >
+                              <i className="fa-solid fa-arrow-up-from-bracket"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
             </div>
           )}
         </div>
-        
       </main>
 
       <NoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isPost={true} onSave={fetchPosts} />
@@ -211,57 +241,44 @@ export function Feed() {
         isOpen={isCommentModalOpen} 
         onClose={() => setIsCommentModalOpen(false)} 
         note={selectedNote} 
-        onCommentAdded={(noteId) => {
-          setNotes(prev => prev.map(n => 
-            n.id === noteId 
-              ? { ...n, comments: [...(n.comments || []), { id: Date.now() }] } 
-              : n
-          ));
-        }}
+        onCommentAdded={fetchPosts}
       />
+      
       {/* Profile Preview Modal */}
-        {viewingProfile && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-            <div className="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
-              {/* Header/Cover */}
-              <div className="h-24 bg-gradient-to-br from-blue-600/40 to-indigo-600/40 border-b border-white/5" />
-              
-              <div className="px-6 pb-6 text-center">
-                <div className="flex justify-center -mt-12 mb-4">
-                  <img 
-                    src={viewingProfile.avatar_url || `https://ui-avatars.com/api/?name=${viewingProfile.username}`}
-                    className="w-24 h-24 rounded-3xl border-4 border-zinc-900 object-cover bg-zinc-800 shadow-2xl"
-                  />
-                </div>
-
-                <h2 className="text-2xl font-black text-white">@{viewingProfile.username}</h2>
-                <p className="text-white/50 text-sm mt-3 leading-relaxed px-2">
-                  {viewingProfile.bio || "This creator hasn't added a bio yet."}
-                </p>
-
-                <div className="mt-8 space-y-3">
-                  <button 
-                    onClick={() => {
-                      setFilterUser(viewingProfile.username);
-                      setViewingProfile(null);
-                    }}
-                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-2xl text-sm transition shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
-                  >
-                    <i className="fa-solid fa-eye"></i>
-                    View All Thoughts
-                  </button>
-                  
-                  <button 
-                    onClick={() => setViewingProfile(null)}
-                    className="w-full bg-white/5 hover:bg-white/10 text-white/60 font-bold py-3 rounded-2xl text-sm transition"
-                  >
-                    Close
-                  </button>
-                </div>
+      {viewingProfile && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="h-24 bg-gradient-to-br from-blue-600/40 to-indigo-600/40 border-b border-white/5" />
+            <div className="px-6 pb-6 text-center">
+              <div className="flex justify-center -mt-12 mb-4">
+                <img 
+                  src={viewingProfile.avatar_url || `https://ui-avatars.com/api/?name=${viewingProfile.username}`}
+                  className="w-24 h-24 rounded-3xl border-4 border-zinc-900 object-cover bg-zinc-800 shadow-2xl"
+                  alt="profile"
+                />
+              </div>
+              <h2 className="text-2xl font-black text-white">@{viewingProfile.username}</h2>
+              <p className="text-white/50 text-sm mt-3 leading-relaxed px-2">
+                {viewingProfile.bio || "This creator hasn't added a bio yet."}
+              </p>
+              <div className="mt-8 space-y-3">
+                <button 
+                  onClick={() => {
+                    setFilterUser(viewingProfile.username);
+                    setViewingProfile(null);
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-2xl text-sm transition flex items-center justify-center gap-2"
+                >
+                  <i className="fa-solid fa-eye"></i> View All Thoughts
+                </button>
+                <button onClick={() => setViewingProfile(null)} className="w-full bg-white/5 hover:bg-white/10 text-white/60 font-bold py-3 rounded-2xl text-sm transition">
+                  Close
+                </button>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 }
