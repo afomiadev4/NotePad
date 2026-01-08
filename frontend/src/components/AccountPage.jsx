@@ -5,9 +5,10 @@ import { useNavigate } from "react-router-dom";
 
 export function AccountPage() {
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(""); // Added for Display Name
+  const [username, setUsername] = useState(""); 
   const [bio, setBio] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(""); // New Avatar State
+  const [avatarUrl, setAvatarUrl] = useState(""); 
   const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,19 +20,20 @@ export function AccountPage() {
       if (user) {
         setUser(user);
         
-        // Fetch profile data (including avatar_url)
         const { data: profile } = await supabase
           .from("profiles")
-          .select("username, bio, avatar_url")
+          .select("username, full_name, bio, avatar_url")
           .eq("id", user.id)
-          .maybeSingle(); // maybeSingle prevents crashing if no profile exists yet
+          .maybeSingle();
 
         if (profile) {
-          setName(profile.username || user.user_metadata?.name || user.email.split("@")[0]);
+          setUsername(profile.username || "");
+          setName(profile.full_name || ""); // Setting the Display Name
           setBio(profile.bio || "");
           setAvatarUrl(profile.avatar_url || "");
         } else {
-          setName(user.user_metadata?.name || user.email.split("@")[0]);
+          setUsername(user.email.split('@')[0]);
+          setName(user.email.split('@')[0]);
         }
 
         await fetchUserPosts(user.id);
@@ -72,19 +74,16 @@ export function AccountPage() {
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
 
-      // 1. Upload to Storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
-      // 2. Get Public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // 3. Update Profile Table
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: publicUrl })
@@ -102,25 +101,28 @@ export function AccountPage() {
   };
 
   const handleSave = async () => {
+    if (!username.trim()) {
+        alert("Username cannot be empty");
+        return;
+    }
+    
     setLoading(true);
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      const finalName = name.trim() || authUser.email.split("@")[0];
 
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({ 
           id: authUser.id, 
-          username: finalName, 
-          full_name: finalName, 
+          username: username.trim().toLowerCase(),
+          full_name: name.trim(), // Saving the Display Name
           bio: bio || "",
         }, { onConflict: 'id' });
 
       if (profileError) throw profileError;
       
       setIsEditing(false);
-      setName(finalName);
-      alert("Profile saved!");
+      alert("Profile updated successfully!");
     } catch (err) {
       console.error("Error saving profile:", err.message);
       alert(`Save failed: ${err.message}`);
@@ -181,8 +183,8 @@ export function AccountPage() {
       <div className="flex-1 flex flex-col lg:ml-64">
         <header className="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-(--bg-primary)/80 backdrop-blur-md z-10">
           <div className="flex items-center gap-2">
-            <i className="fa-solid fa-file-lines text-blue-500 text-xl"></i>
-            <span className="font-black tracking-tighter text-lg">NotePad+</span>
+            <i className="fa-solid fa-user-circle text-blue-500 text-xl"></i>
+            <span className="font-black tracking-tighter text-lg">My Profile</span>
           </div>
         </header>
 
@@ -192,12 +194,11 @@ export function AccountPage() {
           <div className="max-w-2xl mx-auto -mt-12">
             
             <div className="flex justify-between items-end mb-6">
-              {/* Avatar Section with Upload Overlay */}
-              <div className="group relative h-24 w-24 rounded-3xl overflow-hidden border-4 border-(--bg-primary) bg-zinc-900 shadow-xl">
+              <div className="group relative h-28 w-28 rounded-[32px] overflow-hidden border-4 border-(--bg-primary) bg-zinc-900 shadow-2xl">
                 <img
                   alt="Avatar"
                   className="h-full w-full object-cover"
-                  src={avatarUrl || user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${name}&background=random`}
+                  src={avatarUrl || `https://ui-avatars.com/api/?name=${username}&background=random`}
                 />
                 {isEditing && (
                   <label className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -210,90 +211,123 @@ export function AccountPage() {
 
               <button 
                 onClick={() => setIsEditing(!isEditing)}
-                className="px-6 py-2 rounded-xl border border-white/10 text-sm font-bold hover:bg-white/5 transition active:scale-95"
+                className={`px-6 py-2 rounded-xl border font-bold text-sm transition active:scale-95 ${
+                    isEditing ? "border-red-500/50 text-red-500 bg-red-500/5" : "border-white/10 hover:bg-white/5"
+                }`}
               >
                 {isEditing ? "Cancel" : "Edit Profile"}
               </button>
             </div>
 
-            <div className="mb-10">
+            <div className="mb-12">
               {isEditing ? (
-                <div className="flex flex-col gap-3 max-w-sm">
-                  <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Display Name</label>
-                  <input 
-                    className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-white"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                  <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold">Bio</label>
-                  <textarea 
-                    className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none text-white"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Tell us about yourself..."
-                  />
-                  <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition shadow-lg shadow-blue-500/20">
-                    Save Changes
+                <div className="flex flex-col gap-4 max-w-md bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1.5 block ml-1">Display Name</label>
+                    <input 
+                        className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-white"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1.5 block ml-1">Username</label>
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 font-bold">@</span>
+                        <input 
+                            className="bg-white/5 border border-white/10 p-3 pl-8 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-white"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
+                        />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1.5 block ml-1">Bio</label>
+                    <textarea 
+                        className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none text-white"
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Add a bio and tell the world who you are."
+                    />
+                  </div>
+                  <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-500 py-3 rounded-xl text-sm font-black transition shadow-lg shadow-blue-600/20 uppercase tracking-widest">
+                    Save Profile
                   </button>
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <h1 className="text-3xl font-black tracking-tight">{name}</h1>
-                  <p className="text-blue-400 font-medium mb-2">@{user?.email?.split('@')[0]}</p>
-                  <p className="text-white/60 text-sm max-w-lg leading-relaxed">{bio || "Add a bio to tell the community about yourself..."}</p>
+                  {/* Display Name - Modern and bold but not overwhelming */}
+                  <h1 className="text-2xl font-bold tracking-tight text-white">{name || "User"}</h1>
+                  
+                  {/* Username - Professional @ style */}
+                  <p className="text-blue-400/80 text-sm font-medium">@{username}</p>
+                  
+                  {/* Bio Area */}
+                  <p className="text-white/60 text-base max-w-lg leading-relaxed pt-4 border-l-2 border-blue-500/30 pl-4">
+                    {bio || "Add a bio to tell the world who you are.?"}
+                  </p>
                 </div>
               )}
             </div>
 
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <h2 className="font-black text-sm uppercase tracking-[0.2em] text-white/20">My Thoughts</h2>
+                <h2 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/20">My Thoughts</h2>
                 <div className="h-px flex-1 bg-white/5"></div>
               </div>
 
               {userPosts.length > 0 ? (
-                userPosts.map(post => (
-                  <div key={post.id} className="group relative p-5 bg-white/[0.02] rounded-2xl border border-white/5 hover:border-white/20 transition-all">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-bold text-lg text-white/90 group-hover:text-blue-400 transition pr-8">
-                        {post.title}
-                      </h3>
-                      <button 
-                        onClick={() => handleDelete(post.id)}
-                        className="text-white/10 hover:text-red-500 transition-colors p-2"
-                      >
-                        <i className="fa-solid fa-trash-can text-sm"></i>
-                      </button>
+                <div className="grid gap-4">
+                  {userPosts.map(post => (
+                    <div key={post.id} className="group relative p-6 bg-white/[0.02] rounded-3xl border border-white/5 hover:border-white/10 hover:bg-white/[0.03] transition-all">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="font-bold text-xl text-white/90 group-hover:text-blue-400 transition pr-8">
+                          {post.title}
+                        </h3>
+                        <button 
+                          onClick={() => handleDelete(post.id)}
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-white/10 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                        >
+                          <i className="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                      </div>
+                      
+                      <p className="text-white/50 text-sm line-clamp-3 leading-relaxed mb-6">
+                        {post.content}
+                      </p>
+                      
+                      <div className="flex items-center justify-between pt-4 border-t border-white/5">
+                        <div className="flex items-center gap-4 text-white/20 text-[10px] font-black uppercase tracking-widest">
+                            <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                            <span className="flex items-center gap-1.5">
+                                <i className="fa-solid fa-heart text-red-500/40"></i> {post.reactions?.length || 0}
+                            </span>
+                        </div>
+                        <i className="fa-solid fa-chevron-right text-white/5 group-hover:text-blue-500/50 transition-colors"></i>
+                      </div>
                     </div>
-                    
-                    <p className="text-white/50 text-sm line-clamp-3 leading-relaxed">
-                      {post.content}
-                    </p>
-                    
-                    <div className="mt-4 flex items-center gap-4 text-white/20 text-[10px] font-bold uppercase tracking-widest">
-                      <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                      <span className="flex items-center gap-1">
-                        <i className="fa-solid fa-heart text-red-500/50"></i> {post.reactions?.length || 0}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               ) : (
-                <div className="text-center py-20 bg-white/[0.01] rounded-3xl border border-dashed border-white/5">
-                  <p className="text-white/20 text-sm font-medium">No public posts yet.</p>
+                <div className="text-center py-24 bg-white/[0.01] rounded-[40px] border border-dashed border-white/5">
+                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fa-solid fa-feather-pointed text-white/10 text-2xl"></i>
+                  </div>
+                  <p className="text-white/20 text-sm font-bold uppercase tracking-widest">No posts yet</p>
                 </div>
               )}
             </div>
 
-            <div className="mt-20 pt-10 border-t border-white/5 space-y-4">
-              <button onClick={handlePasswordReset} className="w-full text-white/30 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition">
-                <i className="fa-solid fa-key"></i> Reset Password
+            <div className="mt-20 pt-10 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button onClick={handlePasswordReset} className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition">
+                <i className="fa-solid fa-key text-blue-500/50"></i> Reset Password
               </button>
-              <button onClick={handleDeleteAccount} className="w-full text-red-500/40 hover:text-red-500 text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition">
-                <i className="fa-solid fa-user-xmark"></i> Delete Account
+              <button onClick={handleLogout} className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition">
+                <i className="fa-solid fa-right-from-bracket text-yellow-500/50"></i> Sign Out
               </button>
-              <button onClick={handleLogout} className="w-full text-white/60 hover:text-white text-xs font-bold uppercase tracking-widest flex items-center gap-2 transition pt-4">
-                <i className="fa-solid fa-right-from-bracket"></i> Sign Out
+              <button onClick={handleDeleteAccount} className="sm:col-span-2 p-4 rounded-2xl bg-red-500/5 hover:bg-red-500/10 text-red-500/40 hover:text-red-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition">
+                <i className="fa-solid fa-user-xmark"></i> Permanent Account Deletion
               </button>
             </div>
           </div>
