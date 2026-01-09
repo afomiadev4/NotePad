@@ -9,19 +9,17 @@ export function NotificationsSettings() {
       <Navigation />
 
       <main className="flex-1 lg:ml-64 p-6">
-        {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="text-(--text-secondary) mn-3"
-            aria-label="Black"
+            className="text-(--text-secondary) mb-3"
+            aria-label="Back"
           >
             ← Back
           </button>
           <h1 className="text-xl font-bold">Notifications</h1>
         </div>
 
-        {/* Card */}
         <div className="rounded-xl bg-(--bg-secondary) border border-white/10 p-5 space-y-4">
           <label className="flex items-center justify-between">
             <span>New Likes</span>

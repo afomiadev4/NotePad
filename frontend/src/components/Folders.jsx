@@ -14,7 +14,6 @@ export function Folders() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
-  const [folderToEdit, setFolderToEdit] = useState(null);
 
   const fetchData = async () => {
     if (!user) return;
@@ -28,18 +27,27 @@ export function Folders() {
       let fData = fRes.data || [];
       const nData = nRes.data || [];
 
-      // Add Uncategorized logic
+      // Logic for Uncategorized notes (notes without a folder_id)
       if (nData.some(n => !n.folder_id)) {
         if (!fData.find(f => f.id === "uncategorized")) {
-          fData.push({ id: "uncategorized", name: "Uncategorized", icon: "fa-folder-open", color: "text-slate-400" });
+          fData.push({ 
+            id: "uncategorized", 
+            name: "Uncategorized", 
+            icon: "fa-folder-open", 
+            color: "text-slate-400" 
+          });
         }
       }
       setFolders(fData);
       setNotes(nData);
-    } finally { setLoading(false); }
+    } finally { 
+      setLoading(false); 
+    }
   };
 
-  useEffect(() => { fetchData(); }, [user]);
+  useEffect(() => { 
+    fetchData(); 
+  }, [user]);
 
   const activeFolder = folders.find(f => f.id === folderId);
   const displayedNotes = notes.filter(n => 
@@ -63,7 +71,7 @@ export function Folders() {
               </p>
             </div>
             <button 
-              onClick={() => { setFolderToEdit(null); setIsFolderModalOpen(true); }}
+              onClick={() => setIsFolderModalOpen(true)}
               className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-2xl font-bold text-sm transition-all active:scale-95 shadow-lg shadow-blue-600/20"
             >
               + New Folder
@@ -73,7 +81,7 @@ export function Folders() {
           {loading ? (
             <div className="py-20 text-center animate-pulse text-white/20">Loading your space...</div>
           ) : !folderId ? (
-            /* FOLDER GRID */
+            /* FOLDER GRID VIEW */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {folders.map(f => (
                 <div key={f.id} onClick={() => navigate(`/folders/${f.id}`)}
@@ -88,7 +96,7 @@ export function Folders() {
               ))}
             </div>
           ) : (
-            /* NOTES LIST */
+            /* NOTES LIST VIEW WITHIN FOLDER */
             <div className="space-y-4">
               <button onClick={() => navigate("/folders")} className="text-white/40 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-tighter">
                 <i className="fa-solid fa-arrow-left"></i> Back to Folders
@@ -100,14 +108,28 @@ export function Folders() {
                       <h3 className="text-lg font-bold">{note.title}</h3>
                       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
                         <button onClick={() => navigate(`/edit/${note.id}`)} className="p-2 bg-white/5 rounded-lg hover:text-blue-400"><i className="fa-solid fa-pen"></i></button>
-                        <button onClick={async () => { if(confirm("Delete?")) { await supabase.from("notes").delete().eq("id", note.id); fetchData(); } }} className="p-2 bg-white/5 rounded-lg hover:text-red-400"><i className="fa-solid fa-trash"></i></button>
+                        <button 
+                          onClick={async () => { 
+                            if(confirm("Delete this note?")) { 
+                              await supabase.from("notes").delete().eq("id", note.id); 
+                              fetchData(); 
+                            } 
+                          }} 
+                          className="p-2 bg-white/5 rounded-lg hover:text-red-400"
+                        >
+                          <i className="fa-solid fa-trash"></i>
+                        </button>
                       </div>
                     </div>
-                    <p className="text-white/50 line-clamp-2 text-sm leading-relaxed mb-4">{note.content}</p>
+                    {/* Render content as HTML due to Quill editor formatting */}
+                    <div 
+                      className="text-white/50 line-clamp-2 text-sm leading-relaxed mb-4"
+                      dangerouslySetInnerHTML={{ __html: note.content }}
+                    />
                     <span className="text-[10px] font-black text-white/20 uppercase">{new Date(note.created_at).toLocaleDateString()}</span>
                   </div>
                 ))}
-                <div onClick={() => navigate("/create")} className="border-2 border-dashed border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center hover:bg-white/5 cursor-pointer transition-all">
+                <div onClick={() => navigate("/add-note")} className="border-2 border-dashed border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center hover:bg-white/5 cursor-pointer transition-all min-h-[160px]">
                    <i className="fa-solid fa-plus text-white/20 text-2xl mb-2"></i>
                    <span className="text-white/20 font-bold text-sm">Add Note</span>
                 </div>

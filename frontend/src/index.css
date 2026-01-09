@@ -7,3 +7,58 @@
   --text-secondary: #67696e;
   --btn-primary: #1754cf;
 }
+
+.ql-picker-options, .ql-tooltip {
+  background-color: #18181b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: white !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+}
+
+.ql-picker-item:hover {
+  color: #3b82f6 !important;
+}
+
+select option {
+  background-color: #18181b;
+  color: white;
+  padding: 12px;
+}
+
+.quill-preview p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+select {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.ql-editor {
+  color: white !important;
+}
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+option {
+  background-color: #09090b !important;
+  color: white !important;
+  padding: 10px;
+}
+
+.ql-snow .ql-picker-options {
+  background-color: #18181b !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  color: white !important;
+}

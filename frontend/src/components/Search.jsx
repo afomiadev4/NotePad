@@ -9,7 +9,7 @@ export function SearchBar() {
   const searchRef = useRef(null);
   const navigate = useNavigate();
 
-  // Close dropdown when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) setIsOpen(false);
@@ -50,7 +50,7 @@ export function SearchBar() {
         />
       </div>
 
-      {/* Dropdown Results */}
+      
       {isOpen && results.length > 0 && (
         <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-50">
           {results.map((note) => (

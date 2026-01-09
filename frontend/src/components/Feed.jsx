@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 export function Feed() {
   const user = useSelector((state) => state.auth.user);
   
-  // States
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCat, setActiveCat] = useState("All");
@@ -55,7 +54,6 @@ export function Feed() {
     const note = notes[noteIndex];
     const hasLiked = note.reactions?.some(r => r.user_id === user.id);
 
-    // Optimistic Update
     const updatedNotes = [...notes];
     if (hasLiked) {
       updatedNotes[noteIndex].reactions = note.reactions.filter(r => r.user_id !== user.id);
@@ -119,7 +117,6 @@ export function Feed() {
       <main className="flex-1 lg:ml-64 p-4 md:p-8">
         <div className="max-w-2xl mx-auto space-y-6 pb-20">
           
-          {/* HEADER & SEARCH */}
           <header className="sticky top-0 bg-(--bg-primary)/80 backdrop-blur-xl z-30 pb-4 border-b border-white/5 pt-4">
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center">
@@ -135,7 +132,6 @@ export function Feed() {
               </div>
               <SearchBar />
               
-              {/* CATEGORY SELECTOR */}
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                 {categories.map(c => (
                   <button 
@@ -156,7 +152,6 @@ export function Feed() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* USER FILTER NOTIFICATION */}
               {filterUser && (
                 <div className="flex items-center justify-between bg-blue-500/10 border border-blue-500/20 p-4 rounded-3xl">
                   <p className="text-sm">Showing thoughts by <span className="font-bold text-blue-400">@{filterUser}</span></p>
@@ -179,10 +174,6 @@ export function Feed() {
                           onClick={() => setViewingProfile(note.profiles)}
                           alt="avatar"
                         />
-                        <div 
-                            className="text-white/70 leading-relaxed text-sm prose prose-invert max-w-none"
-                            dangerouslySetInnerHTML={{ __html: note.content }} 
-                          />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col cursor-pointer" onClick={() => setViewingProfile(note.profiles)}>
@@ -199,10 +190,12 @@ export function Feed() {
                           </div>
 
                           <h2 className="text-xl font-bold text-white mt-4">{note.title}</h2>
-                          {/* whitespace-pre-wrap makes rich text spacing visible */}
-                          <p className="text-white/60 leading-relaxed my-4 whitespace-pre-wrap line-clamp-6 text-sm">{note.content}</p>
                           
-                          {/* INTERACTION BAR */}
+                          <div 
+                            className="text-white/60 leading-relaxed my-4 text-sm prose prose-invert max-w-none line-clamp-6"
+                            dangerouslySetInnerHTML={{ __html: note.content }} 
+                          />
+                          
                           <div className="flex items-center justify-between max-w-sm pt-4 border-t border-white/5">
                             <button onClick={() => { setSelectedNote(note); setIsCommentModalOpen(true); }} className="flex items-center gap-2 text-white/40 hover:text-blue-400 transition">
                               <i className="fa-regular fa-comment"></i>
@@ -232,11 +225,9 @@ export function Feed() {
         </div>
       </main>
 
-      {/* Modals */}
       <NoteModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} isPost={true} onSave={() => fetchPosts(activeCat)} />
       <CommentModal isOpen={isCommentModalOpen} onClose={() => setIsCommentModalOpen(false)} note={selectedNote} onCommentAdded={() => fetchPosts(activeCat)} />
       
-      {/* Profile Modal */}
       {viewingProfile && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
           <div className="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] overflow-hidden shadow-2xl">
