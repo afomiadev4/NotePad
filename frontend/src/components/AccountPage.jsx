@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 export function AccountPage() {
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState(""); // Added for Display Name
+  const [name, setName] = useState("");
   const [username, setUsername] = useState(""); 
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState(""); 
@@ -28,7 +28,7 @@ export function AccountPage() {
 
         if (profile) {
           setUsername(profile.username || "");
-          setName(profile.full_name || ""); // Setting the Display Name
+          setName(profile.full_name || "");
           setBio(profile.bio || "");
           setAvatarUrl(profile.avatar_url || "");
         } else {
@@ -92,7 +92,6 @@ export function AccountPage() {
       if (updateError) throw updateError;
 
       setAvatarUrl(publicUrl);
-      alert("Avatar updated!");
     } catch (error) {
       alert('Error uploading avatar: ' + error.message);
     } finally {
@@ -115,16 +114,14 @@ export function AccountPage() {
         .upsert({ 
           id: authUser.id, 
           username: username.trim().toLowerCase(),
-          full_name: name.trim(), // Saving the Display Name
+          full_name: name.trim(),
           bio: bio || "",
         }, { onConflict: 'id' });
 
       if (profileError) throw profileError;
       
       setIsEditing(false);
-      alert("Profile updated successfully!");
     } catch (err) {
-      console.error("Error saving profile:", err.message);
       alert(`Save failed: ${err.message}`);
     } finally {
       setLoading(false);
@@ -141,7 +138,7 @@ export function AccountPage() {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     if (error) alert(error.message);
-    else alert("Password reset link sent to your email!");
+    else alert("Reset link sent!");
   };
 
   const handleDeleteAccount = async () => {
@@ -153,7 +150,7 @@ export function AccountPage() {
   };
 
   const handleDelete = async (noteId) => {
-    const confirmed = window.confirm("Are you sure you want to delete this post?");
+    const confirmed = window.confirm("Are you sure?");
     if (!confirmed) return;
     try {
       const { error } = await supabase
@@ -165,7 +162,6 @@ export function AccountPage() {
       if (error) throw error;
       setUserPosts(userPosts.filter((post) => post.id !== noteId));
     } catch (err) {
-      console.error("Delete failed:", err.message);
       alert("Error deleting post.");
     }
   };
@@ -248,7 +244,7 @@ export function AccountPage() {
                         className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none text-white"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        placeholder="Add a bio and tell the world who you are."
+                        placeholder="Add a bio..."
                     />
                   </div>
                   <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-500 py-3 rounded-xl text-sm font-black transition shadow-lg shadow-blue-600/20 uppercase tracking-widest">
@@ -257,15 +253,10 @@ export function AccountPage() {
                 </div>
               ) : (
                 <div className="space-y-1">
-                  {/* Display Name - Modern and bold but not overwhelming */}
                   <h1 className="text-2xl font-bold tracking-tight text-white">{name || "User"}</h1>
-                  
-                  {/* Username - Professional @ style */}
                   <p className="text-blue-400/80 text-sm font-medium">@{username}</p>
-                  
-                  {/* Bio Area */}
                   <p className="text-white/60 text-base max-w-lg leading-relaxed pt-4 border-l-2 border-blue-500/30 pl-4">
-                    {bio || "Add a bio to tell the world who you are.?"}
+                    {bio || "No bio yet."}
                   </p>
                 </div>
               )}
@@ -293,9 +284,10 @@ export function AccountPage() {
                         </button>
                       </div>
                       
-                      <p className="text-white/50 text-sm line-clamp-3 leading-relaxed mb-6">
-                        {post.content}
-                      </p>
+                      <div 
+                        className="text-white/50 text-sm line-clamp-3 leading-relaxed mb-6"
+                        dangerouslySetInnerHTML={{ __html: post.content }}
+                      />
                       
                       <div className="flex items-center justify-between pt-4 border-t border-white/5">
                         <div className="flex items-center gap-4 text-white/20 text-[10px] font-black uppercase tracking-widest">

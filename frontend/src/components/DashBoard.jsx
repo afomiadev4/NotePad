@@ -21,7 +21,7 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Stats
+      // 1. Fetch Stats (using .head:true for efficiency)
       const [notesRes, foldersRes, postsRes] = await Promise.all([
         supabase.from("notes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("folders").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -56,64 +56,73 @@ export default function Dashboard() {
 
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <div className="max-w-5xl mx-auto">
+          
           {/* Welcome Header */}
           <header className="mb-10">
-            <h1 className="text-3xl font-bold">Welcome back, {user?.user_metadata?.name || "User"}!</h1>
-            <p className="text-white/40 mt-1">Here is what's happening with your notes today.</p>
+            <h1 className="text-4xl font-black tracking-tight">
+              Welcome back, {user?.username || "Writer"}!
+            </h1>
+            <p className="text-white/40 mt-1 font-medium">
+              Here is what's happening with your space today.
+            </p>
           </header>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:border-blue-500/50 transition cursor-pointer" onClick={() => navigate("/folders")}>
-              <div className="w-10 h-10 bg-blue-500/10 rounded-xl flex items-center justify-center text-blue-400 mb-4">
-                <i className="fa-solid fa-note-sticky"></i>
-              </div>
-              <p className="text-white/40 text-sm font-medium uppercase tracking-wider">Total Notes</p>
-              <h2 className="text-4xl font-bold mt-1">{stats.totalNotes}</h2>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:border-purple-500/50 transition cursor-pointer" onClick={() => navigate("/folders")}>
-              <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-purple-400 mb-4">
-                <i className="fa-solid fa-folder"></i>
-              </div>
-              <p className="text-white/40 text-sm font-medium uppercase tracking-wider">Folders</p>
-              <h2 className="text-4xl font-bold mt-1">{stats.totalFolders}</h2>
-            </div>
-
-            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:border-green-500/50 transition cursor-pointer" onClick={() => navigate("/feed")}>
-              <div className="w-10 h-10 bg-green-500/10 rounded-xl flex items-center justify-center text-green-400 mb-4">
-                <i className="fa-solid fa-earth-americas"></i>
-              </div>
-              <p className="text-white/40 text-sm font-medium uppercase tracking-wider">Public Posts</p>
-              <h2 className="text-4xl font-bold mt-1">{stats.publicPosts}</h2>
-            </div>
+            <StatCard 
+              label="Total Notes" 
+              value={stats.totalNotes} 
+              icon="fa-note-sticky" 
+              color="text-blue-400" 
+              onClick={() => navigate("/folders")} 
+            />
+            <StatCard 
+              label="Folders" 
+              value={stats.totalFolders} 
+              icon="fa-folder" 
+              color="text-purple-400" 
+              onClick={() => navigate("/folders")} 
+            />
+            <StatCard 
+              label="Public Posts" 
+              value={stats.publicPosts} 
+              icon="fa-earth-americas" 
+              color="text-emerald-400" 
+              onClick={() => navigate("/feed")} 
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Recent Activity */}
-            <section className="bg-white/5 border border-white/10 rounded-3xl p-8">
+            <section className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8">
               <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <i className="fa-solid fa-clock-rotate-left text-blue-400"></i>
                 Recent Activity
               </h3>
               
               <div className="space-y-4">
-                {recentNotes.length === 0 ? (
-                  <p className="text-white/20 text-sm">No notes found.</p>
+                {loading ? (
+                  <div className="animate-pulse space-y-4">
+                    {[1, 2, 3].map(i => <div key={i} className="h-16 bg-white/5 rounded-2xl" />)}
+                  </div>
+                ) : recentNotes.length === 0 ? (
+                  <p className="text-white/20 text-sm italic">No notes created yet...</p>
                 ) : (
                   recentNotes.map((note) => (
                     <div 
                       key={note.id} 
-                      onClick={() => navigate(`/notes/${note.id}`)}
-                      className="flex items-center justify-between p-4 bg-black/20 rounded-2xl hover:bg-white/5 transition cursor-pointer border border-transparent hover:border-white/10"
+                      onClick={() => navigate(`/edit/${note.id}`)}
+                      className="flex items-center justify-between p-4 bg-black/20 rounded-2xl hover:bg-white/5 transition cursor-pointer border border-transparent hover:border-white/10 group"
                     >
                       <div>
-                        <p className="font-semibold">{note.title || "Untitled"}</p>
-                        <p className="text-[10px] text-white/30 uppercase mt-1">
+                        <p className="font-bold text-white group-hover:text-blue-400 transition-colors">
+                          {note.title || "Untitled Thought"}
+                        </p>
+                        <p className="text-[10px] text-white/30 uppercase mt-1 font-black tracking-widest">
                           {new Date(note.updated_at).toLocaleDateString()} • {note.visibility}
                         </p>
                       </div>
-                      <i className="fa-solid fa-chevron-right text-white/10"></i>
+                      <i className="fa-solid fa-chevron-right text-white/10 group-hover:text-white/40 transition-all"></i>
                     </div>
                   ))
                 )}
@@ -122,32 +131,52 @@ export default function Dashboard() {
 
             {/* Quick Actions */}
             <section className="space-y-6">
-              <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-8 shadow-xl shadow-blue-500/10">
-                <h3 className="text-xl font-bold mb-2">Create something new</h3>
-                <p className="text-blue-100/70 mb-6 text-sm">Capture your thoughts or share them with the community.</p>
-                <div className="flex gap-3">
+              <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[2.5rem] p-8 shadow-xl shadow-blue-500/10">
+                <h3 className="text-2xl font-black mb-2">Create something new</h3>
+                <p className="text-blue-100/70 mb-8 text-sm leading-relaxed">
+                  Capture a fleeting thought or craft a story for the world to see.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button 
                     onClick={() => navigate("/add-note")}
-                    className="flex-1 bg-white text-blue-600 font-bold py-3 rounded-xl hover:bg-blue-50 transition"
+                    className="flex-1 bg-white text-blue-600 font-black py-4 rounded-2xl hover:bg-blue-50 transition active:scale-95 text-xs tracking-widest uppercase"
                   >
-                    Private Note
+                    New Note
                   </button>
                   <button 
-                    onClick={() => navigate("/post-note")}
-                    className="flex-1 bg-blue-500 text-white font-bold py-3 rounded-xl hover:bg-blue-400 transition border border-white/20"
+                    onClick={() => navigate("/add-note")} // Adjusted to your route logic
+                    className="flex-1 bg-blue-500 text-white font-black py-4 rounded-2xl hover:bg-blue-400 transition border border-white/20 active:scale-95 text-xs tracking-widest uppercase"
                   >
-                    Public Post
+                    Public Feed
                   </button>
                 </div>
               </div>
 
-              <div className="bg-white/5 border border-white/10 rounded-3xl p-8 text-center">
-                <p className="text-white/40 text-sm italic">"Writing is the geometry of the soul."</p>
+              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 text-center flex items-center justify-center">
+                <p className="text-white/40 text-sm italic font-medium leading-relaxed">
+                  "Writing is the geometry of the soul."
+                </p>
               </div>
             </section>
           </div>
         </div>
       </main>
+    </div>
+  );
+}
+
+// Sub-component for scannable cards
+function StatCard({ label, value, icon, color, onClick }) {
+  return (
+    <div 
+      className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 hover:border-white/20 transition-all cursor-pointer group" 
+      onClick={onClick}
+    >
+      <div className={`w-12 h-12 ${color.replace('text', 'bg')}/10 rounded-2xl flex items-center justify-center ${color} mb-6 text-xl group-hover:scale-110 transition-transform`}>
+        <i className={`fa-solid ${icon}`}></i>
+      </div>
+      <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.2em]">{label}</p>
+      <h2 className="text-5xl font-black mt-2 tracking-tighter">{value}</h2>
     </div>
   );
 }

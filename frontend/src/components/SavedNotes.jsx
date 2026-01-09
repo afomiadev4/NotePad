@@ -89,7 +89,10 @@ export function SavedNotes() {
                       <span className="text-sm font-black text-white/60 group-hover:text-blue-400 transition">@{note.profiles?.username}</span>
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-white leading-tight">{note.title}</h3>
-                    <p className="text-sm text-white/50 line-clamp-4 leading-relaxed font-medium">{note.content}</p>
+                    <div 
+                      className="text-sm text-white/50 line-clamp-4 leading-relaxed font-medium"
+                      dangerouslySetInnerHTML={{ __html: note.content }}
+                    />
                   </div>
                   
                   <div className="mt-8 pt-4 border-t border-white/5 flex items-center justify-between">

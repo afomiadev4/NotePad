@@ -45,8 +45,11 @@ export function CreateNote() {
       updated_at: new Date()
     }]);
 
-    if (!error) navigate(isPublic ? "/feed" : "/folders");
-    else alert(error.message);
+    if (!error) {
+      navigate(isPublic ? "/feed" : "/folders");
+    } else {
+      alert(error.message);
+    }
     setLoading(false);
   };
 
@@ -61,7 +64,7 @@ export function CreateNote() {
             <input 
               value={title} 
               onChange={e => setTitle(e.target.value)} 
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all" 
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all placeholder:text-white/10" 
               placeholder="Give your thought a title..." 
               required
             />
@@ -83,7 +86,7 @@ export function CreateNote() {
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Organize</label>
                 
-                {/* CATEGORY DROPDOWN */}
+                {/* CATEGORY SELECT */}
                 <div className="relative group">
                   <select 
                     value={category} 
@@ -97,7 +100,7 @@ export function CreateNote() {
                   </div>
                 </div>
 
-                {/* FOLDER DROPDOWN */}
+                {/* FOLDER SELECT */}
                 <div className="relative group">
                   <select 
                     value={folderId} 
@@ -113,8 +116,9 @@ export function CreateNote() {
                 </div>
               </div>
 
+              {/* PRIVACY TOGGLE */}
               <div className="space-y-3">
-                 <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Privacy</label>
+                 <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Visibility</label>
                  <button 
                   type="button" 
                   onClick={() => setIsPublic(!isPublic)}
@@ -124,11 +128,12 @@ export function CreateNote() {
                 </button>
               </div>
 
+              {/* ACTION BUTTONS */}
               <div className="pt-4 space-y-3">
                 <button 
                   type="submit" 
                   disabled={loading}
-                  className="w-full py-5 bg-blue-600 rounded-[1.5rem] font-black text-xs tracking-widest shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all"
+                  className="w-full py-5 bg-blue-600 rounded-[1.5rem] font-black text-xs tracking-widest shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
                 >
                   {loading ? "CREATING..." : "CREATE NOTE"}
                 </button>
@@ -141,10 +146,12 @@ export function CreateNote() {
         </form>
       </main>
 
+      {/* Editor Skinning */}
       <style>{`
         .editor-custom .ql-toolbar { border: none !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; padding: 1.5rem !important; }
         .editor-custom .ql-container { border: none !important; font-size: 1.1rem; font-family: inherit; }
         .editor-custom .ql-editor { padding: 2rem !important; min-height: 50vh; color: rgba(255,255,255,0.8); }
+        .editor-custom .ql-editor.ql-blank::before { color: rgba(255,255,255,0.1) !important; left: 2rem !important; }
         .ql-snow .ql-stroke { stroke: rgba(255,255,255,0.4) !important; }
         .ql-snow .ql-fill { fill: rgba(255,255,255,0.4) !important; }
         .ql-snow .ql-picker { color: rgba(255,255,255,0.4) !important; }

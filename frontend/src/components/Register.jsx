@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
-
 export default function Register() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     name: "",
     username: "",
@@ -23,8 +23,6 @@ export default function Register() {
       [e.target.name]: e.target.value,
     });
   };
-
-  const navigate = useNavigate();
 
   const validate = () => {
     let newErrors = {};
@@ -47,7 +45,6 @@ export default function Register() {
     e.preventDefault();
     if (!validate()) return;
 
-    // 1. Sign up the user
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -58,14 +55,13 @@ export default function Register() {
       return;
     }
 
-    // 2. Insert into the 'profiles' table immediately
     if (data.user) {
       const { error: profileError } = await supabase
         .from("profiles")
         .insert([
           { 
             id: data.user.id, 
-            username: form.username, // This saves the CLEAN username
+            username: form.username, 
             full_name: form.name 
           }
         ]);
@@ -77,11 +73,8 @@ export default function Register() {
     navigate("/login");
   };
 
-
   return (
     <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary) overflow-hidden">
-      <title>Sign Up</title>
-
       <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-white/20">
         <h2 className="text-center font-extrabold text-5xl drop-shadow-lg">
           Register

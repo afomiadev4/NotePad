@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+
 export function NoteModal({
   note,
   isOpen,
@@ -13,15 +14,16 @@ export function NoteModal({
 }) {
   const noteRef = useRef(null);
   const isViewMode = mode === "view";
-  // Categories defined as per your requirement
   const categories = ["General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts"];
+  
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     category: "General",
     folderId: "uncategorized",
-    visibility: "Private", // Added visibility state
+    visibility: "Private",
   });
+
   useEffect(() => {
     if (note) {
       setFormData({
@@ -34,7 +36,9 @@ export function NoteModal({
       });
     }
   }, [note, isOpen]);
+
   if (!isOpen) return null;
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
@@ -42,20 +46,21 @@ export function NoteModal({
       folderId: formData.folderId || "uncategorized",
     });
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-0 lg:p-12 bg-black/80 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit}
         className="relative flex flex-col lg:flex-row w-full max-w-6xl h-full lg:h-[85vh] bg-(--bg-primary) text-white border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
       >
-        {/* MAIN CONTENT */}
         <section className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto">
           {isViewMode ? (
             <div className="max-w-3xl">
               <h2 className="text-3xl font-bold mb-6">{formData.title}</h2>
-              <p className="text-white/80 leading-relaxed whitespace-pre-wrap text-lg">
-                {formData.content}
-              </p>
+              <div 
+                className="text-white/80 leading-relaxed text-lg ql-editor"
+                dangerouslySetInnerHTML={{ __html: formData.content }}
+              />
             </div>
           ) : (
             <div className="w-full h-full flex flex-col gap-4">
@@ -75,11 +80,9 @@ export function NoteModal({
             </div>
           )}
         </section>
-        {/* RIGHT PANEL (Settings) */}
+
         <aside className="w-full lg:w-80 flex flex-col px-6 py-8 border-t lg:border-t-0 lg:border-l border-white/10 bg-white/[0.02] justify-between">
           <div className="flex flex-col gap-6">
-            
-            {/* VISIBILITY TOGGLE (Point 9) */}
             {!isViewMode && (
               <div className="p-4 rounded-2xl bg-blue-500/5 border border-blue-500/10">
                 <div className="flex items-center justify-between mb-2">
@@ -97,7 +100,7 @@ export function NoteModal({
                 </button>
               </div>
             )}
-            {/* CATEGORY (Point 6) */}
+
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Category</label>
               {isViewMode ? (
@@ -109,12 +112,12 @@ export function NoteModal({
                   className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-blue-500 transition"
                 >
                   {categories.map(cat => (
-                    <option key={cat} value={cat} className="bg-zinc-900">{cat}</option>
+                    <option key={cat} value={cat}>{cat}</option>
                   ))}
                 </select>
               )}
             </div>
-            {/* FOLDER SELECTION */}
+
             {!hideFolderSelection && !isViewMode && (
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-white/30">Folder</label>
@@ -124,13 +127,13 @@ export function NoteModal({
                   className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm outline-none focus:border-blue-500 transition"
                 >
                   {folders.map((f) => (
-                    <option key={f.id} value={f.id} className="bg-zinc-900">{f.name}</option>
+                    <option key={f.id} value={f.id}>{f.name}</option>
                   ))}
                 </select>
               </div>
             )}
           </div>
-          {/* ACTIONS */}
+
           <div className="flex gap-3 mt-8 lg:mt-0">
             {isViewMode ? (
               <>

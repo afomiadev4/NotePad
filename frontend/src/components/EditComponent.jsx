@@ -44,14 +44,22 @@ export function EditNote() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     await supabase.from("notes").update({
-      title, content, category, visibility,
+      title, 
+      content, 
+      category, 
+      visibility,
       folder_id: folderId === "uncategorized" ? null : folderId,
       updated_at: new Date()
     }).eq("id", id);
+    
     navigate(visibility === "Public" ? "/feed" : "/folders");
   };
 
-  if (loading) return <div className="min-h-screen bg-black flex items-center justify-center text-white font-black tracking-tighter">LOADING...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-black flex items-center justify-center text-white font-black tracking-tighter italic">
+      LOADING YOUR THOUGHTS...
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-(--bg-primary) text-white flex">
@@ -59,12 +67,12 @@ export function EditNote() {
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <form onSubmit={handleUpdate} className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* LEFT: MAIN EDITOR */}
+          {/* MAIN EDITOR */}
           <div className="lg:col-span-2 space-y-6">
             <input 
               value={title} 
               onChange={e => setTitle(e.target.value)} 
-              className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all" 
+              className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all placeholder:text-white/10" 
               placeholder="Title..." 
             />
             <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl">
@@ -77,11 +85,10 @@ export function EditNote() {
             </div>
           </div>
 
-          {/* RIGHT: SIDEBAR SETTINGS */}
+          {/* SIDEBAR SETTINGS */}
           <div className="space-y-4">
             <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8 sticky top-12">
               
-              {/* DROPDOWN UI FIX */}
               <div className="space-y-3">
                 <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Organize</label>
                 <div className="relative group">

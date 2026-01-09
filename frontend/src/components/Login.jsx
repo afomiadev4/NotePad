@@ -1,4 +1,3 @@
-console.log("Login component loaded!");
 import { useDispatch } from "react-redux";
 import { login } from "../store/authSlice";
 import { useState } from "react";
@@ -26,9 +25,6 @@ export default function Login() {
       return;
     }
 
-    // This is the crucial part:
-    // We ignore the metadata (which is often empty or just email) 
-    // and grab the REAL username you stored in your 'profiles' table.
     const { data: profileData } = await supabase
       .from("profiles")
       .select("username, avatar_url")
@@ -39,7 +35,6 @@ export default function Login() {
       login({
         user: { 
           ...authData.user, 
-          // We FORCE the username to be the one from your DB profile
           username: profileData?.username || "User", 
           avatar_url: profileData?.avatar_url 
         },
@@ -50,10 +45,8 @@ export default function Login() {
     navigate("/folders");
   };
 
-
   return (
     <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary)">
-      <title>Login</title>
       <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-white/20">
         <h1 className="text-center font-extrabold text-5xl text-white drop-shadow-lg">
           Login
@@ -87,15 +80,11 @@ export default function Login() {
               value={password}
             />
             <button
-              onClick={() => {
-                setShowPassword(!showPassword);
-              }}
-              className="absolute top-1/2 translate-y-0.5 right-2 cursor-pointer"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 translate-y-0.5 right-2 cursor-pointer text-white/50 hover:text-white"
               type="button"
             >
-              <i
-                className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
-              />
+              <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`} />
             </button>
           </div>
 
