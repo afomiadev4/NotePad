@@ -110,7 +110,7 @@ export function CreateNote() {
               {/* WORD COUNTER */}
               <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                 <div className="flex justify-between items-end mb-2">
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Live Count</label>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Word Count</label>
                   <span className={`text-sm font-black transition-colors ${isPublic && wordCount > WORD_LIMIT ? "text-red-500" : "text-blue-400"}`}>
                     {wordCount}{isPublic ? ` / ${WORD_LIMIT}` : ""}
                   </span>
