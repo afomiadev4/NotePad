@@ -62,9 +62,11 @@ export function Navigation() {
         </Link>
 
         {/* Folders - ADDED HERE */}
-        <Link to="/folders" className={`p-2 transition-colors ${isMobileActive("/folders")}`}>
-          <i className="fa-solid fa-folder text-xl"></i>
+        {/* Saved Notes (replacing Folders) */}
+        <Link to="/saved" className={`p-2 transition-colors ${isMobileActive("/saved")}`}>
+          <i className="fa-solid fa-bookmark text-xl"></i>
         </Link>
+
 
         {/* Plus Button (Center) */}
         <Link 
