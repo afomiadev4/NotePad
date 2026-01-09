@@ -8,7 +8,6 @@ import { AccountPage } from "./components/AccountPage";
 import { CreateNote } from "./components/CreateNote";
 import Dashboard from "./components/DashBoard";
 import { EditNote } from "./components/EditComponent";
-import { NotificationsPage } from "./components/NotificationsSettings"; // Verify this filename
 import { SavedNotes } from "./components/SavedNotes";
 import 'react-quill-new/dist/quill.snow.css';
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,7 +25,6 @@ export default function App() {
         <Route path="/folders" element={<Folders />} />
         <Route path="/folders/:folderId" element={<Folders />} />
         <Route path="/saved" element={<SavedNotes />} />
-        <Route path="/notifications" element={<NotificationsPage />} />
         
         {/* Only one route needed now for creating notes */}
         <Route path="/create-note" element={<CreateNote />} />

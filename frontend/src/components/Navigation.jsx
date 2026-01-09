@@ -44,7 +44,6 @@ export function Navigation() {
 
           <div className="my-4 border-t border-white/5 pt-4">
             <p className="px-6 text-[10px] font-black uppercase tracking-[0.2em] text-white/20 mb-2">Activity</p>
-            <NavLink icon="fa-bell" label="Notifications" to="/notifications" />
             {/* Defaults to private when clicked from the sidebar */}
             <NavLink icon="fa-plus-circle" label="Add Note" to="/create-note?mode=private" />
             <NavLink icon="fa-user" label="Profile" to="/account" />
@@ -56,9 +55,6 @@ export function Navigation() {
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-zinc-950/80 backdrop-blur-xl border-t border-white/5 flex justify-around items-center p-4 z-50">
         <Link to="/dashboard" className="p-2 text-white/40 hover:text-white transition-colors">
           <i className="fa-solid fa-grip text-xl"></i>
-        </Link>
-        <Link to="/notifications" className="p-2 text-white/40 hover:text-white transition-colors">
-          <i className="fa-solid fa-bell text-xl"></i>
         </Link>
         <Link 
           to="/create-note?mode=private" 
