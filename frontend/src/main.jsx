@@ -7,6 +7,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { store } from "./store";
 import { initAuthListener } from "./authListener";
+import 'react-quill-new/dist/quill.snow.css';
 
 initAuthListener(store);
 

@@ -11,6 +11,7 @@ import { EditNote } from "./components/EditComponent";
 import { NotificationsSettings } from "./components/NotificationsSettings";
 
 import { SavedNotes } from "./components/SavedNotes";
+import 'react-quill-new/dist/quill.snow.css';
 
 
 import ProtectedRoute from "./components/ProtectedRoute";

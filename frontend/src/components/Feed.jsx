@@ -179,7 +179,10 @@ export function Feed() {
                           onClick={() => setViewingProfile(note.profiles)}
                           alt="avatar"
                         />
-                        
+                        <div 
+                            className="text-white/70 leading-relaxed text-sm prose prose-invert max-w-none"
+                            dangerouslySetInnerHTML={{ __html: note.content }} 
+                          />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col cursor-pointer" onClick={() => setViewingProfile(note.profiles)}>
