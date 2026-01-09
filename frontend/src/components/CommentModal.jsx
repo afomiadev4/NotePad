@@ -1,105 +1,128 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 
-export function CommentModal({ isOpen, onClose, note, onCommentAdded }) {
+export function CommentModal({ noteId, onClose, onCommentAdded }) {
   const user = useSelector((state) => state.auth.user);
-  const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+
+  // 1. Fetch Comments for this note
+  const fetchComments = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("comments")
+        .select(`
+          id,
+          content,
+          created_at,
+          profiles!user_id (username, avatar_url)
+        `)
+        .eq("note_id", noteId)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      setComments(data || []);
+    } catch (err) {
+      console.error("Error fetching comments:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (isOpen && note) {
-      fetchComments();
-    }
-  }, [isOpen, note]);
+    fetchComments();
+  }, [noteId]);
 
-  const fetchComments = async () => {
-    const { data } = await supabase
-      .from("comments")
-      .select("*, profiles(username, avatar_url)")
-      .eq("note_id", note.id)
-      .order("created_at", { ascending: true });
-    setComments(data || []);
-  };
-
+  // 2. Submit a new comment
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
-    setLoading(true);
+    if (!newComment.trim() || !user) return;
 
-    const { error } = await supabase.from("comments").insert([
-      {
-        note_id: note.id,
-        user_id: user.id,
-        content: commentText,
-      },
-    ]);
+    setSending(true);
+    try {
+      const { error } = await supabase.from("comments").insert([
+        {
+          note_id: noteId,
+          user_id: user.id,
+          content: newComment.trim(),
+        },
+      ]);
 
-    if (!error) {
-      setCommentText("");
-      fetchComments();
-      if (onCommentAdded) onCommentAdded();
+      if (error) throw error;
+      
+      setNewComment("");
+      await fetchComments(); // Refresh list
+      onCommentAdded(); // Refresh count on main Feed
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setSending(false);
     }
-    setLoading(false);
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md">
-      <div className="bg-zinc-900 border-t sm:border border-white/10 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
-        
-        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
-          <div>
-            <h3 className="font-black text-xl tracking-tight text-white">Discussion</h3>
-            <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">on {note?.title}</p>
-          </div>
-          <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition text-white/40 hover:text-white">
-            <i className="fa-solid fa-xmark"></i>
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm">
+      <div 
+        className="w-full max-w-lg bg-zinc-950 border-t sm:border border-white/10 rounded-t-[2.5rem] sm:rounded-[2.5rem] flex flex-col max-h-[90vh] shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="p-6 border-b border-white/5 flex justify-between items-center">
+          <h3 className="text-xl font-black tracking-tight">Comments</h3>
+          <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
+            <i className="fa-solid fa-xmark text-white/40"></i>
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
-          {comments.length === 0 ? (
-            <div className="text-center py-20">
-              <i className="fa-solid fa-comments text-3xl text-white/5 mb-4 block"></i>
-              <p className="text-white/20 text-sm font-bold italic">No voices here yet. Start the conversation.</p>
-            </div>
-          ) : (
-            comments.map((c) => (
-              <div key={c.id} className="flex gap-4 group">
+        {/* Comments List */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar min-h-[300px]">
+          {loading ? (
+            <div className="flex justify-center py-10 animate-pulse text-[10px] font-black uppercase tracking-widest text-blue-500">Loading Discussion...</div>
+          ) : comments.length > 0 ? (
+            comments.map((comment) => (
+              <div key={comment.id} className="flex gap-4 group">
                 <img 
-                  src={c.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${c.profiles?.username}&background=random`} 
-                  className="w-10 h-10 rounded-xl object-cover bg-white/5" 
-                  alt="avatar"
+                  src={comment.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${comment.profiles?.username}`} 
+                  className="w-10 h-10 rounded-xl object-cover border border-white/5" 
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-black text-white">@{c.profiles?.username}</span>
-                    <span className="text-[9px] text-white/20 font-bold uppercase">{new Date(c.created_at).toLocaleDateString()}</span>
+                    <span className="font-bold text-sm">@{comment.profiles?.username}</span>
+                    <span className="text-[10px] text-white/20 font-medium">
+                      {new Date(comment.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
-                  <p className="text-white/70 text-sm leading-relaxed">{c.content}</p>
+                  <p className="text-white/70 text-sm leading-relaxed">{comment.content}</p>
                 </div>
               </div>
             ))
+          ) : (
+            <div className="text-center py-20">
+              <i className="fa-regular fa-comments text-3xl text-white/5 mb-4 block"></i>
+              <p className="text-white/20 text-xs font-bold uppercase tracking-widest">No comments yet. Start the conversation!</p>
+            </div>
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 bg-zinc-900 border-t border-white/5">
-          <div className="relative flex items-center">
+        {/* Input Area */}
+        <form onSubmit={handleSubmit} className="p-6 border-t border-white/5 bg-zinc-900/50">
+          <div className="relative flex items-center gap-3">
             <input 
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Add a thought..."
-              className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-sm outline-none focus:border-blue-500 transition-all text-white placeholder:text-white/20"
+              type="text"
+              placeholder={user ? "Write a comment..." : "Login to comment"}
+              disabled={!user || sending}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="flex-1 bg-white/5 border border-white/10 rounded-2xl py-4 px-5 outline-none focus:border-blue-500 transition-all text-sm"
             />
             <button 
-              type="submit"
-              disabled={loading || !commentText.trim()}
-              className="absolute right-2 p-3 text-blue-500 hover:text-blue-400 disabled:text-white/10 transition-all hover:scale-110 active:scale-90"
+              disabled={!newComment.trim() || sending}
+              className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center hover:bg-blue-500 disabled:opacity-50 disabled:bg-white/5 transition-all shadow-lg shadow-blue-600/20"
             >
-              <i className="fa-solid fa-paper-plane text-lg"></i>
+              {sending ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-paper-plane"></i>}
             </button>
           </div>
         </form>
