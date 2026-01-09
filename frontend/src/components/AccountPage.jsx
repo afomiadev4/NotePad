@@ -44,24 +44,26 @@ export function AccountPage() {
   }, []);
 
   const fetchUserPosts = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from("notes")
-        .select(`
-          *,
-          profiles!user_id (username, avatar_url),
-          reactions!note_id (*)
-        `)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("notes")
+      .select(`
+        *,
+        reactions!note_id (*),
+        profiles:user_id (username, avatar_url)
+      `)
+      .eq("user_id", userId)        // Only this user's posts
+      .eq("visibility", "Public")   // Only public posts
+      .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setUserPosts(data || []);
-    } catch (err) {
-      console.error("Error fetching posts:", err.message);
-      setUserPosts([]);
-    }
-  };
+    if (error) throw error;
+
+    setUserPosts(data || []);
+  } catch (err) {
+    console.error("Error fetching posts:", err.message);
+  }
+};
+
 
   const uploadAvatar = async (event) => {
     try {
