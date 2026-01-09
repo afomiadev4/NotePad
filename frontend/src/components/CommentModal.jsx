@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 
@@ -8,6 +8,7 @@ export function CommentModal({ isOpen, onClose, note, onCommentAdded }) {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  // Fetch comments for this specific note
   useEffect(() => {
     if (isOpen && note) {
       fetchComments();
@@ -15,133 +16,92 @@ export function CommentModal({ isOpen, onClose, note, onCommentAdded }) {
   }, [isOpen, note]);
 
   const fetchComments = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("comments")
-      .select(`
-        id,
-        content,
-        created_at,
-        profiles (username, avatar_url)
-      `)
+      .select("*, profiles(username, avatar_url)")
       .eq("note_id", note.id)
       .order("created_at", { ascending: true });
-
-    if (!error) setComments(data || []);
-    setLoading(false);
+    setComments(data || []);
   };
 
-  const handleSendComment = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!commentText.trim() || !user) return;
+    if (!commentText.trim()) return;
+    setLoading(true);
 
-    const { data, error } = await supabase
-      .from("comments")
-      .insert([{
+    const { error } = await supabase.from("comments").insert([
+      {
         note_id: note.id,
         user_id: user.id,
-        content: commentText.trim(),
-      }])
-      .select(`id, content, created_at, profiles (username, avatar_url)`)
-      .single();
+        content: commentText,
+      },
+    ]);
 
     if (!error) {
-      setComments([...comments, data]);
       setCommentText("");
-      if (onCommentAdded) onCommentAdded(note.id);
+      fetchComments();
+      onCommentAdded(); // Refresh count on feed
     }
+    setLoading(false);
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-zinc-900 border border-white/10 w-full max-w-lg rounded-3xl flex flex-col max-h-[85vh] shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md">
+      <div className="bg-zinc-900 border-t sm:border border-white/10 w-full max-w-lg rounded-t-[2.5rem] sm:rounded-[2.5rem] overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
         
-        {/* Header */}
-        <div className="p-5 border-b border-white/5 flex justify-between items-center bg-zinc-900/50 backdrop-blur-md">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <i className="fa-solid fa-comments text-blue-500"></i>
-            </div>
-            <div>
-              <h3 className="text-lg font-black text-white">Discussion</h3>
-              <p className="text-white/40 text-[11px] uppercase tracking-wider font-bold">Replying to @{note?.profiles?.username}</p>
-            </div>
+        {/* HEADER */}
+        <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+          <div>
+            <h3 className="font-black text-xl tracking-tight">Discussion</h3>
+            <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">on {note?.title}</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-white/20 hover:text-white hover:bg-white/10 transition">
+          <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
 
-        {/* Comments List with Threading UI */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-1">
-          {loading ? (
-            <div className="flex justify-center py-10">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div>
-            </div>
-          ) : comments.length === 0 ? (
-            <div className="text-center py-20 opacity-30">
-              <i className="fa-regular fa-comment-dots text-4xl mb-3"></i>
-              <p className="text-sm italic font-medium">Be the first to share a thought.</p>
+        {/* COMMENTS LIST */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 no-scrollbar">
+          {comments.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-white/20 text-sm font-bold italic">No voices here yet. Start the conversation.</p>
             </div>
           ) : (
-            comments.map((c, idx) => (
-              <div key={c.id} className="group flex gap-4 relative">
-                {/* The Thread Line */}
-                {idx !== comments.length - 1 && (
-                  <div className="absolute left-[15px] top-10 bottom-0 w-[2px] bg-white/5 group-hover:bg-blue-500/20 transition-colors" />
-                )}
-                
-                {/* Avatar */}
-                <div className="relative z-10">
-                  <img 
-                    src={c.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${c.profiles?.username || 'U'}&background=random`}
-                    className="h-8 w-8 rounded-full object-cover border border-white/10 flex-shrink-0"
-                    alt="avatar"
-                  />
-                </div>
-
-                <div className="flex-1 pb-8">
+            comments.map((c) => (
+              <div key={c.id} className="flex gap-4 group">
+                <img 
+                  src={c.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${c.profiles?.username}`} 
+                  className="w-10 h-10 rounded-xl object-cover" 
+                />
+                <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-black text-white">@{c.profiles?.username}</span>
-                    <span className="text-[10px] font-bold text-white/20 uppercase">
-                      {new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                    <span className="text-sm font-black">@{c.profiles?.username}</span>
+                    <span className="text-[9px] text-white/20 font-bold uppercase">{new Date(c.created_at).toLocaleDateString()}</span>
                   </div>
-                  <p className="text-white/70 text-[14px] leading-relaxed bg-white/5 p-3 rounded-2xl rounded-tl-none border border-white/5 group-hover:border-white/10 transition-colors">
-                    {c.content}
-                  </p>
+                  <p className="text-white/70 text-sm leading-relaxed">{c.content}</p>
                 </div>
               </div>
             ))
           )}
         </div>
 
-        {/* Input Area */}
-        <form onSubmit={handleSendComment} className="p-4 bg-zinc-800/50 border-t border-white/5 backdrop-blur-md">
-          <div className="relative flex items-center gap-3">
-             <img 
-                src={user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${user?.user_metadata?.username || 'Me'}`}
-                className="h-8 w-8 rounded-full opacity-50 border border-white/10 hidden sm:block"
-                alt="my avatar"
-             />
-            <div className="relative flex-1">
-              <input
-                type="text"
-                placeholder="Post your reply..."
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-4 pr-12 outline-none focus:border-blue-500/50 focus:bg-white/10 transition text-sm text-white"
-              />
-              <button 
-                type="submit"
-                disabled={!commentText.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-xl bg-blue-600 text-white disabled:bg-white/5 disabled:text-white/10 transition-all shadow-lg shadow-blue-600/20"
-              >
-                <i className="fa-solid fa-paper-plane text-[10px]"></i>
-              </button>
-            </div>
+        {/* INPUT AREA */}
+        <form onSubmit={handleSubmit} className="p-6 bg-white/5 border-t border-white/5">
+          <div className="relative flex items-center">
+            <input 
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Add a thought..."
+              className="w-full bg-zinc-800 border border-white/10 rounded-2xl py-4 pl-6 pr-16 text-sm outline-none focus:border-blue-500 transition-all"
+            />
+            <button 
+              disabled={loading || !commentText.trim()}
+              className="absolute right-2 p-3 text-blue-500 hover:text-blue-400 disabled:text-white/10 transition-colors"
+            >
+              <i className="fa-solid fa-paper-plane text-lg"></i>
+            </button>
           </div>
         </form>
       </div>
