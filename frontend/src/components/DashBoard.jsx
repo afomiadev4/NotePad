@@ -141,13 +141,13 @@ export default function Dashboard() {
                     onClick={() => navigate("/create-note?mode=private")}
                     className="flex-1 bg-white text-blue-600 font-black py-4 rounded-2xl hover:bg-blue-50 transition active:scale-95 text-xs tracking-widest uppercase"
                   >
-                    New Note
+                    Add Note
                   </button>
                   <button 
                     onClick={() => navigate("/create-note?mode=public")}
                     className="flex-1 bg-blue-500 text-white font-black py-4 rounded-2xl hover:bg-blue-400 transition border border-white/20 active:scale-95 text-xs tracking-widest uppercase"
                   >
-                    Public Feed
+                    Add Post
                   </button>
                 </div>
               </div>
