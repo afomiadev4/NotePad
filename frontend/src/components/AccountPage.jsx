@@ -44,24 +44,26 @@ export function AccountPage() {
   }, []);
 
   const fetchUserPosts = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from("notes")
-        .select(`
-          *,
-          profiles!user_id (username, avatar_url),
-          reactions!note_id (*)
-        `)
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from("notes")
+      .select(`
+        *,
+        reactions!note_id (*),
+        profiles:user_id (username, avatar_url)
+      `)
+      .eq("user_id", userId)        // Only this user's posts
+      .eq("visibility", "Public")   // Only public posts
+      .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setUserPosts(data || []);
-    } catch (err) {
-      console.error("Error fetching posts:", err.message);
-      setUserPosts([]);
-    }
-  };
+    if (error) throw error;
+
+    setUserPosts(data || []);
+  } catch (err) {
+    console.error("Error fetching posts:", err.message);
+  }
+};
+
 
   const uploadAvatar = async (event) => {
     try {
@@ -175,17 +177,6 @@ export function AccountPage() {
       <Navigation />
       
       <div className="flex-1 flex flex-col lg:ml-64">
-        {/* HEADER WITH ONLY NOTIFICATION BELL */}
-        <header className="p-4 border-b border-white/5 flex items-center justify-end sticky top-0 bg-(--bg-primary)/80 backdrop-blur-md z-10">
-          <button 
-            onClick={() => navigate('/notifications')}
-            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-600/20 hover:border-blue-500/50 hover:text-blue-400 transition-all group relative"
-          >
-            <i className="fa-solid fa-bell"></i>
-            {/* Notification Indicator Dot */}
-            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-zinc-900 animate-pulse"></span>
-          </button>
-        </header>
 
         <div className="h-40 bg-gradient-to-b from-blue-600/20 to-transparent w-full border-b border-white/5"></div>
 
