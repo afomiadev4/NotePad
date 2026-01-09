@@ -6,7 +6,7 @@ import { Folders } from "./components/Folders";
 import { Feed } from "./components/Feed";
 import { AccountPage } from "./components/AccountPage";
 import { CreateNote } from "./components/CreateNote";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/DashBoard";
 import { EditNote } from "./components/EditComponent";
 import { NotificationsSettings } from "./components/NotificationsSettings";
 import { SavedNotes } from "./components/SavedNotes";
