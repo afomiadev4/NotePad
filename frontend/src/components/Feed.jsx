@@ -19,29 +19,36 @@ export function Feed() {
   const categories = ["All", "General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts"];
 
   const fetchPosts = async (cat = activeCat) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from("notes")
-        .select(`
-          *,
-          profiles!user_id (username, avatar_url, bio),
-          reactions!note_id (user_id),
-          saves!note_id (user_id),
-          comments!note_id (id)
-        `)
-        .eq("visibility", "Public")
-        .eq(cat !== "All" ? "category" : "visibility", cat !== "All" ? cat : "Public")
-        .order("created_at", { ascending: false });
+  setLoading(true);
+  try {
+    let query = supabase
+      .from("notes")
+      .select(`
+        *,
+        profiles!user_id (username, avatar_url, bio),
+        reactions!note_id (user_id),
+        saves!note_id (user_id),
+        comments!note_id (id)
+      `)
+      .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      setNotes(data || []);
-    } catch (error) {
-      console.error("Error fetching feed:", error.message);
-    } finally {
-      setLoading(false);
+    // Apply filters
+    query = query.eq("visibility", "Public");
+    if (cat !== "All") {
+      query = query.eq("category", cat);
     }
-  };
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    setNotes(data || []);
+  } catch (error) {
+    console.error("Error fetching feed:", error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => { fetchPosts(activeCat); }, [activeCat]);
 
