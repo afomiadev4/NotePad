@@ -78,7 +78,7 @@ export function Folders() {
           <div className="flex justify-between items-end mb-12">
             <div>
               <h1 className="text-4xl font-black tracking-tight mb-2">
-                {activeFolder ? activeFolder.name : "Collections"}
+                {activeFolder ? activeFolder.name : "Folders"}
               </h1>
               <p className="text-white/40 font-medium">
                 {activeFolder ? `${displayedNotes.length} notes in this folder` : `${folders.length} active folders`}
