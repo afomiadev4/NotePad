@@ -4,216 +4,74 @@ import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 import { Navigation } from "./Navigation";
 
-export function CreateNote({ defaultFolder = "uncategorized", hideFolderSelection = false, isPost = false }) {
+export function CreateNote() {
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user); // Accessing the logged-in user
-
+  const user = useSelector((state) => state.auth.user);
+  const [folders, setFolders] = useState([]);
+  
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [folderId, setFolderId] = useState(defaultFolder);
-  const [folders, setFolders] = useState([]);
+  const [category, setCategory] = useState("General");
+  const [folderId, setFolderId] = useState("uncategorized");
+  const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // SRS Logic: Word Count for Posts
-  const getWordCount = (str) => {
-    return str.trim() ? str.trim().split(/\s+/).length : 0;
-  };
-
-  const wordCount = getWordCount(content);
-  const isOverLimit = isPost && wordCount > 300;
+  const categories = ["General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts"];
 
   useEffect(() => {
-    const fetchFolders = async () => {
-      if (!user) return;
-      const { data } = await supabase
-        .from("folders")
-        .select("*")
-        .eq("user_id", user.id);
-      if (data) setFolders(data);
-    };
-    fetchFolders();
+    if (user?.id) {
+      const getFolders = async () => {
+        const { data } = await supabase.from("folders").select("*").eq("user_id", user.id);
+        setFolders(data || []);
+      };
+      getFolders();
+    }
   }, [user]);
 
   const handleSave = async (e) => {
     e.preventDefault();
-
-    if (isOverLimit) {
-      alert("As per community guidelines, posts cannot exceed 300 words.");
-      return;
-    }
-
     setLoading(true);
+    const { error } = await supabase.from("notes").insert([{
+      title,
+      content,
+      category,
+      user_id: user.id,
+      visibility: isPublic ? "Public" : "Private",
+      folder_id: folderId === "uncategorized" ? null : folderId,
+      updated_at: new Date()
+    }]);
 
-    // Inside CreateNote.jsx handleSave function
-const noteData = {
-  title: title,
-  content: content,
-  user_id: user.id,
-  // FIX: Ensure this is a real ID or null, NEVER a string like "posted"
-  folder_id: (folderId && folderId !== "uncategorized" && folderId !== "posted") ? folderId : null,
-  visibility: isPost ? "Public" : "Private",
-  word_count: content.trim().split(/\s+/).length,
-  updated_at: new Date().toISOString()
-};
-
-    try {
-      const { error } = await supabase.from("notes").insert([noteData]);
-      if (error) throw error;
-      
-      // Redirect based on type
-      navigate(isPost ? "/feed" : "/folders");
-    } catch (err) {
-      console.error("Error saving note:", err.message);
-      alert("Failed to save note.");
-    } finally {
-      setLoading(false);
-    }
+    if (!error) navigate(isPublic ? "/feed" : "/folders");
+    else alert(error.message);
+    setLoading(false);
   };
-
-  const handlePostNote = async () => {
-  // 1. Word Count Validation (SRS Requirement)
-  const words = content.trim().split(/\s+/);
-  if (words.length > 300) {
-    alert("Public posts cannot exceed 300 words! Current count: " + words.length);
-    return;
-  }
-
-  setLoading(true);
-  
-  const postData = {
-    title: title,
-    content: content,
-    user_id: user.id,
-    visibility: "Public", // This is the magic key for the Feed
-    word_count: words.length,
-    updated_at: new Date().toISOString(),
-  };
-
-  const { error } = await supabase.from("notes").insert([postData]);
-
-  if (error) {
-    console.error("Post Error:", error);
-    alert("Post failed: " + error.message);
-  } else {
-    alert("Posted successfully to the community feed!");
-    navigate("/feed"); // Send them straight to see their post!
-  }
-  setLoading(false);
-};
-
-const handlePost = async () => {
-  const { error } = await supabase
-    .from("notes")
-    .insert([
-      {
-        title: title,
-        content: content,
-        // Only use the column name that matches your Supabase table exactly
-        folder_id: folderId && folder_id !== "uncategorized" ? folderId : null, 
-        user_id: user.id,
-        visibility: "Public",
-        word_count: content.trim().split(/\s+/).length,
-        updated_at: new Date().toISOString(),
-      },
-    ]);
-
-  if (error) {
-    console.error("Post Error:", error.message);
-    alert("Post failed: " + error.message);
-  } else {
-    navigate("/feed");
-  }
-};
 
   return (
     <div className="min-h-screen bg-(--bg-primary) text-white flex">
       <Navigation />
-      
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
-        <div className="max-w-4xl mx-auto">
-          <header className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold">{isPost ? "Create Public Post" : "New Private Note"}</h1>
-              <p className="text-white/40 text-sm mt-1">
-                {isPost ? "Sharing with the community" : "Storing in your personal folders"}
-              </p>
-            </div>
-            <button
-              onClick={() => navigate(-1)}
-              className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition"
-            >
-              Back
-            </button>
-          </header>
-
-          <form onSubmit={handleSave} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Left Column: Editor */}
-              <div className="md:col-span-2 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Note Title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-xl font-semibold focus:border-blue-500 outline-none transition"
-                  required
-                />
-                
-                <div className="relative">
-                  <textarea
-                    placeholder="Write your heart out..."
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    className="w-full h-[50vh] bg-white/5 border border-white/10 rounded-2xl px-6 py-6 text-lg leading-relaxed focus:border-blue-500 outline-none transition resize-none"
-                    required
-                  />
-                  <div className={`absolute bottom-4 right-4 text-[10px] font-bold px-3 py-1 rounded-full bg-black/40 backdrop-blur-md ${isOverLimit ? "text-red-400 border border-red-400/50" : "text-white/40"}`}>
-                    {wordCount} {isPost ? "/ 300" : ""} WORDS
-                  </div>
-                </div>
+        <form onSubmit={handleSave} className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-4">
+            <input value={title} onChange={e => setTitle(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-2xl p-6 text-2xl font-bold outline-none focus:border-blue-500" placeholder="Untitled Note" required />
+            <textarea value={content} onChange={e => setContent(e.target.value)} className="w-full h-[60vh] bg-white/5 border border-white/10 rounded-3xl p-8 text-lg outline-none focus:border-blue-500 resize-none" placeholder="Start writing..." required />
+          </div>
+          <div className="space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 space-y-6">
+              <div>
+                <label className="text-[10px] font-black text-white/30 uppercase tracking-widest">Category</label>
+                <select value={category} onChange={e => setCategory(e.target.value)} className="w-full bg-zinc-900 border border-white/10 rounded-xl p-3 mt-2">
+                  {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
               </div>
-
-              {/* Right Column: Settings */}
-              <div className="space-y-6">
-                {!hideFolderSelection && (
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                    <label className="text-[10px] font-bold text-white/30 uppercase tracking-widest block mb-4">Select Folder</label>
-                    <select
-                      value={folderId}
-                      onChange={(e) => setFolderId(e.target.value)}
-                      className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-blue-500"
-                    >
-                      <option value="uncategorized">Uncategorized</option>
-                      {folders.map(f => (
-                        <option key={f.id} value={f.id}>{f.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-
-                <div className="bg-blue-600/5 border border-blue-500/20 rounded-2xl p-6">
-                  <h3 className="font-semibold mb-2 flex items-center gap-2">
-                    <i className={`fa-solid ${isPost ? 'fa-earth-americas' : 'fa-lock'} text-blue-400`}></i>
-                    {isPost ? "Public Post" : "Private Note"}
-                  </h3>
-                  <p className="text-xs text-white/50 leading-relaxed">
-                    {isPost 
-                      ? "This note will be visible to everyone in the Public Feed." 
-                      : "This note is encrypted and only visible to you."}
-                  </p>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading || isOverLimit}
-                  className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? "Saving..." : isPost ? "Post to Community" : "Save to Folders"}
-                </button>
-              </div>
+              <button type="button" onClick={() => setIsPublic(!isPublic)} className={`w-full py-4 rounded-xl border font-bold ${isPublic ? "bg-blue-600 border-blue-600" : "bg-white/5 border-white/10 text-white/40"}`}>
+                {isPublic ? "🚀 Public Feed" : "🔒 Private Note"}
+              </button>
+              <button type="submit" disabled={loading} className="w-full py-4 bg-blue-600 rounded-2xl font-bold hover:bg-blue-500 transition-all">
+                {loading ? "SAVING..." : "CREATE NOTE"}
+              </button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </main>
     </div>
   );
