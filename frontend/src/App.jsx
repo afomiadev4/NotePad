@@ -9,7 +9,6 @@ import { CreateNote } from "./components/CreateNote";
 import Dashboard from "./components/Dashboard"; // match the filename
 import { EditNote } from "./components/EditComponent";
 import { NotificationsSettings } from "./components/NotificationsSettings";
-import { PrivacySettings } from "./components/PrivacySettings";
 
 import { SavedNotes } from "./components/SavedNotes";
 
@@ -25,9 +24,10 @@ export default function App() {
       <Route path="/register" element={<Register />} />
       
       <Route path="/saved" element={<SavedNotes />} />
+      <Route path="/edit/:id" element={<EditNote />} />
 
       <Route path="/settings/notifications" element={<NotificationsSettings />} />
-      <Route path="/settings/privacy" element={<PrivacySettings />} />
+      
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
