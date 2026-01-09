@@ -21,32 +21,34 @@ export function Feed() {
   const categories = ["All", "General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts"];
 
   const fetchPosts = async (cat = activeCat) => {
-    setLoading(true);
-    try {
-      let query = supabase
-        .from("notes")
-        .select(`
-          *,
-          profiles (username, avatar_url, bio),
-          reactions (user_id),
-          saves (user_id),
-          comments (id)
-        `)
-        .eq("visibility", "Public");
+  setLoading(true);
+  try {
+    let query = supabase
+      .from("notes")
+      .select(`
+        *,
+        profiles (username, avatar_url, bio),
+        reactions!note_id (user_id),
+        saves!note_id (user_id),
+        comments!note_id (id)
+      `) // Added !note_id to reactions, saves, and comments
+      .eq("visibility", "Public");
 
-      if (cat !== "All") {
-        query = query.eq("category", cat);
-      }
-
-      const { data, error } = await query.order("created_at", { ascending: false });
-      if (error) throw error;
-      setNotes(data || []);
-    } catch (error) {
-      console.error("Error fetching feed:", error.message);
-    } finally {
-      setLoading(false);
+    if (cat !== "All") {
+      query = query.eq("category", cat);
     }
-  };
+
+    const { data, error } = await query.order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    setNotes(data || []);
+  } catch (error) {
+    // Check if the error is still about relationships to guide you
+    console.error("Error fetching feed:", error.message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleToggleLike = async (noteId) => {
     if (!user) return alert("Please log in to react!");
@@ -121,14 +123,8 @@ export function Feed() {
             <div className="flex flex-col gap-6">
               <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
-                  <i className="fa-solid fa-file-lines text-blue-500"></i> NotePad+
+                  <i className="fa-solid fa-rrs"></i> Public Feed
                 </h1>
-                <button 
-                  onClick={() => setIsModalOpen(true)}
-                  className="lg:hidden p-2 bg-blue-600 rounded-xl"
-                >
-                  <i className="fa-solid fa-plus"></i>
-                </button>
               </div>
               <SearchBar />
               

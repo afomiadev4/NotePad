@@ -8,7 +8,7 @@ import { AccountPage } from "./components/AccountPage";
 import { CreateNote } from "./components/CreateNote";
 import Dashboard from "./components/DashBoard";
 import { EditNote } from "./components/EditComponent";
-import { NotificationsSettings } from "./components/NotificationsSettings";
+import { NotificationsPage } from "./components/NotificationsSettings"; // Verify this filename
 import { SavedNotes } from "./components/SavedNotes";
 import 'react-quill-new/dist/quill.snow.css';
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -19,23 +19,19 @@ export default function App() {
       <Route index element={<Welcome />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/saved" element={<SavedNotes />} />
-      <Route path="/edit/:id" element={<EditNote />} />
-      <Route path="/settings/notifications" element={<NotificationsSettings />} />
-
+      
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/feed" element={<Feed />} />
         <Route path="/folders" element={<Folders />} />
         <Route path="/folders/:folderId" element={<Folders />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route
-          path="/add-note"
-          element={<CreateNote defaultFolder="uncategorized" hideFolderSelection={false} />}
-        />
-        <Route
-          path="/post-note"
-          element={<CreateNote defaultFolder="posted" hideFolderSelection={true} isPost={true} />}
-        />
+        <Route path="/saved" element={<SavedNotes />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        
+        {/* Only one route needed now for creating notes */}
+        <Route path="/create-note" element={<CreateNote />} />
+        
+        <Route path="/edit/:id" element={<EditNote />} />
         <Route path="/notes/:noteId" element={<EditNote />} />
         <Route path="/account" element={<AccountPage />} />
       </Route>

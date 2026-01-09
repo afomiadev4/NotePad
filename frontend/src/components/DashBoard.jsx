@@ -60,10 +60,10 @@ export default function Dashboard() {
           {/* Welcome Header */}
           <header className="mb-10">
             <h1 className="text-4xl font-black tracking-tight">
-              Welcome back, {user?.username || "Writer"}!
+              Welcome back, {user?.user_metadata?.username || user?.username || "Writer"}!
             </h1>
             <p className="text-white/40 mt-1 font-medium">
-              Here is what's happening with your space today.
+              Your workspace at a glance.
             </p>
           </header>
 
@@ -138,13 +138,13 @@ export default function Dashboard() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
                   <button 
-                    onClick={() => navigate("/add-note")}
+                    onClick={() => navigate("/create-note?mode=private")}
                     className="flex-1 bg-white text-blue-600 font-black py-4 rounded-2xl hover:bg-blue-50 transition active:scale-95 text-xs tracking-widest uppercase"
                   >
                     New Note
                   </button>
                   <button 
-                    onClick={() => navigate("/add-note")} // Adjusted to your route logic
+                    onClick={() => navigate("/create-note?mode=public")}
                     className="flex-1 bg-blue-500 text-white font-black py-4 rounded-2xl hover:bg-blue-400 transition border border-white/20 active:scale-95 text-xs tracking-widest uppercase"
                   >
                     Public Feed
