@@ -48,14 +48,12 @@ export function AccountPage() {
       const { data, error } = await supabase
         .from("notes")
         .select(`
-          id,
-          title,
-          content,
-          created_at,
-          reactions (id)
-        `)
-        .eq("user_id", userId)
-        .eq("visibility", "Public")
+          *,
+          reactions!note_id (*)
+          profiles:user_id (username, avatar_url),
+          reactions!note_id (id, emoji, user_id) 
+        `) // Added !note_id here
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -177,11 +175,16 @@ export function AccountPage() {
       <Navigation />
       
       <div className="flex-1 flex flex-col lg:ml-64">
-        <header className="p-4 border-b border-white/5 flex items-center justify-between sticky top-0 bg-(--bg-primary)/80 backdrop-blur-md z-10">
-          <div className="flex items-center gap-2">
-            <i className="fa-solid fa-user-circle text-blue-500 text-xl"></i>
-            <span className="font-black tracking-tighter text-lg">My Profile</span>
-          </div>
+        {/* HEADER WITH ONLY NOTIFICATION BELL */}
+        <header className="p-4 border-b border-white/5 flex items-center justify-end sticky top-0 bg-(--bg-primary)/80 backdrop-blur-md z-10">
+          <button 
+            onClick={() => navigate('/notifications')}
+            className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-600/20 hover:border-blue-500/50 hover:text-blue-400 transition-all group relative"
+          >
+            <i className="fa-solid fa-bell"></i>
+            {/* Notification Indicator Dot */}
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-zinc-900 animate-pulse"></span>
+          </button>
         </header>
 
         <div className="h-40 bg-gradient-to-b from-blue-600/20 to-transparent w-full border-b border-white/5"></div>
