@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { supabase } from "../supabaseClient";
+import { useSelector } from "react-redux";
 
-const ICONS = [
-  "fa-folder", "fa-heart", "fa-star", "fa-book",
-  "fa-lightbulb", "fa-code", "fa-briefcase", "fa-graduation-cap",
-];
-
+const ICONS = ["fa-folder", "fa-heart", "fa-star", "fa-book", "fa-lightbulb", "fa-code", "fa-briefcase", "fa-graduation-cap"];
 const COLORS = [
   { name: "Blue", class: "text-blue-400", bg: "bg-blue-400/10" },
   { name: "Rose", class: "text-rose-400", bg: "bg-rose-400/10" },
@@ -14,7 +12,8 @@ const COLORS = [
   { name: "Purple", class: "text-purple-400", bg: "bg-purple-400/10" },
 ];
 
-export function FolderModal({ isOpen, onClose, onCreate, folder }) {
+export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
+  const user = useSelector((state) => state.auth.user);
   const [name, setName] = useState("");
   const folderRef = useRef();
   const [selectedIcon, setSelectedIcon] = useState(ICONS[0]);
@@ -35,21 +34,27 @@ export function FolderModal({ isOpen, onClose, onCreate, folder }) {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || !user) return;
 
-    onCreate({
+    const folderData = {
       name,
       icon: selectedIcon,
       color: selectedColor.class,
-    });
+      user_id: user.id
+    };
 
-    if (!folder) {
-      setName("");
-      setSelectedIcon(ICONS[0]);
-      setSelectedColor(COLORS[0]);
+    if (folder) {
+      // Update existing
+      await supabase.from("folders").update(folderData).eq("id", folder.id);
+    } else {
+      // Create new
+      await supabase.from("folders").insert([folderData]);
     }
+
+    onRefresh();
+    onClose();
   };
 
   const validateClick = (e) => {
@@ -57,28 +62,14 @@ export function FolderModal({ isOpen, onClose, onCreate, folder }) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300 font-display" 
-      onClick={validateClick}
-    >
-      <div 
-        className="w-full max-w-md bg-zinc-900/90 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300" 
-        ref={folderRef}
-      >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md" onClick={validateClick}>
+      <div className="w-full max-w-md bg-zinc-900/90 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden" ref={folderRef}>
         <div className="flex items-center justify-between p-6 border-b border-white/10">
           <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">
-              {folder ? "Edit Folder" : "New Folder"}
-            </h2>
-            <p className="text-[11px] text-white/40 mt-0.5 font-medium tracking-wide uppercase">
-              Organize your thoughts
-            </p>
+            <h2 className="text-xl font-bold text-white tracking-tight">{folder ? "Edit Folder" : "New Folder"}</h2>
           </div>
-          <button 
-            onClick={onClose} 
-            className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-all group"
-          >
-            <i className="fa-solid fa-xmark text-lg group-hover:rotate-90 transition-transform"></i>
+          <button onClick={onClose} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 transition-all">
+            <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
 
@@ -88,15 +79,10 @@ export function FolderModal({ isOpen, onClose, onCreate, folder }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-              Folder Name
-            </label>
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Folder Name</label>
             <input
               type="text"
-              autoFocus
-              disabled={folder?.id === 'uncategorized'}
-              className="w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500 outline-none transition-all text-lg font-semibold text-white disabled:opacity-50"
-              placeholder="e.g. Daily Ideas"
+              className="w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500 outline-none text-white"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -104,34 +90,26 @@ export function FolderModal({ isOpen, onClose, onCreate, folder }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-              Select Icon
-            </label>
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Select Icon</label>
             <div className="grid grid-cols-4 gap-2">
               {ICONS.map((icon) => (
                 <button 
-                  key={icon} 
-                  type="button" 
-                  onClick={() => setSelectedIcon(icon)}
-                  className={`p-3 rounded-xl border transition-all ${selectedIcon === icon ? "bg-blue-600 border-blue-600 text-white shadow-lg" : "bg-white/5 border-white/10 text-white/40 hover:bg-white/10"}`}
+                  key={icon} type="button" onClick={() => setSelectedIcon(icon)}
+                  className={`p-3 rounded-xl border transition-all ${selectedIcon === icon ? "bg-blue-600 border-blue-600 text-white" : "bg-white/5 border-white/10 text-white/40"}`}
                 >
-                  <i className={`fa-solid ${icon} text-lg`}></i>
+                  <i className={`fa-solid ${icon}`}></i>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">
-              Select Color
-            </label>
+            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Select Color</label>
             <div className="flex flex-wrap gap-2">
               {COLORS.map((color) => (
                 <button 
-                  key={color.name} 
-                  type="button" 
-                  onClick={() => setSelectedColor(color)}
-                  className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.name === color.name ? "border-white scale-110 shadow-lg" : "border-transparent"} ${color.bg}`}
+                  key={color.name} type="button" onClick={() => setSelectedColor(color)}
+                  className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.name === color.name ? "border-white scale-110" : "border-transparent"} ${color.bg}`}
                 >
                   <div className={`w-3 h-3 rounded-full mx-auto ${color.class}`}></div>
                 </button>
@@ -140,17 +118,8 @@ export function FolderModal({ isOpen, onClose, onCreate, folder }) {
           </div>
 
           <div className="mt-2 flex items-center justify-end gap-3">
-            <button 
-              type="button" 
-              onClick={onClose} 
-              className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-bold transition-all"
-            >
-              Discard
-            </button>
-            <button 
-              type="submit" 
-              className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 transition-all text-white text-sm font-bold shadow-lg"
-            >
+            <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold">Discard</button>
+            <button type="submit" className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-50 text-white font-bold shadow-lg">
               {folder ? "Save Changes" : "Create Folder"}
             </button>
           </div>
