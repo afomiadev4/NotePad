@@ -49,17 +49,17 @@ export function AccountPage() {
         .from("notes")
         .select(`
           *,
+          profiles!user_id (username, avatar_url),
           reactions!note_id (*)
-          profiles:user_id (username, avatar_url),
-          reactions!note_id (id, emoji, user_id) 
-        `) // Added !note_id here
-        .eq("user_id", user.id)
+        `)
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setUserPosts(data || []);
     } catch (err) {
       console.error("Error fetching posts:", err.message);
+      setUserPosts([]);
     }
   };
 
