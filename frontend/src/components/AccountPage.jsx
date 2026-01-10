@@ -190,7 +190,7 @@ export function AccountPage() {
       <div className="flex-1 flex flex-col lg:ml-64">
         <div className="h-40 bg-gradient-to-b from-[var(--accent-primary)]/20 to-transparent w-full border-b border-[var(--border-subtle)]"></div>
 
-        <main className="flex-1 px-4 pb-24">
+        <main className="flex-1 px-4 pb-32 lg:pb-24">
           <div className="max-w-2xl mx-auto -mt-12">
             <div className="flex justify-between items-end mb-6">
               <div className="group relative h-28 w-28 rounded-[32px] overflow-hidden border-4 border-[var(--bg-page)] bg-[var(--bg-card)] shadow-2xl transition-all">

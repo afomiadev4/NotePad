@@ -89,7 +89,7 @@ export function CreateNote() {
   return (
     <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] flex transition-colors duration-300">
       <Navigation />
-      <main className="flex-1 lg:ml-64 p-6 md:p-12">
+      <main className="flex-1 lg:ml-64 p-6 md:p-12 pb-32 lg:pb-12">
         <form
           onSubmit={handleSave}
           className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8"

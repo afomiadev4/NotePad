@@ -55,7 +55,7 @@ export function SavedNotes() {
     <div className="min-h-screen bg-[var(--bg-page)] flex text-[var(--text-main)] font-sans transition-colors duration-300">
       <Navigation />
 
-      <main className="flex-1 lg:ml-64 p-4 md:p-8">
+      <main className="flex-1 lg:ml-64 p-4 md:p-8 pb-32 lg:pb-12">
         <div className="max-w-4xl mx-auto">
           <header className="mb-10 flex flex-col gap-2">
             <div className="flex items-center gap-3">
