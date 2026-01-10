@@ -151,7 +151,7 @@ export function Feed() {
               </div>
 
               <div className="w-full">
-                <SearchBar />
+                <SearchBar setNotes={setNotes} />
               </div>
 
               {/* Category Pills - Scrollable on mobile */}
