@@ -19,6 +19,9 @@ export function EditNote() {
   const [ folders, setFolders ] = useState([]);
   const [ loading, setLoading ] = useState(true);
 
+  // MEMBER 3: Toggle state for Read-Only vs Edit
+  const [ isEditing, setIsEditing ] = useState(false);
+
   const categories = [ "General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts" ];
 
   useEffect(() => {
@@ -52,94 +55,122 @@ export function EditNote() {
       updated_at: new Date()
     }).eq("id", id);
 
-    navigate(visibility === "Public" ? "/feed" : "/folders");
+    setIsEditing(false); // Go back to read mode after saving
+    if (visibility === "Public") navigate("/feed");
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-main)] font-black tracking-tighter italic">
+    <div className="min-h-screen bg-black flex items-center justify-center text-white font-black tracking-tighter italic">
       LOADING YOUR THOUGHTS...
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-main)] flex transition-colors duration-300">
+    <div className="min-h-screen bg-(--bg-primary) text-white flex">
       <Navigation />
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <form onSubmit={handleUpdate} className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* Main Editor */}
+          {/* MAIN CONTENT AREA */}
           <div className="lg:col-span-2 space-y-6">
-            <input
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all placeholder:[var(--text-muted)]"
-              placeholder="Title..."
-            />
-            <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl">
-              <ReactQuill
-                theme="snow"
-                value={content}
-                onChange={setContent}
-                className="flex-1 text-[var(--text-main)] editor-custom"
-              />
-            </div>
+            {!isEditing ? (
+              /* MEMBER 3: READ-ONLY VIEW */
+              <div className="space-y-8 animate-in fade-in duration-500">
+                <h1 className="text-5xl font-black tracking-tighter text-white leading-tight">
+                  {title}
+                </h1>
+                <div
+                  className="text-white/70 text-xl leading-relaxed ql-editor !p-0"
+                  dangerouslySetInnerHTML={{ __html: content }}
+                />
+              </div>
+            ) : (
+              /* EDIT MODE (Original UI) */
+              <div className="space-y-6 animate-in zoom-in-95 duration-200">
+                <input
+                  value={title}
+                  onChange={e => setTitle(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all placeholder:text-white/10"
+                  placeholder="Title..."
+                />
+                <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl">
+                  <ReactQuill
+                    theme="snow"
+                    value={content}
+                    onChange={setContent}
+                    className="flex-1 text-white editor-custom"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Sidebar */}
+          {/* SIDEBAR SETTINGS */}
           <div className="space-y-4">
-            <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[2.5rem] p-8 space-y-8 sticky top-12 shadow-sm">
+            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8 sticky top-12">
 
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">Organize</label>
-                <div className="relative group">
-                  <select
-                    value={category}
-                    onChange={e => setCategory(e.target.value)}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-[var(--bg-secondary)] focus:border-blue-500 transition-all cursor-pointer text-[var(--text-main)]"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat} value={cat} className="bg-[var(--bg-secondary)] text-[var(--text-main)]">{cat}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
-                    <i className="fa-solid fa-chevron-down text-xs"></i>
+              {/* MEMBER 3: TOGGLE BUTTON */}
+              <button
+                type="button"
+                onClick={() => setIsEditing(!isEditing)}
+                className="w-full py-4 rounded-2xl bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all text-blue-400"
+              >
+                {isEditing ? "✨ View Mode" : "📝 Edit Note"}
+              </button>
+
+              {isEditing && (
+                <div className="space-y-8 animate-in slide-in-from-top-4 duration-300">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Organize</label>
+                    <div className="relative group">
+                      <select
+                        value={category}
+                        onChange={e => setCategory(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-white/10 focus:border-blue-500 transition-all cursor-pointer"
+                      >
+                        {categories.map(cat => <option key={cat} value={cat} className="bg-zinc-900">{cat}</option>)}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                        <i className="fa-solid fa-chevron-down text-xs"></i>
+                      </div>
+                    </div>
+
+                    <div className="relative group">
+                      <select
+                        value={folderId}
+                        onChange={e => setFolderId(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-white/10 focus:border-blue-500 transition-all cursor-pointer"
+                      >
+                        <option value="uncategorized" className="bg-zinc-900">No Folder</option>
+                        {folders.map(f => <option key={f.id} value={f.id} className="bg-zinc-900">{f.name}</option>)}
+                      </select>
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                        <i className="fa-solid fa-folder text-xs"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Privacy</label>
+                    <button
+                      type="button"
+                      onClick={() => setVisibility(visibility === "Public" ? "Private" : "Public")}
+                      className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${visibility === "Public" ? "bg-blue-600/10 border-blue-500 text-blue-400" : "bg-white/5 border-white/10 text-white/20"}`}
+                    >
+                      {visibility === "Public" ? "🚀 GOING PUBLIC" : "🔒 STAY PRIVATE"}
+                    </button>
                   </div>
                 </div>
-
-                <div className="relative group">
-                  <select
-                    value={folderId}
-                    onChange={e => setFolderId(e.target.value)}
-                    className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-[var(--bg-secondary)] focus:border-blue-500 transition-all cursor-pointer text-[var(--text-main)]"
-                  >
-                    <option value="uncategorized" className="bg-[var(--bg-secondary)] text-[var(--text-main)]">No Folder</option>
-                    {folders.map(f => (
-                      <option key={f.id} value={f.id} className="bg-[var(--bg-secondary)] text-[var(--text-main)]">{f.name}</option>
-                    ))}
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[var(--text-muted)]">
-                    <i className="fa-solid fa-folder text-xs"></i>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <label className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">Privacy</label>
-                <button
-                  type="button"
-                  onClick={() => setVisibility(visibility === "Public" ? "Private" : "Public")}
-                  className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${visibility === "Public" ? "bg-blue-600/10 border-blue-500 text-blue-500" : "bg-[var(--bg-primary)] border-[var(--border-color)] text-[var(--text-muted)]"}`}
-                >
-                  {visibility === "Public" ? "🚀 GOING PUBLIC" : "🔒 STAY PRIVATE"}
-                </button>
-              </div>
+              )}
 
               <div className="pt-4 space-y-3">
-                <button type="submit" className="w-full py-5 bg-blue-600 text-white rounded-[1.5rem] font-black text-xs tracking-widest shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all">
-                  SAVE CHANGES
-                </button>
-                <button type="button" onClick={() => navigate(-1)} className="w-full py-4 text-[var(--text-muted)] font-black text-[10px] tracking-widest hover:text-[var(--text-main)] transition-colors">
-                  DISCARD
+                {isEditing && (
+                  <button type="submit" className="w-full py-5 bg-blue-600 rounded-[1.5rem] font-black text-xs tracking-widest shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    SAVE CHANGES
+                  </button>
+                )}
+                <button type="button" onClick={() => navigate(-1)} className="w-full py-4 text-white/20 font-black text-[10px] tracking-widest hover:text-white transition-colors">
+                  {isEditing ? "DISCARD" : "BACK TO LIST"}
                 </button>
               </div>
             </div>
@@ -148,20 +179,12 @@ export function EditNote() {
       </main>
 
       <style>{`
-        .editor-custom .ql-toolbar { 
-          border: none !important; 
-          border-bottom: 1px solid var(--border-color) !important; 
-          padding: 1.5rem !important; 
-          background: var(--bg-secondary) !important;
-        }
+        .editor-custom .ql-toolbar { border: none !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; padding: 1.5rem !important; }
         .editor-custom .ql-container { border: none !important; font-size: 1.1rem; font-family: inherit; }
-        .editor-custom .ql-editor { padding: 2rem !important; min-height: 50vh; color: var(--text-main); }
-        .editor-custom .ql-editor.ql-blank::before { color: var(--text-muted) !important; opacity: 0.5; left: 2rem !important; font-style: normal; }
-        
-        .ql-snow .ql-stroke { stroke: var(--text-main) !important; opacity: 0.6; }
-        .ql-snow .ql-fill { fill: var(--text-main) !important; opacity: 0.6; }
-        .ql-snow .ql-picker { color: var(--text-main) !important; opacity: 0.6; }
-        .ql-snow .ql-picker-options { background-color: var(--bg-secondary) !important; border-color: var(--border-color) !important; }
+        .editor-custom .ql-editor { padding: 2rem !important; min-height: 50vh; color: rgba(255,255,255,0.8); }
+        .ql-snow .ql-stroke { stroke: rgba(255,255,255,0.4) !important; }
+        .ql-snow .ql-fill { fill: rgba(255,255,255,0.4) !important; }
+        .ql-snow .ql-picker { color: rgba(255,255,255,0.4) !important; }
       `}</style>
     </div>
   );
