@@ -74,7 +74,7 @@ export function Folders() {
     <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] flex transition-colors duration-300">
       <Navigation />
 
-      <main className="flex-1 lg:ml-64 p-6 md:p-12">
+      <main className="flex-1 lg:ml-64 p-6 md:p-12 pb-32 lg:pb-12">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
