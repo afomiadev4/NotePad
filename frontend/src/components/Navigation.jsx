@@ -45,30 +45,6 @@ export function Navigation() {
             <i className="fa-solid fa-file-lines text-[var(--accent-primary)]"></i>
             NotePad+
           </h1>
-
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="mt-6 w-full flex items-center justify-between px-4 py-3 rounded-xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all duration-300 group cursor-pointer"
-            aria-label="Toggle theme"
-          >
-            <span className="text-xs font-bold uppercase tracking-wider">
-              {theme === "dark" ? "Dark Mode" : "Light Mode"}
-            </span>
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                theme === "light"
-                  ? "bg-amber-100 text-amber-600"
-                  : "bg-indigo-950 text-indigo-400"
-              }`}
-            >
-              <i
-                className={`fa-solid ${
-                  theme === "dark" ? "fa-moon" : "fa-sun"
-                } text-sm`}
-              ></i>
-            </div>
-          </button>
         </div>
 
         <nav className="space-y-2 flex-1 overflow-y-auto no-scrollbar">
@@ -95,6 +71,24 @@ export function Navigation() {
             <NavLink icon="fa-user" label="Profile" to="/account" />
           </div>
         </nav>
+
+        {/* Desktop Theme Toggle at Bottom */}
+        <div className="pt-4 mt-4 border-t border-[var(--border-subtle)]">
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center gap-4 px-6 py-4 rounded-xl hover:bg-[var(--bg-card-hover)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all duration-300 group cursor-pointer"
+            aria-label="Toggle theme"
+          >
+            <i
+              className={`fa-solid ${
+                theme === "dark" ? "fa-moon" : "fa-sun"
+              } text-xl group-hover:text-[var(--accent-primary)] transition-colors`}
+            ></i>
+            <span className="font-bold text-sm tracking-tight">
+              {theme === "dark" ? "Dark Mode" : "Light Mode"}
+            </span>
+          </button>
+        </div>
       </aside>
 
       {/* Mobile Bottom Bar */}
@@ -107,20 +101,12 @@ export function Navigation() {
           <i className="fa-solid fa-grip text-xl"></i>
         </Link>
 
-        {/* Saved Notes */}
+        {/* Saved */}
         <Link
           to="/saved"
           className={`p-2 transition-colors ${isMobileActive("/saved")}`}
         >
           <i className="fa-solid fa-bookmark text-xl"></i>
-        </Link>
-
-        {/* Plus Button (Center) */}
-        <Link
-          to="/create-note?mode=private"
-          className="text-white hover:scale-110 transition flex items-center justify-center bg-[var(--accent-primary)] w-12 h-12 rounded-2xl shadow-lg shadow-blue-900/40"
-        >
-          <i className="fa-solid fa-plus text-xl"></i>
         </Link>
 
         {/* Feed */}
@@ -131,7 +117,15 @@ export function Navigation() {
           <i className="fa-solid fa-rss text-xl"></i>
         </Link>
 
-        {/* Profile Link for Mobile */}
+        {/* Add Note */}
+        <Link
+          to="/create-note?mode=private"
+          className={`p-2 transition-colors ${isMobileActive("/create-note")}`}
+        >
+          <i className="fa-solid fa-plus-circle text-xl"></i>
+        </Link>
+
+        {/* Profile */}
         <Link
           to="/account"
           className={`p-2 transition-colors ${isMobileActive("/account")}`}
