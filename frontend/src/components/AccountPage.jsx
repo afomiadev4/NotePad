@@ -52,8 +52,8 @@ export function AccountPage() {
         reactions!note_id (*),
         profiles:user_id (username, avatar_url)
       `)
-      .eq("user_id", userId)        // Only this user's posts
-      .eq("visibility", "Public")   // Only public posts
+      .eq("user_id", userId)        
+      .eq("visibility", "Public")   
       .order("created_at", { ascending: false });
 
     if (error) throw error;

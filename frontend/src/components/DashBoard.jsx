@@ -21,7 +21,7 @@ export default function Dashboard() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Stats (using .head:true for efficiency)
+      
       const [notesRes, foldersRes, postsRes] = await Promise.all([
         supabase.from("notes").select("*", { count: "exact", head: true }).eq("user_id", user.id),
         supabase.from("folders").select("*", { count: "exact", head: true }).eq("user_id", user.id),
@@ -34,7 +34,7 @@ export default function Dashboard() {
         publicPosts: postsRes.count || 0,
       });
 
-      // 2. Fetch Recent Notes
+      
       const { data: recent } = await supabase
         .from("notes")
         .select("id, title, updated_at, visibility")
@@ -57,7 +57,7 @@ export default function Dashboard() {
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <div className="max-w-5xl mx-auto">
           
-          {/* Welcome Header */}
+          
           <header className="mb-10">
             <h1 className="text-4xl font-black tracking-tight">
               Welcome back, {user?.user_metadata?.username || user?.username || "Writer"}!
@@ -67,7 +67,7 @@ export default function Dashboard() {
             </p>
           </header>
 
-          {/* Stats Grid */}
+          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <StatCard 
               label="Total Notes" 
@@ -93,7 +93,7 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Recent Activity */}
+           
             <section className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8">
               <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <i className="fa-solid fa-clock-rotate-left text-blue-400"></i>
@@ -129,7 +129,7 @@ export default function Dashboard() {
               </div>
             </section>
 
-            {/* Quick Actions */}
+            
             <section className="space-y-6">
               <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-[2.5rem] p-8 shadow-xl shadow-blue-500/10">
                 <h3 className="text-2xl font-black mb-2">Create something new</h3>
@@ -165,7 +165,7 @@ export default function Dashboard() {
   );
 }
 
-// Sub-component for scannable cards
+
 function StatCard({ label, value, icon, color, onClick }) {
   return (
     <div 

@@ -19,19 +19,19 @@ export function CreateNote() {
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // WORD COUNT LOGIC
+ 
   const [wordCount, setWordCount] = useState(0);
   const WORD_LIMIT = 300;
 
   useEffect(() => {
-    // 1. Remove HTML tags and replace with spaces
+    
     const plainText = content.replace(/<[^>]*>/g, ' ');
-    // 2. Match actual words using boundaries to count correctly on space OR new line
+    
     const words = plainText.match(/\b[-?(\w+)]+\b/gi);
     setWordCount(words ? words.length : 0);
   }, [content]);
 
-  // Sync state with URL if user clicks different NavLinks
+ 
   useEffect(() => {
     const mode = searchParams.get("mode");
     if (mode === "public") setIsPublic(true);
@@ -52,7 +52,7 @@ export function CreateNote() {
     e.preventDefault();
     if (!user?.id) return;
 
-    // Strict validation for Public Posts
+    
     if (isPublic && wordCount > WORD_LIMIT) {
       alert(`Limit exceeded! Public posts cannot be more than ${WORD_LIMIT} words.`);
       return;
@@ -83,7 +83,7 @@ export function CreateNote() {
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <form onSubmit={handleSave} className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* LEFT: EDITOR */}
+          
           <div className="lg:col-span-2 space-y-6">
             <input 
               value={title} 
@@ -103,11 +103,11 @@ export function CreateNote() {
             </div>
           </div>
 
-          {/* RIGHT: SIDEBAR */}
+         
           <div className="space-y-4">
             <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8 sticky top-12">
               
-              {/* WORD COUNTER */}
+
               <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
                 <div className="flex justify-between items-end mb-2">
                   <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">Word Count</label>
@@ -150,7 +150,7 @@ export function CreateNote() {
                 </button>
               </div>
 
-              {/* ACTION BUTTONS */}
+              
               <div className="pt-4 space-y-3">
                 <button 
                   type="submit" 
