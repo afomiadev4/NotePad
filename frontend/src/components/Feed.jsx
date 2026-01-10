@@ -160,7 +160,7 @@ export function Feed() {
                   <button
                     key={c}
                     onClick={() => setActiveCat(c)}
-                    className={`shrink-0 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border ${
+                    className={`shrink-0 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${
                       activeCat === c
                         ? "bg-[var(--text-main)] text-[var(--bg-page)] border-transparent"
                         : "border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)]"
@@ -225,7 +225,7 @@ export function Feed() {
                           <div className="flex items-center gap-4 md:gap-8">
                             <button
                               onClick={() => handleToggleLike(note.id)}
-                              className={`flex items-center gap-1.5 transition-colors ${
+                              className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
                                 hasLiked
                                   ? "text-rose-500"
                                   : "text-[var(--text-muted)] hover:text-rose-400"
@@ -234,7 +234,7 @@ export function Feed() {
                               <i
                                 className={`${
                                   hasLiked ? "fa-solid" : "fa-regular"
-                                } fa-heart text-base`}
+                                } fa-heart text-base hover:scale-110 transition-all `}
                               ></i>
                               <span className="text-xs font-bold">
                                 {note.reactions?.length || 0}
@@ -245,16 +245,16 @@ export function Feed() {
                                 setSelectedNote(note);
                                 setIsCommentModalOpen(true);
                               }}
-                              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors"
+                              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
                             >
-                              <i className="fa-regular fa-comment text-base"></i>
+                              <i className="fa-regular fa-comment text-base hover:scale-110 transition-all"></i>
                               <span className="text-xs font-bold">
                                 {note.comments?.length || 0}
                               </span>
                             </button>
                             <button
                               onClick={() => handleToggleSave(note.id)}
-                              className={`flex items-center transition-colors ${
+                              className={`flex items-center transition-colors cursor-pointer ${
                                 hasSaved
                                   ? "text-yellow-500"
                                   : "text-[var(--text-muted)] hover:text-yellow-400"
@@ -263,7 +263,7 @@ export function Feed() {
                               <i
                                 className={`${
                                   hasSaved ? "fa-solid" : "fa-regular"
-                                } fa-bookmark text-base`}
+                                } fa-bookmark text-base hover:scale-110 transition-all`}
                               ></i>
                             </button>
                           </div>
@@ -280,9 +280,9 @@ export function Feed() {
                                 alert("Link copied!");
                               }
                             }}
-                            className="text-[var(--text-muted)] hover:text-emerald-400 transition-colors p-2"
+                            className="text-[var(--text-muted)] hover:text-emerald-400 transition-colors p-2 cursor-pointer"
                           >
-                            <i className="fa-solid fa-arrow-up-from-bracket text-sm"></i>
+                            <i className="fa-solid fa-arrow-up-from-bracket text-sm hover:scale-110 transition-all"></i>
                           </button>
                         </div>
                       </div>
