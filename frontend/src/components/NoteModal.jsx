@@ -9,7 +9,14 @@ export function NoteModal({
   folders = [],
 }) {
   const [ isEditing, setIsEditing ] = useState(false);
-  const categories = [ "General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts" ];
+  const categories = [
+    "General",
+    "Life",
+    "Questions",
+    "Fun/Random",
+    "Creative",
+    "Thoughts",
+  ];
 
   const [ formData, setFormData ] = useState({
     title: "",
@@ -46,10 +53,10 @@ export function NoteModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-0 lg:p-12 bg-black/90 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-0 lg:p-12 bg-black/80 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit}
-        className="relative flex flex-col lg:flex-row w-full max-w-6xl h-full lg:h-[85vh] bg-black text-white border border-white/10 rounded-3xl overflow-hidden shadow-2xl"
+        className="relative flex flex-col lg:flex-row w-full max-w-6xl h-full lg:h-[85vh] bg-[var(--bg-page)] text-[var(--text-main)] border border-[var(--border-subtle)] rounded-3xl overflow-hidden shadow-2xl transition-colors duration-300"
       >
         {/* LEFT SIDE: CONTENT */}
         <section className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto custom-scrollbar">
@@ -68,16 +75,20 @@ export function NoteModal({
             <div className="w-full h-full flex flex-col gap-6 animate-in zoom-in-95 duration-200">
               <input
                 value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
                 placeholder="Note Title"
-                className="bg-transparent text-3xl font-black outline-none border-b border-white/10 pb-4 focus:border-blue-500 transition"
+                className="bg-transparent text-3xl font-bold outline-none border-b border-[var(--border-subtle)] pb-4 focus:border-[var(--accent-primary)] transition text-[var(--text-main)] placeholder-[var(--text-faint)]"
                 required
               />
               <textarea
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, content: e.target.value })
+                }
                 placeholder="Start writing..."
-                className="flex-1 bg-white/5 resize-none outline-none text-lg leading-relaxed rounded-2xl p-8 border border-white/5 focus:border-white/10 transition"
+                className="flex-1 bg-[var(--bg-input)] resize-none outline-none text-lg leading-relaxed rounded-2xl p-6 focus:border-[var(--accent-primary)]/50 border border-transparent transition text-[var(--text-main)] placeholder-[var(--text-faint)]"
               />
             </div>
           )}
@@ -145,9 +156,6 @@ export function NoteModal({
                 Delete Note
               </button>
             )}
-            <button type="button" onClick={onClose} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition">
-              Close
-            </button>
           </div>
         </aside>
       </form>

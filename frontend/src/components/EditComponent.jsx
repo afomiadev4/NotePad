@@ -3,8 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 import { Navigation } from "./Navigation";
-import ReactQuill from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 export function EditNote() {
   const { id } = useParams();
@@ -22,12 +22,23 @@ export function EditNote() {
   // MEMBER 3: Toggle state for Read-Only vs Edit
   const [ isEditing, setIsEditing ] = useState(false);
 
-  const categories = [ "General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts" ];
+  const categories = [
+    "General",
+    "Life",
+    "Questions",
+    "Fun/Random",
+    "Creative",
+    "Thoughts",
+  ];
 
   useEffect(() => {
     const loadData = async () => {
       try {
-        const { data: note } = await supabase.from("notes").select("*").eq("id", id).single();
+        const { data: note } = await supabase
+          .from("notes")
+          .select("*")
+          .eq("id", id)
+          .single();
         if (note) {
           setTitle(note.title || "");
           setContent(note.content || "");
@@ -36,24 +47,32 @@ export function EditNote() {
           setFolderId(note.folder_id || "uncategorized");
         }
         if (user?.id) {
-          const { data: fData } = await supabase.from("folders").select("*").eq("user_id", user.id);
+          const { data: fData } = await supabase
+            .from("folders")
+            .select("*")
+            .eq("user_id", user.id);
           setFolders(fData || []);
         }
-      } finally { setLoading(false); }
+      } finally {
+        setLoading(false);
+      }
     };
     loadData();
   }, [ id, user ]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    await supabase.from("notes").update({
-      title,
-      content,
-      category,
-      visibility,
-      folder_id: folderId === "uncategorized" ? null : folderId,
-      updated_at: new Date()
-    }).eq("id", id);
+    await supabase
+      .from("notes")
+      .update({
+        title,
+        content,
+        category,
+        visibility,
+        folder_id: folderId === "uncategorized" ? null : folderId,
+        updated_at: new Date(),
+      })
+      .eq("id", id);
 
     setIsEditing(false); // Go back to read mode after saving
     if (visibility === "Public") navigate("/feed");
@@ -105,6 +124,7 @@ export function EditNote() {
             )}
           </div>
 
+          {/* SIDEBAR SETTINGS */}
           {/* SIDEBAR SETTINGS */}
           <div className="space-y-4">
             <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8 sticky top-12">
