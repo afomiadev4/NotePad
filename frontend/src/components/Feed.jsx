@@ -84,11 +84,11 @@ export function Feed() {
     <div className="min-h-screen bg-(--bg-primary) flex flex-col lg:flex-row text-white font-sans overflow-x-hidden">
       <Navigation />
       
-      {/* Main Content */}
+      
       <main className="flex-1 w-full lg:ml-64 px-4 md:px-8 pt-4 md:pt-8">
         <div className="max-w-2xl mx-auto space-y-6 pb-32 lg:pb-12">
           
-          {/* Responsive Header */}
+         
           <header className="sticky top-0 bg-(--bg-primary)/90 backdrop-blur-xl z-30 pb-4 border-b border-white/5 pt-2">
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -116,7 +116,7 @@ export function Feed() {
                 <SearchBar />
               </div>
 
-              {/* Category Pills - Scrollable on mobile */}
+              
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0">
                 {categories.map(c => (
                   <button 
@@ -133,7 +133,7 @@ export function Feed() {
             </div>
           </header>
 
-          {/* Posts Section */}
+          
           {loading ? (
             <div className="flex justify-center py-20 text-blue-500 animate-pulse font-black uppercase tracking-widest text-[10px]">Syncing...</div>
           ) : (
@@ -145,7 +145,7 @@ export function Feed() {
                 return (
                   <article key={note.id} className="bg-white/[0.03] rounded-[1.5rem] md:rounded-[2rem] border border-white/10 p-4 md:p-6 hover:bg-white/[0.05] transition-all">
                     <div className="flex gap-3 md:gap-4">
-                      {/* Responsive Image Size */}
+                    
                       <img 
                         src={note.profiles?.avatar_url || `https://ui-avatars.com/api/?name=${note.profiles?.username}`} 
                         className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl object-cover cursor-pointer shrink-0" 
@@ -163,7 +163,7 @@ export function Feed() {
                         <h2 className="text-lg md:text-xl font-bold text-white mt-2 md:mt-4 leading-tight truncate">{note.title}</h2>
                         <div className="text-white/60 text-xs md:text-sm my-3 md:my-4 line-clamp-5 md:line-clamp-6 leading-relaxed" dangerouslySetInnerHTML={{ __html: note.content }} />
                         
-                        {/* Action Bar */}
+                        
                         <div className="flex items-center justify-between pt-4 border-t border-white/5">
                           <div className="flex items-center gap-4 md:gap-8">
                             <button onClick={() => handleToggleLike(note.id)} className={`flex items-center gap-1.5 transition-colors ${hasLiked ? 'text-rose-500' : 'text-white/40 hover:text-rose-400'}`}>
