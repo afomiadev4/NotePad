@@ -1,62 +1,73 @@
 @import "tailwindcss";
 
 :root {
-  /* DARK MODE COLORS */
-  --bg-primary: #09090b;
-  --bg-secondary: #18181b;
-  --text-main: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.4);
-  --border-color: rgba(255, 255, 255, 0.05);
-  --card-bg: rgba(255, 255, 255, 0.05);
+  --bg-primary: #111621;
+  --bg-secondary: #1a2232;
+  --text-primary: #fff;
+  --text-secondary: #67696e;
+  --btn-primary: #1754cf;
 }
 
-body.light {
-  /* LIGHT MODE COLORS */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --text-main: #0f172a;
-  /* Dark Navy for readability */
-  --text-muted: #64748b;
-  /* Slate Grey */
-  --border-color: #e2e8f0;
-  --card-bg: #ffffff;
+.ql-picker-options,
+.ql-tooltip {
+  background-color: #18181b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  color: white !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
 }
 
-body {
-  background-color: var(--bg-primary);
-  color: var(--text-main);
-  transition: background-color 0.3s ease, color 0.3s ease;
+.ql-picker-item:hover {
+  color: #3b82f6 !important;
 }
 
-/* This forces any text inside the app to respect the variable */
-h1,
-h2,
-h3,
-h4,
-p,
-span,
-div {
-  color: var(--text-main);
+select option {
+  background-color: #18181b;
+  color: white;
+  padding: 12px;
 }
 
-/* Allow muted text to remain muted */
-.text-muted-custom {
-  color: var(--text-muted) !important;
+.quill-preview p {
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-/* Quill Editor Fixes */
+select {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .ql-editor {
-  color: var(--text-main) !important;
+  color: white !important;
 }
 
 .ql-toolbar.ql-snow {
-  background: var(--bg-secondary) !important;
-  border-color: var(--border-color) !important;
+  border: none !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-/* Select/Options Fix */
-select,
 option {
-  background-color: var(--bg-secondary) !important;
-  color: var(--text-main) !important;
+  background-color: #09090b !important;
+  color: white !important;
+  padding: 10px;
+}
+
+.ql-snow .ql-picker-options {
+  background-color: #18181b !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

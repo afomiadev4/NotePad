@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { FolderModal } from "./FolderModal";
-import { supabase } from "../supabaseClient";
+import { supabase } from "../supabaseClient"; 
 import { useSelector } from "react-redux";
 
 export function Folders() {
@@ -10,17 +10,17 @@ export function Folders() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const [ folders, setFolders ] = useState([]);
-  const [ notes, setNotes ] = useState([]);
-  const [ loading, setLoading ] = useState(true);
-  const [ isFolderModalOpen, setIsFolderModalOpen ] = useState(false);
-  const [ selectedFolder, setSelectedFolder ] = useState(null);
+  const [folders, setFolders] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState(null);
 
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
     try {
-      const [ fRes, nRes ] = await Promise.all([
+      const [fRes, nRes] = await Promise.all([
         supabase.from("folders").select("*").eq("user_id", user.id),
         supabase.from("notes").select("*").eq("user_id", user.id),
       ]);
@@ -30,27 +30,27 @@ export function Folders() {
 
       if (nData.some(n => !n.folder_id)) {
         if (!fData.find(f => f.id === "uncategorized")) {
-          fData.push({
-            id: "uncategorized",
-            name: "Uncategorized",
-            icon: "fa-folder-open",
-            color: "text-slate-500"
+          fData.push({ 
+            id: "uncategorized", 
+            name: "Uncategorized", 
+            icon: "fa-folder-open", 
+            color: "text-slate-400" 
           });
         }
       }
       setFolders(fData);
       setNotes(nData);
-    } finally {
-      setLoading(false);
+    } finally { 
+      setLoading(false); 
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [ user ]);
+  useEffect(() => { 
+    fetchData(); 
+  }, [user]);
 
   const handleDeleteFolder = async (e, id) => {
-    e.stopPropagation();
+    e.stopPropagation(); // Prevents navigating into the folder
     if (id === "uncategorized") return;
     if (!confirm("Delete this folder? Notes will become uncategorized.")) return;
 
@@ -65,116 +65,94 @@ export function Folders() {
   };
 
   const activeFolder = folders.find(f => f.id === folderId);
-  const displayedNotes = notes.filter(n =>
+  const displayedNotes = notes.filter(n => 
     folderId === "uncategorized" ? !n.folder_id : n.folder_id === folderId
   );
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-main)] flex transition-colors duration-300">
+    <div className="min-h-screen bg-(--bg-primary) text-white flex">
       <Navigation />
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <div className="max-w-6xl mx-auto">
-
-          {/* Header Section */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+          
+          <div className="flex justify-between items-end mb-12">
             <div>
-              <h1 className="text-4xl font-black tracking-tight mb-2 uppercase">
-                {activeFolder ? activeFolder.name : "Your Library"}
+              <h1 className="text-4xl font-black tracking-tight mb-2">
+                {activeFolder ? activeFolder.name : "Folders"}
               </h1>
-              <p className="text-[var(--text-muted)] font-bold text-xs uppercase tracking-widest">
-                {activeFolder ? `${displayedNotes.length} thoughts stored` : `${folders.length} active categories`}
+              <p className="text-white/40 font-medium">
+                {activeFolder ? `${displayedNotes.length} notes in this folder` : `${folders.length} active folders`}
               </p>
             </div>
-            {!folderId && (
-              <button
-                onClick={() => { setSelectedFolder(null); setIsFolderModalOpen(true); }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-blue-600/20 active:scale-95"
-              >
-                + Create Folder
-              </button>
-            )}
+            <button 
+              onClick={() => { setSelectedFolder(null); setIsFolderModalOpen(true); }}
+              className="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg"
+            >
+              + New Folder
+            </button>
           </div>
 
           {loading ? (
-            <div className="py-20 text-center animate-pulse text-[var(--text-muted)] font-black uppercase tracking-tighter italic">
-              SYNCING YOUR ARCHIVE...
-            </div>
+            <div className="py-20 text-center animate-pulse text-white/20">Loading your space...</div>
           ) : !folderId ? (
-            /* Folders Grid View */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {folders.map(f => (
                 <div key={f.id} onClick={() => navigate(`/folders/${f.id}`)}
-                  className="group bg-[var(--bg-secondary)] border border-[var(--border-color)] p-8 rounded-[2.5rem] hover:border-blue-500/50 transition-all cursor-pointer relative overflow-hidden shadow-sm"
+                  className="group bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-all cursor-pointer relative overflow-hidden"
                 >
-                  <div className="flex justify-between items-start mb-8">
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center bg-[var(--bg-primary)] border border-[var(--border-color)]`}>
-                      <i className={`fa-solid ${f.icon} text-2xl ${f.color}`}></i>
-                    </div>
-
+                  <div className="flex justify-between items-start mb-6">
+                    <i className={`fa-solid ${f.icon} text-4xl ${f.color}`}></i>
+                    
                     {f.id !== "uncategorized" && (
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                        <button onClick={(e) => handleEditFolder(e, f)} className="p-2 hover:text-blue-500 text-[var(--text-muted)] transition-colors"><i className="fa-solid fa-pen text-xs"></i></button>
-                        <button onClick={(e) => handleDeleteFolder(e, f.id)} className="p-2 hover:text-red-500 text-[var(--text-muted)] transition-colors"><i className="fa-solid fa-trash text-xs"></i></button>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <button onClick={(e) => handleEditFolder(e, f)} className="p-2 bg-white/5 rounded-lg hover:text-blue-400"><i className="fa-solid fa-pen text-xs"></i></button>
+                        <button onClick={(e) => handleDeleteFolder(e, f.id)} className="p-2 bg-white/5 rounded-lg hover:text-red-400"><i className="fa-solid fa-trash text-xs"></i></button>
                       </div>
                     )}
                   </div>
-
-                  <h3 className="text-xl font-black mb-1 text-[var(--text-main)]">{f.name}</h3>
-                  <p className="text-[var(--text-muted)] text-[10px] font-black uppercase tracking-widest">
-                    {notes.filter(n => f.id === "uncategorized" ? !n.folder_id : n.folder_id === f.id).length} Entries
+                  
+                  <h3 className="text-xl font-bold mb-1">{f.name}</h3>
+                  <p className="text-white/30 text-sm font-bold uppercase tracking-widest">
+                    {notes.filter(n => f.id === "uncategorized" ? !n.folder_id : n.folder_id === f.id).length} Notes
                   </p>
                 </div>
               ))}
             </div>
           ) : (
-            /* Individual Folder View (Notes List) */
-            <div className="space-y-6">
-              <button onClick={() => navigate("/folders")} className="text-[var(--text-muted)] hover:text-[var(--text-main)] mb-6 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest transition-colors">
-                <i className="fa-solid fa-arrow-left"></i> Back to Archive
+            <div className="space-y-4">
+              <button onClick={() => navigate("/folders")} className="text-white/40 hover:text-white mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-tighter">
+                <i className="fa-solid fa-arrow-left"></i> Back to Folders
               </button>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {displayedNotes.map(note => (
-                  <div key={note.id} className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-6 rounded-[2rem] hover:border-blue-500/30 transition-all group shadow-sm">
+                  <div key={note.id} className="bg-white/5 border border-white/10 p-6 rounded-3xl hover:border-blue-500/50 transition-all group">
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-lg font-black text-[var(--text-main)] leading-tight">{note.title}</h3>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                        <button onClick={() => navigate(`/edit/${note.id}`)} className="p-2 hover:text-blue-500 text-[var(--text-muted)]"><i className="fa-solid fa-pen text-xs"></i></button>
-                        <button
-                          onClick={async () => {
-                            if (confirm("Delete this note?")) {
-                              await supabase.from("notes").delete().eq("id", note.id);
-                              fetchData();
-                            }
-                          }}
-                          className="p-2 hover:text-red-500 text-[var(--text-muted)]"
+                      <h3 className="text-lg font-bold">{note.title}</h3>
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                        <button onClick={() => navigate(`/edit/${note.id}`)} className="p-2 bg-white/5 rounded-lg hover:text-blue-400"><i className="fa-solid fa-pen"></i></button>
+                        <button 
+                          onClick={async () => { 
+                            if(confirm("Delete this note?")) { 
+                              await supabase.from("notes").delete().eq("id", note.id); 
+                              fetchData(); 
+                            } 
+                          }} 
+                          className="p-2 bg-white/5 rounded-lg hover:text-red-400"
                         >
-                          <i className="fa-solid fa-trash text-xs"></i>
+                          <i className="fa-solid fa-trash"></i>
                         </button>
                       </div>
                     </div>
-                    <div
-                      className="text-[var(--text-muted)] line-clamp-2 text-sm leading-relaxed mb-6"
+                    <div 
+                      className="text-white/50 line-clamp-2 text-sm leading-relaxed mb-4"
                       dangerouslySetInnerHTML={{ __html: note.content }}
                     />
-                    <div className="flex items-center justify-between border-t border-[var(--border-color)] pt-4">
-                      <span className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-tighter">
-                        {new Date(note.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
-                      <i className="fa-solid fa-chevron-right text-[10px] text-[var(--text-muted)] opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0"></i>
-                    </div>
+                    <span className="text-[10px] font-black text-white/20 uppercase">{new Date(note.created_at).toLocaleDateString()}</span>
                   </div>
                 ))}
-
-                {/* Add Note Placeholder */}
-                <div
-                  onClick={() => navigate("/create-note")}
-                  className="border-2 border-dashed border-[var(--border-color)] rounded-[2rem] p-8 flex flex-col items-center justify-center hover:bg-[var(--bg-secondary)] hover:border-blue-500/30 cursor-pointer transition-all min-h-[180px] group"
-                >
-                  <div className="w-12 h-12 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                    <i className="fa-solid fa-plus text-[var(--text-muted)]"></i>
-                  </div>
-                  <span className="text-[var(--text-muted)] font-black text-[10px] uppercase tracking-widest">Add New Thought</span>
+                <div onClick={() => navigate("/create-note")} className="border-2 border-dashed border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center hover:bg-white/5 cursor-pointer transition-all min-h-[160px]">
+                   <i className="fa-solid fa-plus text-white/20 text-2xl mb-2"></i>
+                   <span className="text-white/20 font-bold text-sm">Add Note</span>
                 </div>
               </div>
             </div>
@@ -182,11 +160,11 @@ export function Folders() {
         </div>
       </main>
 
-      <FolderModal
-        isOpen={isFolderModalOpen}
-        onClose={() => { setIsFolderModalOpen(false); setSelectedFolder(null); }}
+      <FolderModal 
+        isOpen={isFolderModalOpen} 
+        onClose={() => { setIsFolderModalOpen(false); setSelectedFolder(null); }} 
         folder={selectedFolder}
-        onRefresh={fetchData}
+        onRefresh={fetchData} 
       />
     </div>
   );

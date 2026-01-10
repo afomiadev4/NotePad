@@ -1,127 +1,189 @@
+import { useDispatch } from "react-redux";
+import { login } from "../store/authSlice";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 
 export default function Register() {
-  const [ formData, setFormData ] = useState({
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    name: "",
     username: "",
     email: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
-  const [ showPassword, setShowPassword ] = useState(false);
-  const [ loading, setLoading ] = useState(false);
 
-  const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
 
-  const handleRegister = async (e) => {
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const validate = () => {
+    let newErrors = {};
+
+    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.username.trim()) newErrors.username = "Username is required";
+    if (form.username.trim().includes(" "))
+      newErrors.username = "Username cannot contain spaces";
+    if (!form.email.includes("@")) newErrors.email = "Valid email is required";
+    if (form.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters";
+    if (form.password !== form.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
+    if (!validate()) return;
 
-    setLoading(true);
     const { data, error } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        data: { username: formData.username }
-      }
+      email: form.email,
+      password: form.password,
     });
 
     if (error) {
       alert(error.message);
-    } else {
-      alert("Registration successful! Please check your email for verification.");
-      navigate("/login");
+      return;
     }
-    setLoading(false);
+
+    if (data.user) {
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert([
+          { 
+            id: data.user.id, 
+            username: form.username, 
+            full_name: form.name 
+          }
+        ]);
+        
+      if (profileError) console.error("Profile creation error:", profileError.message);
+    }
+
+    alert("Check your email to verify your account!");
+    navigate("/login");
   };
 
   return (
-    <div className="w-full min-h-screen bg-[var(--bg-primary)] flex items-center justify-center p-6 text-[var(--text-main)] transition-colors duration-500 relative overflow-hidden">
-      {/* Decorative Glow */}
-      <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/5 blur-[120px] rounded-full"></div>
-
-      <div className="w-full max-w-md relative z-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-[2rem] shadow-xl shadow-blue-600/20 mb-6">
-            <i className="fa-solid fa-user-plus text-white text-2xl"></i>
+    <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary) overflow-hidden">
+      <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-white/20">
+        <h2 className="text-center font-extrabold text-5xl drop-shadow-lg">
+          Register
+        </h2>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          <div className="flex flex-col">
+            <label className=" font-semibold mb-1" htmlFor="name">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
           </div>
-          <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">Join NotePad+</h1>
-          <p className="text-[var(--text-muted)] text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Initialize your personal node</p>
-        </div>
+          <div className="flex flex-col">
+            <label className=" font-semibold mb-1" htmlFor="username">
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={form.username}
+              onChange={handleChange}
+              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+            />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <label className=" font-semibold mb-1" htmlFor="email">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+            )}
+          </div>
 
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-[3rem] shadow-2xl p-8 md:p-10 transition-all">
-          <form className="flex flex-col gap-5" onSubmit={handleRegister}>
+          <div className="flex flex-col">
+            <label className=" font-semibold mb-1" htmlFor="password">
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+            )}
+          </div>
 
-            {/* Username */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] ml-1">Username</label>
-              <input
-                type="text"
-                placeholder="@thinker_01"
-                className="px-6 py-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:border-blue-500/50 text-sm font-bold outline-none transition-all placeholder:[var(--text-muted)]"
-                required
-                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-              />
-            </div>
-
-            {/* Email */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] ml-1">Email</label>
-              <input
-                type="email"
-                placeholder="hello@world.com"
-                className="px-6 py-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:border-blue-500/50 text-sm font-bold outline-none transition-all placeholder:[var(--text-muted)]"
-                required
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
-            </div>
-
-            {/* Password */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] ml-1">Security Key</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className="w-full px-6 py-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] focus:border-blue-500/50 text-sm font-bold outline-none transition-all placeholder:[var(--text-muted)]"
-                  required
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-                <button
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute top-1/2 -translate-y-1/2 right-4 text-[var(--text-muted)] hover:text-blue-500 transition-colors"
-                  type="button"
-                >
-                  <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`} />
-                </button>
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-[var(--text-main)] text-[var(--bg-primary)] font-black text-[10px] uppercase tracking-[0.2em] py-5 rounded-2xl shadow-xl hover:opacity-90 transition-all active:scale-[0.98] mt-4 disabled:opacity-50"
+          <div className="flex flex-col">
+            <label
+              className="text-(--text-primary) font-semibold mb-1"
+              htmlFor="confirmPassword"
             >
-              {loading ? "Initializing..." : "Create Archive"}
-            </button>
-
-            <div className="flex flex-col items-center gap-4 mt-4 pt-6 border-t border-[var(--border-color)]">
-              <p className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest">
-                Already a member?
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={handleChange}
+              className="px-4 py-2 text-(--text-primary) rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword}
               </p>
-              <Link
-                to="/login"
-                className="text-blue-500 font-black text-xs uppercase tracking-widest hover:text-blue-400 transition-colors"
-              >
-                Access Existing Node
-              </Link>
-            </div>
-          </form>
-        </div>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className="bg-(--btn-primary) transition font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg mt-4 cursor-pointer"
+          >
+            Sign Up
+          </button>
+          <div className="flex mt-2 justify-between">
+            Already have an account?
+            <Link
+              to="/login"
+              className="text-(--text-secondary) hover:underline"
+            >
+              Login
+            </Link>
+          </div>
+        </form>
       </div>
     </div>
   );
