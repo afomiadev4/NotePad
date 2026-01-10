@@ -99,11 +99,11 @@ export function CreateNote() {
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-[var(--accent-primary)] transition-all placeholder:text-[var(--text-faint)] text-[var(--text-main)]"
+              className="w-full bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-[var(--accent-primary)] hover:border-[var(--accent-primary)]/50 transition-all placeholder:text-[var(--text-faint)] text-[var(--text-main)]"
               placeholder="Title"
               required
             />
-            <div className="bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl transition-colors">
+            <div className="bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl transition-colors focus-within:border-[var(--accent-primary)] hover:border-[var(--accent-primary)]/50">
               <ReactQuill
                 theme="snow"
                 value={content}
@@ -159,7 +159,7 @@ export function CreateNote() {
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-[var(--bg-card-hover)] focus:border-[var(--accent-primary)] transition-all cursor-pointer text-[var(--text-main)]"
+                    className="w-full bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-[var(--bg-card-hover)] hover:border-[var(--accent-primary)]/50 focus:border-[var(--accent-primary)] transition-all cursor-pointer text-[var(--text-main)]"
                   >
                     {[
                       "General",
@@ -187,7 +187,7 @@ export function CreateNote() {
                   <select
                     value={folderId}
                     onChange={(e) => setFolderId(e.target.value)}
-                    className="w-full bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-[var(--bg-card-hover)] focus:border-[var(--accent-primary)] transition-all cursor-pointer text-[var(--text-main)]"
+                    className="w-full bg-[var(--bg-input)] border border-[var(--border-subtle)] rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-[var(--bg-card-hover)] hover:border-[var(--accent-primary)]/50 focus:border-[var(--accent-primary)] transition-all cursor-pointer text-[var(--text-main)]"
                   >
                     <option
                       value="uncategorized"
@@ -220,8 +220,8 @@ export function CreateNote() {
                   onClick={() => setIsPublic(!isPublic)}
                   className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${
                     isPublic
-                      ? "bg-[var(--accent-surface)] border-[var(--accent-primary)] text-[var(--accent-primary)]"
-                      : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-faint)]"
+                      ? "bg-[var(--accent-surface)] border-[var(--accent-primary)] text-[var(--accent-primary)] hover:scale-[1.02]"
+                      : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-faint)] hover:border-[var(--text-muted)] hover:text-[var(--text-muted)] hover:scale-[1.02]"
                   }`}
                 >
                   {isPublic ? "🚀 PUBLIC FEED" : "🔒 PRIVATE NOTE"}
@@ -244,7 +244,7 @@ export function CreateNote() {
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                  className="w-full py-4 text-[var(--text-muted)] font-black text-[10px] tracking-widest hover:text-[var(--text-main)] transition-colors"
+                  className="w-full py-4 text-[var(--text-muted)] font-black text-[10px] tracking-widest hover:text-[var(--text-main)] hover:scale-105 transition-all"
                 >
                   CANCEL
                 </button>
@@ -256,6 +256,8 @@ export function CreateNote() {
 
       <style>{`
         .editor-custom .ql-toolbar { border: none !important; border-bottom: 1px solid var(--border-subtle) !important; padding: 1.5rem !important; }
+        .editor-custom .ql-toolbar button { transition: transform 0.2s ease; }
+        .editor-custom .ql-toolbar button:hover { transform: scale(1.1); }
         .editor-custom .ql-container { border: none !important; font-size: 1.1rem; font-family: inherit; }
         .editor-custom .ql-editor { padding: 2rem !important; min-height: 50vh; color: var(--text-main); }
         .editor-custom .ql-editor.ql-blank::before { color: var(--text-faint) !important; left: 2rem !important; }
