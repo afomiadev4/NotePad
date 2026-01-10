@@ -11,30 +11,33 @@ import { EditNote } from "./components/EditComponent";
 import { SavedNotes } from "./components/SavedNotes";
 import "react-quill-new/dist/quill.snow.css";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { ThemeProvider } from "./context/ThemeContext";
 
 export default function App() {
   return (
-    <Routes>
-      <Route index element={<Welcome />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+    <ThemeProvider>
+      <Routes>
+        <Route index element={<Welcome />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/folders" element={<Folders />} />
-        <Route path="/folders/:folderId" element={<Folders />} />
-        <Route path="/saved" element={<SavedNotes />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/feed" element={<Feed />} />
+          <Route path="/folders" element={<Folders />} />
+          <Route path="/folders/:folderId" element={<Folders />} />
+          <Route path="/saved" element={<SavedNotes />} />
 
-        {/* Only one route needed now for creating notes */}
-        <Route path="/create-note" element={<CreateNote />} />
+          {/* Only one route needed now for creating notes */}
+          <Route path="/create-note" element={<CreateNote />} />
 
-        <Route path="/edit/:id" element={<EditNote />} />
-        <Route path="/notes/:noteId" element={<EditNote />} />
-        <Route path="/account" element={<AccountPage />} />
-      </Route>
+          <Route path="/edit/:id" element={<EditNote />} />
+          <Route path="/notes/:noteId" element={<EditNote />} />
+          <Route path="/account" element={<AccountPage />} />
+        </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ThemeProvider>
   );
 }

@@ -56,17 +56,16 @@ export default function Register() {
     }
 
     if (data.user) {
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert([
-          { 
-            id: data.user.id, 
-            username: form.username, 
-            full_name: form.name 
-          }
-        ]);
-        
-      if (profileError) console.error("Profile creation error:", profileError.message);
+      const { error: profileError } = await supabase.from("profiles").insert([
+        {
+          id: data.user.id,
+          username: form.username,
+          full_name: form.name,
+        },
+      ]);
+
+      if (profileError)
+        console.error("Profile creation error:", profileError.message);
     }
 
     alert("Check your email to verify your account!");
@@ -74,14 +73,17 @@ export default function Register() {
   };
 
   return (
-    <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary) overflow-hidden">
-      <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-white/20">
-        <h2 className="text-center font-extrabold text-5xl drop-shadow-lg">
+    <div className="w-full h-screen bg-[var(--bg-page)] flex items-center justify-center p-5 text-[var(--text-main)] overflow-hidden transition-colors duration-300">
+      <div className="bg-[var(--bg-card)] rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-[var(--border-subtle)]">
+        <h2 className="text-center font-extrabold text-5xl drop-shadow-sm text-[var(--text-main)]">
           Register
         </h2>
         <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1" htmlFor="name">
+            <label
+              className="font-semibold mb-1 text-[var(--text-main)]"
+              htmlFor="name"
+            >
               Name
             </label>
             <input
@@ -90,14 +92,17 @@ export default function Register() {
               name="name"
               value={form.name}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 placeholder-[var(--text-faint)] text-[var(--text-main)] outline-none transition"
             />
             {errors.name && (
               <p className="text-red-500 text-sm mt-1">{errors.name}</p>
             )}
           </div>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1" htmlFor="username">
+            <label
+              className="font-semibold mb-1 text-[var(--text-main)]"
+              htmlFor="username"
+            >
               Username
             </label>
             <input
@@ -106,14 +111,17 @@ export default function Register() {
               name="username"
               value={form.username}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 placeholder-[var(--text-faint)] text-[var(--text-main)] outline-none transition"
             />
             {errors.username && (
               <p className="text-red-500 text-sm mt-1">{errors.username}</p>
             )}
           </div>
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1" htmlFor="email">
+            <label
+              className="font-semibold mb-1 text-[var(--text-main)]"
+              htmlFor="email"
+            >
               Email
             </label>
             <input
@@ -122,7 +130,7 @@ export default function Register() {
               name="email"
               value={form.email}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 placeholder-[var(--text-faint)] text-[var(--text-main)] outline-none transition"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email}</p>
@@ -130,7 +138,10 @@ export default function Register() {
           </div>
 
           <div className="flex flex-col">
-            <label className=" font-semibold mb-1" htmlFor="password">
+            <label
+              className="font-semibold mb-1 text-[var(--text-main)]"
+              htmlFor="password"
+            >
               Password
             </label>
             <input
@@ -139,7 +150,7 @@ export default function Register() {
               name="password"
               value={form.password}
               onChange={handleChange}
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 placeholder-[var(--text-faint)] text-[var(--text-main)] outline-none transition"
             />
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password}</p>
@@ -148,7 +159,7 @@ export default function Register() {
 
           <div className="flex flex-col">
             <label
-              className="text-(--text-primary) font-semibold mb-1"
+              className="text-[var(--text-main)] font-semibold mb-1"
               htmlFor="confirmPassword"
             >
               Confirm Password
@@ -159,7 +170,7 @@ export default function Register() {
               name="confirmPassword"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="px-4 py-2 text-(--text-primary) rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 placeholder-white/70 outline-none transition"
+              className="px-4 py-2 text-[var(--text-main)] rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 placeholder-[var(--text-faint)] outline-none transition"
             />
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">
@@ -170,15 +181,15 @@ export default function Register() {
 
           <button
             type="submit"
-            className="bg-(--btn-primary) transition font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg mt-4 cursor-pointer"
+            className="bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-white transition font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg mt-4 cursor-pointer"
           >
             Sign Up
           </button>
-          <div className="flex mt-2 justify-between">
+          <div className="flex mt-2 justify-between text-[var(--text-muted)]">
             Already have an account?
             <Link
               to="/login"
-              className="text-(--text-secondary) hover:underline"
+              className="text-[var(--accent-primary)] hover:underline font-bold"
             >
               Login
             </Link>
