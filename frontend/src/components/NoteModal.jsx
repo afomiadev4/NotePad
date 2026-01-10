@@ -1,50 +1,57 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 export function NoteModal({
   note,
   isOpen,
   onClose,
   onSave,
-  onEdit,
   onDelete,
-  mode = "create",
   folders = [],
-  hideFolderSelection = false,
-  isPost = false,
 }) {
   const noteRef = useRef(null);
   const isViewMode = mode === "view";
   const categories = [ "General", "Life", "Questions", "Fun/Random", "Creative", "Thoughts" ];
 
   const [ formData, setFormData ] = useState({
-    title: "",
-    content: "",
-    category: "General",
-    folderId: "uncategorized",
-    visibility: "Private",
-  });
+    const [ isEditing, setIsEditing ] = useState(false);
+    const [ formData, setFormData ] = useState({
+      title: "",
+      content: "",
+      category: "General",
+      folderId: "uncategorized",
+      visibility: "Private",
+    });
 
-  useEffect(() => {
-    if (note) {
+    // Update form data when note opens
+    useEffect(() => {
+    if (isOpen && note) {
       setFormData({
         id: note.id,
-        title: note.title || "",
+        title: note.title || "Untitled",
         content: note.content || "",
         category: note.category || "General",
-        folderId: note.folder_id || note.folderId || "uncategorized",
+        folderId: note.folder_id || note.folder_id || "uncategorized",
         visibility: note.visibility || "Private",
       });
+      setIsEditing(false); // start in read-only
     }
   }, [ note, isOpen ]);
 
   if (!isOpen) return null;
 
+  if (!note) return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 text-white font-black italic">
+      LOADING NOTE...
+    </div>
+  );
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
       ...formData,
-      folderId: formData.folderId || "uncategorized",
+      folder_id: formData.folderId === "uncategorized" ? null : formData.folderId,
     });
+    setIsEditing(false);
   };
 
   return (
@@ -159,6 +166,9 @@ export function NoteModal({
                 </button>
               </>
             )}
+            <button type="button" onClick={onClose} className="w-full py-4 rounded-xl bg-white/5 border border-white/10 font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition">
+              Close
+            </button>
           </div>
         </aside>
       </form>
