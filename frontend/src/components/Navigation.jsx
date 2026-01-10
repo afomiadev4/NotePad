@@ -22,12 +22,12 @@ function NavLink({ icon, label, to }) {
 export function Navigation() {
   const location = useLocation();
 
-  // Helper function to check if a mobile link is active
+  
   const isMobileActive = (path) => location.pathname === path ? "text-blue-500" : "text-white/40";
 
   return (
     <>
-      {/* Desktop Sidebar */}
+      
       <aside className="fixed left-0 top-0 h-screen w-64 bg-zinc-950 border-r border-white/5 hidden lg:flex flex-col p-6 z-50">
         <div className="mb-10 px-4">
           <h1 className="text-xl font-black tracking-tighter flex items-center gap-2 text-white">
@@ -54,21 +54,20 @@ export function Navigation() {
         </nav>
       </aside>
 
-      {/* Mobile Bottom Bar */}
+    
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-zinc-950/80 backdrop-blur-xl border-t border-white/5 flex justify-around items-center p-4 z-50">
-        {/* Dashboard */}
+        
         <Link to="/dashboard" className={`p-2 transition-colors ${isMobileActive("/dashboard")}`}>
           <i className="fa-solid fa-grip text-xl"></i>
         </Link>
 
-        {/* Folders - ADDED HERE */}
-        {/* Saved Notes (replacing Folders) */}
+        
         <Link to="/saved" className={`p-2 transition-colors ${isMobileActive("/saved")}`}>
           <i className="fa-solid fa-bookmark text-xl"></i>
         </Link>
 
 
-        {/* Plus Button (Center) */}
+       
         <Link 
           to="/create-note?mode=private" 
           className="text-white hover:scale-110 transition flex items-center justify-center bg-blue-600 w-12 h-12 rounded-2xl shadow-lg shadow-blue-600/40"
@@ -76,12 +75,12 @@ export function Navigation() {
           <i className="fa-solid fa-plus text-xl"></i>
         </Link>
 
-        {/* Feed */}
+        
         <Link to="/feed" className={`p-2 transition-colors ${isMobileActive("/feed")}`}>
           <i className="fa-solid fa-rss text-xl"></i>
         </Link>
 
-        {/* Account */}
+       
         <Link to="/account" className={`p-2 transition-colors ${isMobileActive("/account")}`}>
           <i className="fa-solid fa-user text-xl"></i>
         </Link>
