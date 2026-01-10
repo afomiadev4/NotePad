@@ -46,10 +46,10 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
     };
 
     if (folder) {
-      // Update existing
+     
       await supabase.from("folders").update(folderData).eq("id", folder.id);
     } else {
-      // Create new
+      
       await supabase.from("folders").insert([folderData]);
     }
 

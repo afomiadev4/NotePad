@@ -207,7 +207,6 @@ export function Feed() {
         </div>
       </main>
 
-      {/* Modals */}
       {isCommentModalOpen && selectedNote && (
         <CommentModal 
           noteId={selectedNote.id} 
