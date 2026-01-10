@@ -15,10 +15,11 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (authError) {
       alert(authError.message);
@@ -33,10 +34,10 @@ export default function Login() {
 
     dispatch(
       login({
-        user: { 
-          ...authData.user, 
-          username: profileData?.username || "User", 
-          avatar_url: profileData?.avatar_url 
+        user: {
+          ...authData.user,
+          username: profileData?.username || "User",
+          avatar_url: profileData?.avatar_url,
         },
         token: authData.session.access_token,
       })
@@ -46,59 +47,67 @@ export default function Login() {
   };
 
   return (
-    <div className="w-full h-screen bg-(--bg-primary) flex items-center justify-center p-5 text-(--text-primary)">
-      <div className="bg-white/10 backdrop-blur-md rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-white/20">
-        <h1 className="text-center font-extrabold text-5xl text-white drop-shadow-lg">
+    <div className="w-full h-screen bg-[var(--bg-page)] flex items-center justify-center p-5 text-[var(--text-main)] transition-colors duration-300">
+      <div className="bg-[var(--bg-card)] rounded-3xl shadow-2xl w-full max-w-md p-10 flex flex-col gap-6 border border-[var(--border-subtle)]">
+        <h1 className="text-center font-extrabold text-5xl text-[var(--text-main)] drop-shadow-sm">
           Login
         </h1>
         <form className="flex flex-col gap-4" onSubmit={handleLogin}>
           <div className="flex flex-col">
-            <label htmlFor="email" className="text-white font-semibold mb-1">
+            <label
+              htmlFor="email"
+              className="text-[var(--text-main)] font-semibold mb-1"
+            >
               Email
             </label>
             <input
               type="email"
               id="email"
               placeholder="Enter your email..."
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 text-white placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 text-[var(--text-main)] placeholder-[var(--text-faint)] outline-none transition"
               required
               onChange={(e) => setEmail(e.target.value)}
               value={email}
             />
           </div>
           <div className="flex flex-col relative">
-            <label htmlFor="password" className="text-white font-semibold mb-1">
+            <label
+              htmlFor="password"
+              className="text-[var(--text-main)] font-semibold mb-1"
+            >
               Password
             </label>
             <input
               type={showPassword ? "text" : "password"}
               id="password"
               placeholder="Enter your password..."
-              className="px-4 py-2 rounded-xl bg-white/20 border border-white/40 focus:ring-2 focus:ring-blue-400 text-white placeholder-white/70 outline-none transition"
+              className="px-4 py-2 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:ring-2 focus:ring-[var(--accent-primary)]/50 text-[var(--text-main)] placeholder-[var(--text-faint)] outline-none transition"
               required
               onChange={(e) => setPassword(e.target.value)}
               value={password}
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 translate-y-0.5 right-2 cursor-pointer text-white/50 hover:text-white"
+              className="absolute top-1/2 translate-y-0.5 right-2 cursor-pointer text-[var(--text-faint)] hover:text-[var(--heading-main)]"
               type="button"
             >
-              <i className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`} />
+              <i
+                className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"}`}
+              />
             </button>
           </div>
 
           <button
             type="submit"
-            className="bg-(--btn-primary) transition font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg mt-4 cursor-pointer"
+            className="bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-white transition font-semibold px-6 py-2 rounded-xl shadow-md hover:shadow-lg mt-4 cursor-pointer"
           >
             Login
           </button>
-          <div className="flex mt-4 justify-between">
+          <div className="flex mt-4 justify-between text-[var(--text-muted)]">
             Don't have an account?
             <Link
               to="/register"
-              className="text-(--text-secondary) hover:underline"
+              className="text-[var(--accent-primary)] hover:underline font-bold"
             >
               Register
             </Link>

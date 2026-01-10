@@ -1,29 +1,87 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #111621;
-  --bg-secondary: #1a2232;
-  --text-primary: #fff;
-  --text-secondary: #67696e;
-  --btn-primary: #1754cf;
+  /* DARK THEME (Default) */
+  --bg-page: #09090b; /* zinc-950 - Main background */
+  --bg-sidebar: #18181b; /* zinc-900 - Sidebar/Navigation */
+  --bg-card: #27272a; /* zinc-800 - Cards/Panels */
+  --bg-card-hover: #3f3f46; /* zinc-700 - Hover state */
+  --bg-input: #27272a; /* zinc-800 - Input fields */
+
+  --text-main: #ffffff; /* White - Primary text */
+  --text-muted: #a1a1aa; /* zinc-400 - Secondary text */
+  --text-faint: #52525b; /* zinc-600 - Tertiary/Placeholder text */
+  --text-inverse: #09090b; /* zinc-950 - Text on contrasting bg */
+
+  --border-subtle: #3f3f46; /* zinc-700 - Subtle borders */
+  --border-highlight: #52525b; /* zinc-600 - Active/Hover borders */
+
+  --accent-primary: #2563eb; /* blue-600 - Primary brand color */
+  --accent-hover: #1d4ed8; /* blue-700 - Hover brand color */
+  --accent-surface: #1e3a8a; /* blue-900 - Low opacity accent backgrounds */
+
+  /* Legacy variables mappings for backward compatibility if needed temporarily */
+  --bg-primary: var(--bg-page);
+  --bg-secondary: var(--bg-sidebar);
+  --text-primary: var(--text-main);
+  --text-secondary: var(--text-muted);
+  --btn-primary: var(--accent-primary);
+}
+
+/* LIGHT THEME */
+[data-theme="light"] {
+  --bg-page: #f8fafc; /* slate-50 - Main background */
+  --bg-sidebar: #ffffff; /* white - Sidebar/Navigation */
+  --bg-card: #ffffff; /* white - Cards/Panels */
+  --bg-card-hover: #f1f5f9; /* slate-100 - Hover state */
+  --bg-input: #f1f5f9; /* slate-100 - Input fields */
+
+  --text-main: #0f172a; /* slate-900 - Primary text */
+  --text-muted: #64748b; /* slate-500 - Secondary text */
+  --text-faint: #94a3b8; /* slate-400 - Tertiary/Placeholder text */
+  --text-inverse: #ffffff; /* white - Text on contrasting bg */
+
+  --border-subtle: #e2e8f0; /* slate-200 - Subtle borders */
+  --border-highlight: #cbd5e1; /* slate-300 - Active/Hover borders */
+
+  --accent-primary: #2563eb; /* blue-600 - Primary brand color */
+  --accent-hover: #1d4ed8; /* blue-700 - Hover brand color */
+  --accent-surface: #dbeafe; /* blue-100 - Low opacity accent backgrounds */
+}
+
+/* Base styles using semantic variables */
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Global Transitions */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke,
+    box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
 }
 
 .ql-picker-options,
 .ql-tooltip {
-  background-color: #18181b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
   border-radius: 12px !important;
-  color: white !important;
+  color: var(--text-main) !important;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
 }
 
 .ql-picker-item:hover {
-  color: #3b82f6 !important;
+  color: var(--accent-primary) !important;
 }
 
 select option {
-  background-color: #18181b;
-  color: white;
+  background-color: var(--bg-card);
+  color: var(--text-main);
   padding: 12px;
 }
 
@@ -33,8 +91,8 @@ select option {
 }
 
 select {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: white;
+  background-color: var(--bg-input);
+  color: var(--text-main);
 }
 
 select:focus {
@@ -43,25 +101,25 @@ select:focus {
 }
 
 .ql-editor {
-  color: white !important;
+  color: var(--text-main) !important;
 }
 
 .ql-toolbar.ql-snow {
   border: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-subtle) !important;
+  background: var(--bg-input);
 }
 
 option {
-  background-color: #09090b !important;
-  color: white !important;
+  background-color: var(--bg-card) !important;
+  color: var(--text-main) !important;
   padding: 10px;
 }
 
 .ql-snow .ql-picker-options {
-  background-color: #18181b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: white !important;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  color: var(--text-main) !important;
 }
 
 .no-scrollbar::-webkit-scrollbar {

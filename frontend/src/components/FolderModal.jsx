@@ -2,7 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 
-const ICONS = ["fa-folder", "fa-heart", "fa-star", "fa-book", "fa-lightbulb", "fa-code", "fa-briefcase", "fa-graduation-cap"];
+const ICONS = [
+  "fa-folder",
+  "fa-heart",
+  "fa-star",
+  "fa-book",
+  "fa-lightbulb",
+  "fa-code",
+  "fa-briefcase",
+  "fa-graduation-cap",
+];
 const COLORS = [
   { name: "Blue", class: "text-blue-400", bg: "bg-blue-400/10" },
   { name: "Rose", class: "text-rose-400", bg: "bg-rose-400/10" },
@@ -23,7 +32,8 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
     if (folder) {
       setName(folder.name || "");
       setSelectedIcon(folder.icon || ICONS[0]);
-      const colorMatch = COLORS.find((c) => c.class === folder.color) || COLORS[0];
+      const colorMatch =
+        COLORS.find((c) => c.class === folder.color) || COLORS[0];
       setSelectedColor(colorMatch);
     } else {
       setName("");
@@ -42,7 +52,7 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
       name,
       icon: selectedIcon,
       color: selectedColor.class,
-      user_id: user.id
+      user_id: user.id,
     };
 
     if (folder) {
@@ -62,27 +72,42 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md" onClick={validateClick}>
-      <div className="w-full max-w-md bg-zinc-900/90 backdrop-blur-2xl rounded-3xl border border-white/20 shadow-2xl overflow-hidden" ref={folderRef}>
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md"
+      onClick={validateClick}
+    >
+      <div
+        className="w-full max-w-md bg-[var(--bg-card)] backdrop-blur-2xl rounded-3xl border border-[var(--border-subtle)] shadow-2xl overflow-hidden transition-colors"
+        ref={folderRef}
+      >
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border-subtle)]">
           <div>
-            <h2 className="text-xl font-bold text-white tracking-tight">{folder ? "Edit Folder" : "New Folder"}</h2>
+            <h2 className="text-xl font-bold text-[var(--heading-main)] tracking-tight">
+              {folder ? "Edit Folder" : "New Folder"}
+            </h2>
           </div>
-          <button onClick={onClose} className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 transition-all">
+          <button
+            onClick={onClose}
+            className="p-2 rounded-xl bg-[var(--bg-input)] hover:bg-[var(--bg-card-hover)] text-[var(--text-muted)] hover:text-[var(--text-main)] transition-all"
+          >
             <i className="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-6">
-          <div className="flex flex-col items-center justify-center p-6 bg-white/5 rounded-3xl border border-white/5 mx-auto w-32 h-32 mb-2">
-            <i className={`fa-solid ${selectedIcon} text-5xl ${selectedColor.class}`}></i>
+          <div className="flex flex-col items-center justify-center p-6 bg-[var(--bg-input)] rounded-3xl border border-[var(--border-subtle)] mx-auto w-32 h-32 mb-2">
+            <i
+              className={`fa-solid ${selectedIcon} text-5xl ${selectedColor.class}`}
+            ></i>
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Folder Name</label>
+            <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
+              Folder Name
+            </label>
             <input
               type="text"
-              className="w-full px-5 py-3 rounded-xl bg-white/5 border border-white/10 focus:border-blue-500 outline-none text-white"
+              className="w-full px-5 py-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] focus:border-[var(--accent-primary)] outline-none text-[var(--text-main)] placeholder-[var(--text-faint)]"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -90,12 +115,20 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Select Icon</label>
+            <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
+              Select Icon
+            </label>
             <div className="grid grid-cols-4 gap-2">
               {ICONS.map((icon) => (
-                <button 
-                  key={icon} type="button" onClick={() => setSelectedIcon(icon)}
-                  className={`p-3 rounded-xl border transition-all ${selectedIcon === icon ? "bg-blue-600 border-blue-600 text-white" : "bg-white/5 border-white/10 text-white/40"}`}
+                <button
+                  key={icon}
+                  type="button"
+                  onClick={() => setSelectedIcon(icon)}
+                  className={`p-3 rounded-xl border transition-all ${
+                    selectedIcon === icon
+                      ? "bg-[var(--accent-primary)] border-[var(--accent-primary)] text-white"
+                      : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)]"
+                  }`}
                 >
                   <i className={`fa-solid ${icon}`}></i>
                 </button>
@@ -104,22 +137,41 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-1">Select Color</label>
+            <label className="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-[0.2em] ml-1">
+              Select Color
+            </label>
             <div className="flex flex-wrap gap-2">
               {COLORS.map((color) => (
-                <button 
-                  key={color.name} type="button" onClick={() => setSelectedColor(color)}
-                  className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.name === color.name ? "border-white scale-110" : "border-transparent"} ${color.bg}`}
+                <button
+                  key={color.name}
+                  type="button"
+                  onClick={() => setSelectedColor(color)}
+                  className={`w-10 h-10 rounded-full border-2 transition-all ${
+                    selectedColor.name === color.name
+                      ? "border-[var(--text-main)] scale-110"
+                      : "border-transparent"
+                  } ${color.bg}`}
                 >
-                  <div className={`w-3 h-3 rounded-full mx-auto ${color.class}`}></div>
+                  <div
+                    className={`w-3 h-3 rounded-full mx-auto ${color.class}`}
+                  ></div>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="mt-2 flex items-center justify-end gap-3">
-            <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white font-bold">Discard</button>
-            <button type="submit" className="px-8 py-3 rounded-xl bg-blue-600 hover:bg-blue-50 text-white font-bold shadow-lg">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 rounded-xl bg-[var(--bg-input)] border border-[var(--border-subtle)] text-[var(--text-main)] hover:bg-[var(--bg-card-hover)] font-bold transition-colors"
+            >
+              Discard
+            </button>
+            <button
+              type="submit"
+              className="px-8 py-3 rounded-xl bg-[var(--accent-primary)] hover:bg-[var(--accent-hover)] text-white font-bold shadow-lg shadow-blue-500/20 transition-all"
+            >
               {folder ? "Save Changes" : "Create Folder"}
             </button>
           </div>
