@@ -1,67 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #111621;
-  --bg-secondary: #1a2232;
-  --text-primary: #fff;
-  --text-secondary: #67696e;
-  --btn-primary: #1754cf;
+  /* DARK MODE (Default) */
+  --bg-primary: #09090b;
+  --bg-secondary: #18181b;
+  --bg-sidebar: #020617;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.4);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --input-bg: rgba(255, 255, 255, 0.05);
 }
 
-.ql-picker-options, .ql-tooltip {
-  background-color: #18181b !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 12px !important;
-  color: white !important;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
+body.light {
+  /* LIGHT MODE */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-sidebar: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --input-bg: #f1f5f9;
 }
 
-.ql-picker-item:hover {
-  color: #3b82f6 !important;
+/* Apply variables to the whole app */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-select option {
-  background-color: #18181b;
-  color: white;
-  padding: 12px;
-}
-
-.quill-preview p {
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-select {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: white;
-}
-
-select:focus {
-  outline: none;
-  box-shadow: none;
-}
-
+/* Fix Quill Editor for Light/Dark */
 .ql-editor {
-  color: white !important;
+  color: var(--text-main) !important;
 }
 
 .ql-toolbar.ql-snow {
   border: none !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-color) !important;
+  background: var(--bg-secondary);
 }
 
-option {
-  background-color: #09090b !important;
-  color: white !important;
-  padding: 10px;
+.ql-snow .ql-stroke {
+  stroke: var(--text-muted) !important;
 }
 
-.ql-snow .ql-picker-options {
-  background-color: #18181b !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
-  color: white !important;
+/* Custom Utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
