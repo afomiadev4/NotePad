@@ -2,8 +2,10 @@ import { Navigation } from "./Navigation";
 import { supabase } from "../supabaseClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 export function AccountPage() {
+  const { theme, toggleTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
