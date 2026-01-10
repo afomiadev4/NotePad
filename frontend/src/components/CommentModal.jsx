@@ -80,7 +80,7 @@ export function CommentModal({ noteId, onClose, onCommentAdded }) {
         className="w-full max-w-lg bg-zinc-950 border-t sm:border border-white/10 sm:rounded-[2rem] flex flex-col h-[80vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Sleek Header */}
+        
         <div className="px-6 py-4 flex items-center justify-between border-b border-white/5">
           <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30">Discussion</h3>
           <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition">
@@ -88,7 +88,7 @@ export function CommentModal({ noteId, onClose, onCommentAdded }) {
           </button>
         </div>
 
-        {/* Thread Section */}
+        
         <div className="flex-1 overflow-y-auto no-scrollbar p-6">
           {loading ? (
             <div className="flex justify-center py-10 text-blue-500 animate-pulse text-[10px] font-black uppercase tracking-widest">Loading...</div>
@@ -96,7 +96,7 @@ export function CommentModal({ noteId, onClose, onCommentAdded }) {
             <div className="space-y-0">
               {comments.map((comment, index) => (
                 <div key={comment.id} className="relative flex gap-4 pb-6">
-                  {/* Vertical Thread Line */}
+                  
                   {index !== comments.length - 1 && (
                     <div className="absolute left-5 top-12 bottom-0 w-px bg-white/10"></div>
                   )}
@@ -138,7 +138,7 @@ export function CommentModal({ noteId, onClose, onCommentAdded }) {
           )}
         </div>
 
-        {/* Clean Reply Input (No Avatar) */}
+        
         <div className="p-6 border-t border-white/5 bg-zinc-900/30">
           <form onSubmit={handleSubmit} className="flex gap-3">
             <input 

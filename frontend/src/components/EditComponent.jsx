@@ -67,7 +67,7 @@ export function EditNote() {
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
         <form onSubmit={handleUpdate} className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* MAIN EDITOR */}
+          
           <div className="lg:col-span-2 space-y-6">
             <input 
               value={title} 
@@ -85,7 +85,7 @@ export function EditNote() {
             </div>
           </div>
 
-          {/* SIDEBAR SETTINGS */}
+          
           <div className="space-y-4">
             <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8 sticky top-12">
               

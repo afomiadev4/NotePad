@@ -26,7 +26,7 @@ export default function App() {
         <Route path="/folders/:folderId" element={<Folders />} />
         <Route path="/saved" element={<SavedNotes />} />
         
-        {/* Only one route needed now for creating notes */}
+        
         <Route path="/create-note" element={<CreateNote />} />
         
         <Route path="/edit/:id" element={<EditNote />} />
