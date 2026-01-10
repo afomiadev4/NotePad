@@ -1,55 +1,62 @@
 @import "tailwindcss";
 
 :root {
-  /* DARK MODE (Default) */
+  /* DARK MODE COLORS */
   --bg-primary: #09090b;
   --bg-secondary: #18181b;
-  --bg-sidebar: #020617;
   --text-main: #ffffff;
   --text-muted: rgba(255, 255, 255, 0.4);
   --border-color: rgba(255, 255, 255, 0.05);
-  --input-bg: rgba(255, 255, 255, 0.05);
+  --card-bg: rgba(255, 255, 255, 0.05);
 }
 
 body.light {
-  /* LIGHT MODE */
+  /* LIGHT MODE COLORS */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
-  --bg-sidebar: #ffffff;
   --text-main: #0f172a;
+  /* Dark Navy for readability */
   --text-muted: #64748b;
+  /* Slate Grey */
   --border-color: #e2e8f0;
-  --input-bg: #f1f5f9;
+  --card-bg: #ffffff;
 }
 
-/* Apply variables to the whole app */
 body {
   background-color: var(--bg-primary);
   color: var(--text-main);
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Fix Quill Editor for Light/Dark */
+/* This forces any text inside the app to respect the variable */
+h1,
+h2,
+h3,
+h4,
+p,
+span,
+div {
+  color: var(--text-main);
+}
+
+/* Allow muted text to remain muted */
+.text-muted-custom {
+  color: var(--text-muted) !important;
+}
+
+/* Quill Editor Fixes */
 .ql-editor {
   color: var(--text-main) !important;
 }
 
 .ql-toolbar.ql-snow {
-  border: none !important;
-  border-bottom: 1px solid var(--border-color) !important;
-  background: var(--bg-secondary);
+  background: var(--bg-secondary) !important;
+  border-color: var(--border-color) !important;
 }
 
-.ql-snow .ql-stroke {
-  stroke: var(--text-muted) !important;
-}
-
-/* Custom Utilities */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Select/Options Fix */
+select,
+option {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-main) !important;
 }

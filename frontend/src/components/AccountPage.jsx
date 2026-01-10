@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function AccountPage() {
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState(""); 
-  const [bio, setBio] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(""); 
-  const [user, setUser] = useState(null);
-  const [userPosts, setUserPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [ isEditing, setIsEditing ] = useState(false);
+  const [ name, setName ] = useState("");
+  const [ username, setUsername ] = useState("");
+  const [ bio, setBio ] = useState("");
+  const [ avatarUrl, setAvatarUrl ] = useState("");
+  const [ user, setUser ] = useState(null);
+  const [ userPosts, setUserPosts ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export function AccountPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
-        
+
         const { data: profile } = await supabase
           .from("profiles")
           .select("username, full_name, bio, avatar_url")
@@ -32,8 +32,8 @@ export function AccountPage() {
           setBio(profile.bio || "");
           setAvatarUrl(profile.avatar_url || "");
         } else {
-          setUsername(user.email.split('@')[0]);
-          setName(user.email.split('@')[0]);
+          setUsername(user.email.split('@')[ 0 ]);
+          setName(user.email.split('@')[ 0 ]);
         }
 
         await fetchUserPosts(user.id);
@@ -44,33 +44,31 @@ export function AccountPage() {
   }, []);
 
   const fetchUserPosts = async (userId) => {
-  try {
-    const { data, error } = await supabase
-      .from("notes")
-      .select(`
+    try {
+      const { data, error } = await supabase
+        .from("notes")
+        .select(`
         *,
         reactions!note_id (*),
         profiles:user_id (username, avatar_url)
       `)
-      .eq("user_id", userId)        
-      .eq("visibility", "Public")   
-      .order("created_at", { ascending: false });
+        .eq("user_id", userId)
+        .eq("visibility", "Public")
+        .order("created_at", { ascending: false });
 
-    if (error) throw error;
-
-    setUserPosts(data || []);
-  } catch (err) {
-    console.error("Error fetching posts:", err.message);
-  }
-};
-
+      if (error) throw error;
+      setUserPosts(data || []);
+    } catch (err) {
+      console.error("Error fetching posts:", err.message);
+    }
+  };
 
   const uploadAvatar = async (event) => {
     try {
       setLoading(true);
       if (!event.target.files || event.target.files.length === 0) return;
-      
-      const file = event.target.files[0];
+
+      const file = event.target.files[ 0 ];
       const fileExt = file.name.split('.').pop();
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
 
@@ -90,7 +88,6 @@ export function AccountPage() {
         .eq('id', user.id);
 
       if (updateError) throw updateError;
-
       setAvatarUrl(publicUrl);
     } catch (error) {
       alert('Error uploading avatar: ' + error.message);
@@ -101,25 +98,23 @@ export function AccountPage() {
 
   const handleSave = async () => {
     if (!username.trim()) {
-        alert("Username cannot be empty");
-        return;
+      alert("Username cannot be empty");
+      return;
     }
-    
+
     setLoading(true);
     try {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-
       const { error: profileError } = await supabase
         .from("profiles")
-        .upsert({ 
-          id: authUser.id, 
+        .upsert({
+          id: authUser.id,
           username: username.trim().toLowerCase(),
           full_name: name.trim(),
           bio: bio || "",
         }, { onConflict: 'id' });
 
       if (profileError) throw profileError;
-      
       setIsEditing(false);
     } catch (err) {
       alert(`Save failed: ${err.message}`);
@@ -167,24 +162,24 @@ export function AccountPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-(--bg-primary) flex items-center justify-center">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex items-center justify-center">
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-500 border-t-transparent"></div>
     </div>
   );
 
   return (
-    <div className="relative w-full min-h-screen bg-(--bg-primary) flex text-white font-sans">
+    <div className="relative w-full min-h-screen bg-[var(--bg-primary)] flex text-[var(--text-main)] font-sans transition-colors duration-300">
       <Navigation />
-      
-      <div className="flex-1 flex flex-col lg:ml-64">
 
-        <div className="h-40 bg-gradient-to-b from-blue-600/20 to-transparent w-full border-b border-white/5"></div>
+      <div className="flex-1 flex flex-col lg:ml-64">
+        {/* Banner Gradient */}
+        <div className="h-40 bg-gradient-to-b from-blue-600/20 to-transparent w-full border-b border-[var(--border-color)]"></div>
 
         <main className="flex-1 px-4 pb-24">
           <div className="max-w-2xl mx-auto -mt-12">
-            
+
             <div className="flex justify-between items-end mb-6">
-              <div className="group relative h-28 w-28 rounded-[32px] overflow-hidden border-4 border-(--bg-primary) bg-zinc-900 shadow-2xl">
+              <div className="group relative h-28 w-28 rounded-[32px] overflow-hidden border-4 border-[var(--bg-primary)] bg-[var(--bg-secondary)] shadow-2xl">
                 <img
                   alt="Avatar"
                   className="h-full w-full object-cover"
@@ -199,11 +194,10 @@ export function AccountPage() {
                 )}
               </div>
 
-              <button 
+              <button
                 onClick={() => setIsEditing(!isEditing)}
-                className={`px-6 py-2 rounded-xl border font-bold text-sm transition active:scale-95 ${
-                    isEditing ? "border-red-500/50 text-red-500 bg-red-500/5" : "border-white/10 hover:bg-white/5"
-                }`}
+                className={`px-6 py-2 rounded-xl border font-bold text-sm transition active:scale-95 ${isEditing ? "border-red-500/50 text-red-500 bg-red-500/5" : "border-[var(--border-color)] hover:bg-[var(--bg-secondary)] text-[var(--text-main)]"
+                  }`}
               >
                 {isEditing ? "Cancel" : "Edit Profile"}
               </button>
@@ -211,45 +205,45 @@ export function AccountPage() {
 
             <div className="mb-12">
               {isEditing ? (
-                <div className="flex flex-col gap-4 max-w-md bg-white/[0.02] p-6 rounded-3xl border border-white/5">
+                <div className="flex flex-col gap-4 max-w-md bg-[var(--bg-secondary)] p-6 rounded-3xl border border-[var(--border-color)]">
                   <div>
-                    <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1.5 block ml-1">Display Name</label>
-                    <input 
-                        className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-white"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Your name"
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold mb-1.5 block ml-1">Display Name</label>
+                    <input
+                      className="bg-[var(--bg-primary)] border border-[var(--border-color)] p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-[var(--text-main)]"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Your name"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1.5 block ml-1">Username</label>
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold mb-1.5 block ml-1">Username</label>
                     <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 font-bold">@</span>
-                        <input 
-                            className="bg-white/5 border border-white/10 p-3 pl-8 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-white"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
-                        />
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-bold">@</span>
+                      <input
+                        className="bg-[var(--bg-primary)] border border-[var(--border-color)] p-3 pl-8 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm text-[var(--text-main)]"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
+                      />
                     </div>
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase tracking-widest text-white/30 font-bold mb-1.5 block ml-1">Bio</label>
-                    <textarea 
-                        className="bg-white/5 border border-white/10 p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none text-white"
-                        value={bio}
-                        onChange={(e) => setBio(e.target.value)}
-                        placeholder="Add a bio..."
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-bold mb-1.5 block ml-1">Bio</label>
+                    <textarea
+                      className="bg-[var(--bg-primary)] border border-[var(--border-color)] p-3 rounded-xl w-full outline-none focus:border-blue-500 transition text-sm h-24 resize-none text-[var(--text-main)]"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Add a bio..."
                     />
                   </div>
-                  <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-500 py-3 rounded-xl text-sm font-black transition shadow-lg shadow-blue-600/20 uppercase tracking-widest">
+                  <button onClick={handleSave} className="bg-blue-600 hover:bg-blue-500 py-3 rounded-xl text-sm font-black transition shadow-lg shadow-blue-600/20 uppercase tracking-widest text-white">
                     Save Profile
                   </button>
                 </div>
               ) : (
                 <div className="space-y-1">
-                  <h1 className="text-2xl font-bold tracking-tight text-white">{name || "User"}</h1>
+                  <h1 className="text-2xl font-bold tracking-tight text-[var(--text-main)]">{name || "User"}</h1>
                   <p className="text-blue-400/80 text-sm font-medium">@{username}</p>
-                  <p className="text-white/60 text-base max-w-lg leading-relaxed pt-4 border-l-2 border-blue-500/30 pl-4">
+                  <p className="text-[var(--text-muted)] text-base max-w-lg leading-relaxed pt-4 border-l-2 border-blue-500/30 pl-4">
                     {bio || "No bio yet."}
                   </p>
                 </div>
@@ -258,61 +252,61 @@ export function AccountPage() {
 
             <div className="space-y-6">
               <div className="flex items-center gap-4">
-                <h2 className="font-black text-[10px] uppercase tracking-[0.3em] text-white/20">My Thoughts</h2>
-                <div className="h-px flex-1 bg-white/5"></div>
+                <h2 className="font-black text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)]">My Thoughts</h2>
+                <div className="h-px flex-1 bg-[var(--border-color)]"></div>
               </div>
 
               {userPosts.length > 0 ? (
                 <div className="grid gap-4">
                   {userPosts.map(post => (
-                    <div key={post.id} className="group relative p-6 bg-white/[0.02] rounded-3xl border border-white/5 hover:border-white/10 hover:bg-white/[0.03] transition-all">
+                    <div key={post.id} className="group relative p-6 bg-[var(--bg-secondary)] rounded-3xl border border-[var(--border-color)] hover:border-blue-500/30 transition-all">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold text-xl text-white/90 group-hover:text-blue-400 transition pr-8">
+                        <h3 className="font-bold text-xl text-[var(--text-main)] group-hover:text-blue-400 transition pr-8">
                           {post.title}
                         </h3>
-                        <button 
+                        <button
                           onClick={() => handleDelete(post.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-lg text-white/10 hover:text-red-500 hover:bg-red-500/10 transition-all"
+                          className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:text-red-500 hover:bg-red-500/10 transition-all"
                         >
                           <i className="fa-solid fa-trash-can text-sm"></i>
                         </button>
                       </div>
-                      
-                      <div 
-                        className="text-white/50 text-sm line-clamp-3 leading-relaxed mb-6"
+
+                      <div
+                        className="text-[var(--text-muted)] text-sm line-clamp-3 leading-relaxed mb-6"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                       />
-                      
-                      <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                        <div className="flex items-center gap-4 text-white/20 text-[10px] font-black uppercase tracking-widest">
-                            <span>{new Date(post.created_at).toLocaleDateString()}</span>
-                            <span className="flex items-center gap-1.5">
-                                <i className="fa-solid fa-heart text-red-500/40"></i> {post.reactions?.length || 0}
-                            </span>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
+                        <div className="flex items-center gap-4 text-[var(--text-muted)] text-[10px] font-black uppercase tracking-widest">
+                          <span>{new Date(post.created_at).toLocaleDateString()}</span>
+                          <span className="flex items-center gap-1.5">
+                            <i className="fa-solid fa-heart text-red-500/40"></i> {post.reactions?.length || 0}
+                          </span>
                         </div>
-                        <i className="fa-solid fa-chevron-right text-white/5 group-hover:text-blue-500/50 transition-colors"></i>
+                        <i className="fa-solid fa-chevron-right text-[var(--text-muted)] group-hover:text-blue-500/50 transition-colors"></i>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-24 bg-white/[0.01] rounded-[40px] border border-dashed border-white/5">
-                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i className="fa-solid fa-feather-pointed text-white/10 text-2xl"></i>
+                <div className="text-center py-24 bg-[var(--bg-secondary)] rounded-[40px] border border-dashed border-[var(--border-color)]">
+                  <div className="w-16 h-16 bg-[var(--bg-primary)] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fa-solid fa-feather-pointed text-[var(--text-muted)] text-2xl"></i>
                   </div>
-                  <p className="text-white/20 text-sm font-bold uppercase tracking-widest">No posts yet</p>
+                  <p className="text-[var(--text-muted)] text-sm font-bold uppercase tracking-widest">No posts yet</p>
                 </div>
               )}
             </div>
 
-            <div className="mt-20 pt-10 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <button onClick={handlePasswordReset} className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition">
+            <div className="mt-20 pt-10 border-t border-[var(--border-color)] grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button onClick={handlePasswordReset} className="p-4 rounded-2xl bg-[var(--bg-secondary)] hover:bg-blue-600/5 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition border border-[var(--border-color)]">
                 <i className="fa-solid fa-key text-blue-500/50"></i> Reset Password
               </button>
-              <button onClick={handleLogout} className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition">
+              <button onClick={handleLogout} className="p-4 rounded-2xl bg-[var(--bg-secondary)] hover:bg-yellow-500/5 text-[var(--text-muted)] hover:text-[var(--text-main)] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition border border-[var(--border-color)]">
                 <i className="fa-solid fa-right-from-bracket text-yellow-500/50"></i> Sign Out
               </button>
-              <button onClick={handleDeleteAccount} className="sm:col-span-2 p-4 rounded-2xl bg-red-500/5 hover:bg-red-500/10 text-red-500/40 hover:text-red-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition">
+              <button onClick={handleDeleteAccount} className="sm:col-span-2 p-4 rounded-2xl bg-red-500/5 hover:bg-red-500/10 text-red-500/60 hover:text-red-500 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition border border-red-500/10">
                 <i className="fa-solid fa-user-xmark"></i> Permanent Account Deletion
               </button>
             </div>
