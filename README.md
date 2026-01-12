@@ -1,4 +1,4 @@
-# NotePad - Modern Note-Taking Application
+# NotePad+ - Modern Note-Taking Application
 
 A full-stack, feature-rich note-taking application built with React and Supabase. Create, organize, and share your thoughts with a beautiful, modern interface that supports both private notes and public posts.
 
@@ -483,3 +483,4 @@ If you encounter any issues or have questions:
 ---
 
 **Made with love using React and Supabase**
+
