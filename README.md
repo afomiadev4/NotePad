@@ -463,7 +463,7 @@ Contributions are welcome! Please follow these steps:
 
 ## 📝 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is open source.
 
 ## 🆘 Support
 
@@ -483,4 +483,5 @@ If you encounter any issues or have questions:
 ---
 
 **Made with love using React and Supabase**
+
 
