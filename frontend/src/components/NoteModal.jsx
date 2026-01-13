@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 export function NoteModal({
   note,
@@ -27,6 +29,15 @@ export function NoteModal({
     folderId: "uncategorized",
     visibility: "Private",
   });
+
+  const [wordCount, setWordCount] = useState(0);
+  const WORD_LIMIT = 300;
+
+  useEffect(() => {
+    const plainText = (formData.content || "").replace(/<[^>]*>/g, " ");
+    const words = plainText.match(/\b[-?(\w+)]+\b/gi);
+    setWordCount(words ? words.length : 0);
+  }, [formData.content]);
 
   // This effect runs every time a note is clicked/opened
   useEffect(() => {
@@ -97,14 +108,46 @@ export function NoteModal({
                 className="bg-transparent text-3xl font-bold outline-none border-b border-[var(--border-subtle)] pb-4 focus:border-[var(--accent-primary)] transition text-[var(--text-main)] placeholder-[var(--text-faint)]"
                 required
               />
-              <textarea
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData({ ...formData, content: e.target.value })
-                }
-                placeholder="Start writing..."
-                className="flex-1 bg-[var(--bg-input)] resize-none outline-none text-lg leading-relaxed rounded-2xl p-6 focus:border-[var(--accent-primary)]/50 border border-transparent transition text-[var(--text-main)] placeholder-[var(--text-faint)]"
-              />
+              {/* WORD COUNTER */}
+              <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/30">
+                <span>
+                  Words:{" "}
+                  <span
+                    className={
+                      formData.visibility === "Public" && wordCount > WORD_LIMIT
+                        ? "text-red-500"
+                        : "text-blue-400"
+                    }
+                  >
+                    {wordCount}
+                    {formData.visibility === "Public" ? ` / ${WORD_LIMIT}` : ""}
+                  </span>
+                </span>
+                {formData.visibility === "Public" && (
+                  <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden max-w-[100px]">
+                    <div
+                      className={`h-full transition-all duration-300 ${
+                        wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
+                      }`}
+                      style={{
+                        width: `${Math.min(
+                          (wordCount / WORD_LIMIT) * 100,
+                          100
+                        )}%`,
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 bg-[var(--bg-input)] rounded-2xl overflow-hidden border border-transparent focus-within:border-[var(--accent-primary)]/50 transition">
+                <ReactQuill
+                  theme="snow"
+                  value={formData.content}
+                  onChange={(content) => setFormData({ ...formData, content })}
+                  placeholder="Start writing..."
+                  className="h-full text-[var(--text-main)] editor-custom"
+                />
+              </div>
             </div>
           )}
         </section>
@@ -201,6 +244,16 @@ export function NoteModal({
           </div>
         </aside>
       </form>
+      <style>{`
+        .editor-custom .ql-toolbar { border: none !important; border-bottom: 1px solid var(--border-subtle) !important; padding: 1rem !important; }
+        .editor-custom .ql-container { border: none !important; font-size: 1.1rem; font-family: inherit; }
+        .editor-custom .ql-editor { padding: 1.5rem !important; min-height: 40vh; color: var(--text-main); }
+        .editor-custom .ql-editor.ql-blank::before { color: var(--text-faint) !important; left: 1.5rem !important; }
+        .ql-snow .ql-stroke { stroke: var(--text-main) !important; }
+        .ql-snow .ql-fill { fill: var(--text-main) !important; }
+        .ql-snow .ql-picker { color: var(--text-main) !important; }
+        .ql-snow .ql-picker-options { background-color: #18181b !important; border-color: var(--border-subtle) !important; }
+      `}</style>
     </div>
   );
 }
