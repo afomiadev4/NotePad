@@ -80,6 +80,15 @@ export function NoteModal({
         className="relative flex flex-col lg:flex-row w-full max-w-6xl h-full lg:h-[85vh] bg-[var(--bg-page)] text-[var(--text-main)] border border-[var(--border-subtle)] rounded-3xl overflow-hidden shadow-2xl transition-colors duration-300"
         ref={formRef}
       >
+        {/* CLOSE BUTTON */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-1 right-2 z-[70] w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/20 hover:text-white transition-all transform hover:rotate-90 group"
+        >
+          <i className="fa-solid fa-xmark text-xl group-hover:scale-110 transition-transform"></i>
+        </button>
+
         {/* LEFT SIDE: CONTENT */}
         <section className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto custom-scrollbar">
           {!isEditing ? (
