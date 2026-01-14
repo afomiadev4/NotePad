@@ -11,16 +11,16 @@ export function EditNote() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const [ title, setTitle ] = useState("");
-  const [ content, setContent ] = useState("");
-  const [ category, setCategory ] = useState("General");
-  const [ visibility, setVisibility ] = useState("Private");
-  const [ folderId, setFolderId ] = useState("");
-  const [ folders, setFolders ] = useState([]);
-  const [ loading, setLoading ] = useState(true);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("General");
+  const [visibility, setVisibility] = useState("Private");
+  const [folderId, setFolderId] = useState("");
+  const [folders, setFolders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // MEMBER 3: Toggle state for Read-Only vs Edit
-  const [ isEditing, setIsEditing ] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const categories = [
     "General",
@@ -58,7 +58,7 @@ export function EditNote() {
       }
     };
     loadData();
-  }, [ id, user ]);
+  }, [id, user]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -78,28 +78,31 @@ export function EditNote() {
     if (visibility === "Public") navigate("/feed");
   };
 
-  if (loading) return (
-    <div className="min-h-screen bg-black flex items-center justify-center text-white font-black tracking-tighter italic">
-      LOADING YOUR THOUGHTS...
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="min-h-screen bg-(--bg-page) flex items-center justify-center text-(--text-main) font-black tracking-tighter italic">
+        LOADING YOUR THOUGHTS...
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-(--bg-primary) text-white flex">
       <Navigation />
       <main className="flex-1 lg:ml-64 p-6 md:p-12">
-        <form onSubmit={handleUpdate} className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
-
+        <form
+          onSubmit={handleUpdate}
+          className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8"
+        >
           {/* MAIN CONTENT AREA */}
           <div className="lg:col-span-2 space-y-6">
             {!isEditing ? (
               /* MEMBER 3: READ-ONLY VIEW */
               <div className="space-y-8 animate-in fade-in duration-500">
-                <h1 className="text-5xl font-black tracking-tighter text-white leading-tight">
+                <h1 className="text-5xl font-black tracking-tighter text-(--text-main) leading-tight">
                   {title}
                 </h1>
                 <div
-                  className="text-white/70 text-xl leading-relaxed ql-editor !p-0"
+                  className="text-(--text-muted) text-xl leading-relaxed ql-editor !p-0"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
               </div>
@@ -108,16 +111,16 @@ export function EditNote() {
               <div className="space-y-6 animate-in zoom-in-95 duration-200">
                 <input
                   value={title}
-                  onChange={e => setTitle(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-blue-500 transition-all placeholder:text-white/10"
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full bg-(--bg-input) border border-(--border-subtle) rounded-2xl px-8 py-6 text-3xl font-black outline-none focus:border-(--accent-primary) transition-all placeholder:text-(--text-faint)"
                   placeholder="Title..."
                 />
-                <div className="bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl">
+                <div className="bg-(--bg-input) border border-(--border-subtle) rounded-[2rem] overflow-hidden min-h-[60vh] flex flex-col shadow-2xl">
                   <ReactQuill
                     theme="snow"
                     value={content}
                     onChange={setContent}
-                    className="flex-1 text-white editor-custom"
+                    className="flex-1 text-(--text-main) editor-custom"
                   />
                 </div>
               </div>
@@ -125,15 +128,13 @@ export function EditNote() {
           </div>
 
           {/* SIDEBAR SETTINGS */}
-          {/* SIDEBAR SETTINGS */}
           <div className="space-y-4">
-            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 space-y-8 sticky top-12">
-
+            <div className="bg-(--bg-card) border border-(--border-subtle) rounded-[2.5rem] p-8 space-y-8 sticky top-12">
               {/* MEMBER 3: TOGGLE BUTTON */}
               <button
                 type="button"
                 onClick={() => setIsEditing(!isEditing)}
-                className="w-full py-4 rounded-2xl bg-white/10 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all text-blue-400"
+                className="w-full py-4 rounded-2xl bg-(--bg-input) border border-(--border-subtle) text-[10px] font-black uppercase tracking-widest hover:bg-(--bg-card-hover) transition-all text-(--accent-primary)"
               >
                 {isEditing ? "✨ View Mode" : "📝 Edit Note"}
               </button>
@@ -141,16 +142,26 @@ export function EditNote() {
               {isEditing && (
                 <div className="space-y-8 animate-in slide-in-from-top-4 duration-300">
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Organize</label>
+                    <label className="text-[10px] font-black text-(--text-faint) uppercase tracking-[0.2em] ml-1">
+                      Organize
+                    </label>
                     <div className="relative group">
                       <select
                         value={category}
-                        onChange={e => setCategory(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-white/10 focus:border-blue-500 transition-all cursor-pointer"
+                        onChange={(e) => setCategory(e.target.value)}
+                        className="w-full bg-(--bg-input) border border-(--border-subtle) rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-(--bg-card-hover) focus:border-(--accent-primary) transition-all cursor-pointer text-(--text-main)"
                       >
-                        {categories.map(cat => <option key={cat} value={cat} className="bg-zinc-900">{cat}</option>)}
+                        {categories.map((cat) => (
+                          <option
+                            key={cat}
+                            value={cat}
+                            className="bg-(--bg-page)"
+                          >
+                            {cat}
+                          </option>
+                        ))}
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-(--text-muted)">
                         <i className="fa-solid fa-chevron-down text-xs"></i>
                       </div>
                     </div>
@@ -158,26 +169,51 @@ export function EditNote() {
                     <div className="relative group">
                       <select
                         value={folderId}
-                        onChange={e => setFolderId(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-white/10 focus:border-blue-500 transition-all cursor-pointer"
+                        onChange={(e) => setFolderId(e.target.value)}
+                        className="w-full bg-(--bg-input) border border-(--border-subtle) rounded-2xl p-4 text-sm font-bold outline-none appearance-none hover:bg-(--bg-card-hover) focus:border-(--accent-primary) transition-all cursor-pointer text-(--text-main)"
                       >
-                        <option value="uncategorized" className="bg-zinc-900">No Folder</option>
-                        {folders.map(f => <option key={f.id} value={f.id} className="bg-zinc-900">{f.name}</option>)}
+                        <option
+                          value="uncategorized"
+                          className="bg-(--bg-page)"
+                        >
+                          No Folder
+                        </option>
+                        {folders.map((f) => (
+                          <option
+                            key={f.id}
+                            value={f.id}
+                            className="bg-(--bg-page)"
+                          >
+                            {f.name}
+                          </option>
+                        ))}
                       </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20">
+                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-(--text-faint)">
                         <i className="fa-solid fa-folder text-xs"></i>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Privacy</label>
+                    <label className="text-[10px] font-black text-(--text-faint) uppercase tracking-[0.2em] ml-1">
+                      Privacy
+                    </label>
                     <button
                       type="button"
-                      onClick={() => setVisibility(visibility === "Public" ? "Private" : "Public")}
-                      className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${visibility === "Public" ? "bg-blue-600/10 border-blue-500 text-blue-400" : "bg-white/5 border-white/10 text-white/20"}`}
+                      onClick={() =>
+                        setVisibility(
+                          visibility === "Public" ? "Private" : "Public"
+                        )
+                      }
+                      className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${
+                        visibility === "Public"
+                          ? "bg-(--accent-surface) border-(--accent-primary) text-(--accent-primary)"
+                          : "bg-(--bg-input) border-(--border-subtle) text-(--text-faint)"
+                      }`}
                     >
-                      {visibility === "Public" ? "🚀 GOING PUBLIC" : "🔒 STAY PRIVATE"}
+                      {visibility === "Public"
+                        ? "🚀 GOING PUBLIC"
+                        : "🔒 STAY PRIVATE"}
                     </button>
                   </div>
                 </div>
@@ -185,11 +221,18 @@ export function EditNote() {
 
               <div className="pt-4 space-y-3">
                 {isEditing && (
-                  <button type="submit" className="w-full py-5 bg-blue-600 rounded-[1.5rem] font-black text-xs tracking-widest shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all">
+                  <button
+                    type="submit"
+                    className="w-full py-5 bg-(--accent-primary) rounded-[1.5rem] font-black text-xs tracking-widest shadow-xl shadow-blue-600/20 hover:scale-[1.02] active:scale-95 transition-all"
+                  >
                     SAVE CHANGES
                   </button>
                 )}
-                <button type="button" onClick={() => navigate(-1)} className="w-full py-4 text-white/20 font-black text-[10px] tracking-widest hover:text-white transition-colors">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="w-full py-4 text-(--text-faint) font-black text-[10px] tracking-widest hover:text-(--text-main) transition-colors"
+                >
                   {isEditing ? "DISCARD" : "BACK TO LIST"}
                 </button>
               </div>
@@ -199,12 +242,12 @@ export function EditNote() {
       </main>
 
       <style>{`
-        .editor-custom .ql-toolbar { border: none !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; padding: 1.5rem !important; }
+        .editor-custom .ql-toolbar { border: none !important; border-bottom: 1px solid var(--border-subtle) !important; padding: 1.5rem !important; }
         .editor-custom .ql-container { border: none !important; font-size: 1.1rem; font-family: inherit; }
-        .editor-custom .ql-editor { padding: 2rem !important; min-height: 50vh; color: rgba(255,255,255,0.8); }
-        .ql-snow .ql-stroke { stroke: rgba(255,255,255,0.4) !important; }
-        .ql-snow .ql-fill { fill: rgba(255,255,255,0.4) !important; }
-        .ql-snow .ql-picker { color: rgba(255,255,255,0.4) !important; }
+        .editor-custom .ql-editor { padding: 2rem !important; min-height: 50vh; color: var(--text-main); }
+        .ql-snow .ql-stroke { stroke: var(--text-muted) !important; }
+        .ql-snow .ql-fill { fill: var(--text-muted) !important; }
+        .ql-snow .ql-picker { color: var(--text-muted) !important; }
       `}</style>
     </div>
   );
