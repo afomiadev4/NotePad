@@ -8,33 +8,33 @@ import "react-quill-new/dist/quill.snow.css";
 
 export function CreateNote() {
   const navigate = useNavigate();
-  const [ searchParams ] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const user = useSelector((state) => state.auth.user);
 
-  const [ title, setTitle ] = useState("");
-  const [ content, setContent ] = useState("");
-  const [ category, setCategory ] = useState("General");
-  const [ isPublic, setIsPublic ] = useState(
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("General");
+  const [isPublic, setIsPublic] = useState(
     searchParams.get("mode") === "public"
   );
-  const [ folderId, setFolderId ] = useState("uncategorized");
-  const [ folders, setFolders ] = useState([]);
-  const [ loading, setLoading ] = useState(false);
+  const [folderId, setFolderId] = useState("uncategorized");
+  const [folders, setFolders] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [ wordCount, setWordCount ] = useState(0);
+  const [wordCount, setWordCount] = useState(0);
   const WORD_LIMIT = 300;
 
   useEffect(() => {
-    const plainText = content.replace(/<[^>]*>/g, ' ');
+    const plainText = content.replace(/<[^>]*>/g, " ");
     const words = plainText.match(/\b[-?(\w+)]+\b/gi);
     setWordCount(words ? words.length : 0);
-  }, [ content ]);
+  }, [content]);
 
   // Sync state with URL if user clicks different NavLinks
   useEffect(() => {
     const mode = searchParams.get("mode");
     setIsPublic(mode === "public");
-  }, [ searchParams ]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (user?.id) {
@@ -47,7 +47,7 @@ export function CreateNote() {
       };
       fetchFolders();
     }
-  }, [ user ]);
+  }, [user]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -118,10 +118,11 @@ export function CreateNote() {
                     Word Count
                   </label>
                   <span
-                    className={`text-sm font-black transition-colors ${isPublic && wordCount > WORD_LIMIT
-                      ? "text-red-500"
-                      : "text-blue-400"
-                      }`}
+                    className={`text-sm font-black transition-colors ${
+                      isPublic && wordCount > WORD_LIMIT
+                        ? "text-red-500"
+                        : "text-blue-400"
+                    }`}
                   >
                     {wordCount}
                     {isPublic ? ` / ${WORD_LIMIT}` : ""}
@@ -130,8 +131,9 @@ export function CreateNote() {
                 {isPublic && (
                   <div className="w-full h-1 bg-[var(--bg-card)] rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-300 ${wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
-                        }`}
+                      className={`h-full transition-all duration-300 ${
+                        wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
+                      }`}
                       style={{
                         width: `${Math.min(
                           (wordCount / WORD_LIMIT) * 100,
@@ -144,7 +146,9 @@ export function CreateNote() {
               </div>
 
               <div className="space-y-3">
-                <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] ml-1">Category</label>
+                <label className="text-[10px] font-black text-(--text-faint) uppercase tracking-[0.2em] ml-1">
+                  Category
+                </label>
                 <div className="relative group">
                   <select
                     value={category}
@@ -168,7 +172,9 @@ export function CreateNote() {
                       </option>
                     ))}
                   </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/20"><i className="fa-solid fa-chevron-down text-xs"></i></div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-(--text-faint)">
+                    <i className="fa-solid fa-chevron-down text-xs"></i>
+                  </div>
                 </div>
 
                 <div className="relative group">
@@ -206,10 +212,11 @@ export function CreateNote() {
                 <button
                   type="button"
                   onClick={() => setIsPublic(!isPublic)}
-                  className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${isPublic
+                  className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${
+                    isPublic
                       ? "bg-[var(--accent-surface)] border-[var(--accent-primary)] text-[var(--accent-primary)] hover:scale-[1.02]"
                       : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-faint)] hover:border-[var(--text-muted)] hover:text-[var(--text-muted)] hover:scale-[1.02]"
-                    }`}
+                  }`}
                 >
                   {isPublic ? "🚀 PUBLIC FEED" : "🔒 PRIVATE NOTE"}
                 </button>
@@ -224,8 +231,8 @@ export function CreateNote() {
                   {loading
                     ? "CREATING..."
                     : isPublic
-                      ? "POST TO FEED"
-                      : "CREATE NOTE"}
+                    ? "POST TO FEED"
+                    : "CREATE NOTE"}
                 </button>
                 <button
                   type="button"
