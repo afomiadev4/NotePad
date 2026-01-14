@@ -11,23 +11,27 @@ export function Folders() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const [ folders, setFolders ] = useState([]);
-  const [ notes, setNotes ] = useState([]);
-  const [ loading, setLoading ] = useState(true);
-  const [ isFolderModalOpen, setIsFolderModalOpen ] = useState(false);
-  const [ selectedFolder, setSelectedFolder ] = useState(null);
+  const [folders, setFolders] = useState([]);
+  const [notes, setNotes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [selectedFolder, setSelectedFolder] = useState(null);
 
   // MEMBER 3: State for Note Modal
-  const [ selectedNote, setSelectedNote ] = useState(null);
-  const [ isNoteModalOpen, setIsNoteModalOpen ] = useState(false);
+  const [selectedNote, setSelectedNote] = useState(null);
+  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
     try {
-      const [ fRes, nRes ] = await Promise.all([
+      const [fRes, nRes] = await Promise.all([
         supabase.from("folders").select("*").eq("user_id", user.id),
-        supabase.from("notes").select("*").eq("user_id", user.id).order('created_at', { ascending: false }),
+        supabase
+          .from("notes")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false }),
       ]);
 
       let fData = fRes.data || [];
@@ -39,7 +43,7 @@ export function Folders() {
             id: "uncategorized",
             name: "Uncategorized",
             icon: "fa-folder-open",
-            color: "text-slate-400"
+            color: "text-slate-400",
           });
         }
       }
@@ -52,7 +56,7 @@ export function Folders() {
 
   useEffect(() => {
     fetchData();
-  }, [ user ]);
+  }, [user]);
 
   // MEMBER 3: Note Action Handlers
   const handleNoteClick = (note) => {
@@ -68,7 +72,7 @@ export function Folders() {
         content: updatedData.content,
         category: updatedData.category,
         folder_id: updatedData.folder_id,
-        visibility: updatedData.visibility
+        visibility: updatedData.visibility,
       })
       .eq("id", updatedData.id);
 
@@ -119,8 +123,10 @@ export function Folders() {
               <h1 className="text-4xl font-black tracking-tight mb-2 text-[var(--text-main)]">
                 {activeFolder ? activeFolder.name : "Your Folders"}
               </h1>
-              <p className="text-white/40 font-medium tracking-widest text-[10px] uppercase">
-                {activeFolder ? `${displayedNotes.length} notes found` : `${folders.length} active folders`}
+              <p className="text-[var(--text-faint)] font-medium tracking-widest text-[10px] uppercase">
+                {activeFolder
+                  ? `${displayedNotes.length} notes found`
+                  : `${folders.length} active folders`}
               </p>
             </div>
             <button
@@ -189,20 +195,22 @@ export function Folders() {
                 <i className="fa-solid fa-arrow-left"></i> Back to Folders
               </button>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {displayedNotes.map(note => (
+                {displayedNotes.map((note) => (
                   <div
                     key={note.id}
                     onClick={() => handleNoteClick(note)} // TRIGGER MODAL HERE
-                    className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-blue-500/50 hover:bg-white/[0.07] transition-all group cursor-pointer"
+                    className="bg-[var(--bg-card)] border border-[var(--border-subtle)] p-8 rounded-[2rem] hover:border-[var(--accent-primary)] hover:bg-[var(--bg-card-hover)] transition-all group cursor-pointer"
                   >
                     <div className="flex justify-between items-start mb-4">
-                      <h3 className="text-xl font-black tracking-tight">{note.title}</h3>
-                      <span className="text-[10px] font-black px-3 py-1 bg-white/5 rounded-full text-white/40 uppercase tracking-tighter italic">
-                        {note.category || 'General'}
+                      <h3 className="text-xl font-black tracking-tight text-[var(--text-main)]">
+                        {note.title}
+                      </h3>
+                      <span className="text-[10px] font-black px-3 py-1 bg-[var(--bg-input)] rounded-full text-[var(--text-muted)] uppercase tracking-tighter italic">
+                        {note.category || "General"}
                       </span>
                     </div>
                     <div
-                      className="text-white/40 line-clamp-3 text-sm leading-relaxed mb-6"
+                      className="text-[var(--text-muted)] line-clamp-3 text-sm leading-relaxed mb-6"
                       dangerouslySetInnerHTML={{ __html: note.content }}
                     />
                     <span className="text-[10px] font-black text-[var(--text-faint)] uppercase">
@@ -225,7 +233,6 @@ export function Folders() {
         </div>
       </main>
 
-
       <FolderModal
         isOpen={isFolderModalOpen}
         onClose={() => {
@@ -235,7 +242,6 @@ export function Folders() {
         folder={selectedFolder}
         onRefresh={fetchData}
       />
-
 
       <NoteModal
         isOpen={isNoteModalOpen}

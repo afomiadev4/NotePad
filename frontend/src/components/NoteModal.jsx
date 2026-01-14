@@ -84,7 +84,7 @@ export function NoteModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-1 right-2 z-[70] w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/20 hover:text-white transition-all transform hover:rotate-90 group"
+          className="absolute top-1 right-2 z-[70] w-10 h-10 flex items-center justify-center rounded-full bg-(--bg-input) hover:bg-(--bg-card-hover) border border-(--border-subtle) text-(--text-muted) hover:text-(--text-main) transition-all transform hover:rotate-90 group"
         >
           <i className="fa-solid fa-xmark text-xl group-hover:scale-110 transition-transform"></i>
         </button>
@@ -93,16 +93,16 @@ export function NoteModal({
         <section className="flex-1 px-6 lg:px-10 py-8 overflow-y-auto custom-scrollbar">
           {!isEditing ? (
             <div className="max-w-3xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <h2 className="text-4xl font-black mb-8 tracking-tighter border-b border-white/5 pb-4">
+              <h2 className="text-4xl font-black mb-8 tracking-tighter border-b border-(--border-subtle) pb-4">
                 {formData.title}
               </h2>
               {/* Displaying content safely */}
               <div
-                className="text-white/70 leading-relaxed text-lg ql-editor !p-0 prose-invert"
+                className="text-(--text-main) opacity-80 leading-relaxed text-lg ql-editor !p-0 prose-invert"
                 dangerouslySetInnerHTML={{
                   __html:
                     formData.content ||
-                    "<p className='italic text-white/20'>No content...</p>",
+                    "<p class='italic opacity-40'>No content...</p>",
                 }}
               />
             </div>
@@ -118,7 +118,7 @@ export function NoteModal({
                 required
               />
               {/* WORD COUNTER */}
-              <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-white/30">
+              <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-(--text-faint)">
                 <span>
                   Words:{" "}
                   <span
@@ -133,7 +133,7 @@ export function NoteModal({
                   </span>
                 </span>
                 {formData.visibility === "Public" && (
-                  <div className="flex-1 h-1 bg-white/5 rounded-full overflow-hidden max-w-[100px]">
+                  <div className="flex-1 h-1 bg-(--bg-card) rounded-full overflow-hidden max-w-[100px]">
                     <div
                       className={`h-full transition-all duration-300 ${
                         wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
@@ -162,17 +162,17 @@ export function NoteModal({
         </section>
 
         {/* RIGHT SIDE: SETTINGS */}
-        <aside className="w-full lg:w-80 flex flex-col px-6 py-8 border-t lg:border-t-0 lg:border-l border-white/10 bg-zinc-900/50 justify-between">
+        <aside className="w-full lg:w-80 flex flex-col px-6 py-8 border-t lg:border-t-0 lg:border-l border-(--border-subtle) bg-(--bg-sidebar) justify-between">
           <div className="flex flex-col gap-8">
             {/* TOGGLE BUTTON */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">
+              <label className="text-[10px] font-black uppercase tracking-widest text-(--text-faint) ml-1">
                 Mode
               </label>
               <button
                 type="button"
                 onClick={() => setIsEditing(!isEditing)}
-                className="w-full py-4 rounded-2xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl bg-(--bg-input) border border-(--border-subtle) text-[10px] font-black uppercase tracking-widest hover:bg-(--bg-card-hover) transition-all flex items-center justify-center gap-2"
               >
                 {isEditing ? (
                   <>
@@ -190,7 +190,7 @@ export function NoteModal({
             {isEditing && (
               <div className="space-y-6 animate-in slide-in-from-right-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-(--text-faint) ml-1">
                     Category
                   </label>
                   <select
@@ -198,10 +198,10 @@ export function NoteModal({
                     onChange={(e) =>
                       setFormData({ ...formData, category: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-bold outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-(--bg-input) border border-(--border-subtle) text-sm font-bold outline-none"
                   >
                     {categories.map((cat) => (
-                      <option key={cat} value={cat} className="bg-zinc-900">
+                      <option key={cat} value={cat} className="bg-(--bg-page)">
                         {cat}
                       </option>
                     ))}
@@ -209,7 +209,7 @@ export function NoteModal({
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-white/30 ml-1">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-(--text-faint) ml-1">
                     Folder
                   </label>
                   <select
@@ -217,13 +217,17 @@ export function NoteModal({
                     onChange={(e) =>
                       setFormData({ ...formData, folderId: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-sm font-bold outline-none"
+                    className="w-full px-4 py-3 rounded-xl bg-(--bg-input) border border-(--border-subtle) text-sm font-bold outline-none"
                   >
-                    <option value="uncategorized" className="bg-zinc-900">
+                    <option value="uncategorized" className="bg-(--bg-page)">
                       No Folder
                     </option>
                     {folders.map((f) => (
-                      <option key={f.id} value={f.id} className="bg-zinc-900">
+                      <option
+                        key={f.id}
+                        value={f.id}
+                        className="bg-(--bg-page)"
+                      >
                         {f.name}
                       </option>
                     ))}
@@ -261,7 +265,7 @@ export function NoteModal({
         .ql-snow .ql-stroke { stroke: var(--text-main) !important; }
         .ql-snow .ql-fill { fill: var(--text-main) !important; }
         .ql-snow .ql-picker { color: var(--text-main) !important; }
-        .ql-snow .ql-picker-options { background-color: #18181b !important; border-color: var(--border-subtle) !important; }
+        .ql-snow .ql-picker-options { background-color: var(--bg-page) !important; border-color: var(--border-subtle) !important; }
       `}</style>
     </div>
   );
