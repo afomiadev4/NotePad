@@ -6,14 +6,14 @@ import { useTheme } from "../context/ThemeContext";
 
 export function AccountPage() {
   const { theme, toggleTheme } = useTheme();
-  const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [user, setUser] = useState(null);
-  const [userPosts, setUserPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [ isEditing, setIsEditing ] = useState(false);
+  const [ name, setName ] = useState("");
+  const [ username, setUsername ] = useState("");
+  const [ bio, setBio ] = useState("");
+  const [ avatarUrl, setAvatarUrl ] = useState("");
+  const [ user, setUser ] = useState(null);
+  const [ userPosts, setUserPosts ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,8 +36,8 @@ export function AccountPage() {
           setBio(profile.bio || "");
           setAvatarUrl(profile.avatar_url || "");
         } else {
-          setUsername(user.email.split("@")[0]);
-          setName(user.email.split("@")[0]);
+          setUsername(user.email.split("@")[ 0 ]);
+          setName(user.email.split("@")[ 0 ]);
         }
 
         await fetchUserPosts(user.id);
@@ -75,7 +75,7 @@ export function AccountPage() {
       setLoading(true);
       if (!event.target.files || event.target.files.length === 0) return;
 
-      const file = event.target.files[0];
+      const file = event.target.files[ 0 ];
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}-${Math.random()}.${fileExt}`;
 
@@ -143,7 +143,7 @@ export function AccountPage() {
 
   const handlePasswordReset = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `http://localhost:5173/reset-password`,
     });
     if (error) alert(error.message);
     else alert("Reset link sent!");
@@ -220,11 +220,10 @@ export function AccountPage() {
 
               <button
                 onClick={() => setIsEditing(!isEditing)}
-                className={`px-6 py-2 rounded-xl border font-bold text-sm transition active:scale-95 ${
-                  isEditing
+                className={`px-6 py-2 rounded-xl border font-bold text-sm transition active:scale-95 ${isEditing
                     ? "border-red-500/50 text-red-500 bg-red-500/5"
                     : "border-[var(--border-subtle)] hover:bg-[var(--bg-card-hover)] text-[var(--text-main)]"
-                }`}
+                  }`}
               >
                 {isEditing ? "Cancel" : "Edit Profile"}
               </button>
@@ -359,9 +358,8 @@ export function AccountPage() {
                 className="p-4 rounded-2xl bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-muted)] hover:text-[var(--text-main)] text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition"
               >
                 <i
-                  className={`fa-solid ${
-                    theme === "dark" ? "fa-moon" : "fa-sun"
-                  } ${theme === "dark" ? "text-indigo-400" : "text-amber-500"}`}
+                  className={`fa-solid ${theme === "dark" ? "fa-moon" : "fa-sun"
+                    } ${theme === "dark" ? "text-indigo-400" : "text-amber-500"}`}
                 ></i>
                 {theme === "dark" ? "Dark Mode" : "Light Mode"}
               </button>

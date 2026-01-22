@@ -12,6 +12,7 @@ import { SavedNotes } from "./components/SavedNotes";
 import "react-quill-new/dist/quill.snow.css";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
+import ResetPassword from "./components/reset-password";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route index element={<Welcome />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
