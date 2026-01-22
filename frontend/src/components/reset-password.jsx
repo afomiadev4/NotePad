@@ -9,11 +9,21 @@ export default function ResetPassword() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        supabase.auth.onAuthStateChange(async (event, session) => {
-            if (event === "PASSWORD_RECOVERY") {
+
+        const hasToken = window.location.hash.includes("access_token=");
+        if (hasToken) {
+            setIsRecoveryMode(true);
+        }
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            console.log("Auth Event:", event);
+            if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") {
                 setIsRecoveryMode(true);
             }
         });
+        return () => {
+            if (subscription) subscription.unsubscribe();
+        };
     }, []);
 
     const handleUpdatePassword = async (e) => {

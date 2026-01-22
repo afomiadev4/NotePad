@@ -8,13 +8,13 @@ import { useSelector } from "react-redux";
 
 export function Feed() {
   const user = useSelector((state) => state.auth.user);
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeCat, setActiveCat] = useState("All");
-  const [filterUser, setFilterUser] = useState(null);
-  const [selectedNote, setSelectedNote] = useState(null);
-  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
-  const [viewingProfile, setViewingProfile] = useState(null);
+  const [ notes, setNotes ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
+  const [ activeCat, setActiveCat ] = useState("All");
+  const [ filterUser, setFilterUser ] = useState(null);
+  const [ selectedNote, setSelectedNote ] = useState(null);
+  const [ isCommentModalOpen, setIsCommentModalOpen ] = useState(false);
+  const [ viewingProfile, setViewingProfile ] = useState(null);
 
   const categories = [
     "All",
@@ -27,6 +27,7 @@ export function Feed() {
   ];
 
   const fetchPosts = async () => {
+    setNotes([]);
     setLoading(true);
     try {
       let query = supabase
@@ -43,11 +44,22 @@ export function Feed() {
         .eq("visibility", "Public")
         .order("created_at", { ascending: false });
 
-      if (activeCat !== "All") query = query.eq("category", activeCat);
-      if (filterUser) query = query.eq("user_id", filterUser.id);
+      if (activeCat !== "All") {
+        query = query.eq("category", activeCat);
+      }
 
-      const { data, error } = await query;
+      if (filterUser) {
+        query = query.eq("user_id", filterUser.id);
+      }
+
+      query = query.eq("visibility", "Public");
+
+      const { data, error } = await query.order("created_at", { ascending: false });
+
+      console.log("FEED DATA RETURNED:", data.map(n => ({ title: n.title, vis: n.visibility })));
+
       if (error) throw error;
+
       setNotes(data || []);
     } catch (error) {
       console.error("Error fetching feed:", error.message);
@@ -58,18 +70,18 @@ export function Feed() {
 
   useEffect(() => {
     fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCat, filterUser]);
+
+  }, [ activeCat, filterUser ]);
 
   const handleToggleLike = async (noteId) => {
     if (!user) return alert("Please log in!");
     const noteIndex = notes.findIndex((n) => n.id === noteId);
-    const hasLiked = notes[noteIndex].reactions?.some(
+    const hasLiked = notes[ noteIndex ].reactions?.some(
       (r) => r.user_id === user.id
     );
-    const updated = [...notes];
+    const updated = [ ...notes ];
     if (hasLiked) {
-      updated[noteIndex].reactions = updated[noteIndex].reactions.filter(
+      updated[ noteIndex ].reactions = updated[ noteIndex ].reactions.filter(
         (r) => r.user_id !== user.id
       );
       await supabase
@@ -78,13 +90,13 @@ export function Feed() {
         .eq("note_id", noteId)
         .eq("user_id", user.id);
     } else {
-      updated[noteIndex].reactions = [
-        ...(updated[noteIndex].reactions || []),
+      updated[ noteIndex ].reactions = [
+        ...(updated[ noteIndex ].reactions || []),
         { user_id: user.id },
       ];
       await supabase
         .from("reactions")
-        .insert([{ note_id: noteId, user_id: user.id }]);
+        .insert([ { note_id: noteId, user_id: user.id } ]);
     }
     setNotes(updated);
   };
@@ -92,10 +104,10 @@ export function Feed() {
   const handleToggleSave = async (noteId) => {
     if (!user) return alert("Please log in!");
     const noteIndex = notes.findIndex((n) => n.id === noteId);
-    const hasSaved = notes[noteIndex].saves?.some((s) => s.user_id === user.id);
-    const updated = [...notes];
+    const hasSaved = notes[ noteIndex ].saves?.some((s) => s.user_id === user.id);
+    const updated = [ ...notes ];
     if (hasSaved) {
-      updated[noteIndex].saves = updated[noteIndex].saves.filter(
+      updated[ noteIndex ].saves = updated[ noteIndex ].saves.filter(
         (s) => s.user_id !== user.id
       );
       await supabase
@@ -104,13 +116,13 @@ export function Feed() {
         .eq("note_id", noteId)
         .eq("user_id", user.id);
     } else {
-      updated[noteIndex].saves = [
-        ...(updated[noteIndex].saves || []),
+      updated[ noteIndex ].saves = [
+        ...(updated[ noteIndex ].saves || []),
         { user_id: user.id },
       ];
       await supabase
         .from("saves")
-        .insert([{ note_id: noteId, user_id: user.id }]);
+        .insert([ { note_id: noteId, user_id: user.id } ]);
     }
     setNotes(updated);
   };
@@ -161,11 +173,10 @@ export function Feed() {
                   <button
                     key={c}
                     onClick={() => setActiveCat(c)}
-                    className={`shrink-0 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${
-                      activeCat === c
-                        ? "bg-(--text-main) text-(--bg-page) border-transparent"
-                        : "border-(--border-subtle) text-(--text-muted) hover:text-(--text-main)"
-                    }`}
+                    className={`shrink-0 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${activeCat === c
+                      ? "bg-(--text-main) text-(--bg-page) border-transparent"
+                      : "border-(--border-subtle) text-(--text-muted) hover:text-(--text-main)"
+                      }`}
                   >
                     {c}
                   </button>
@@ -231,16 +242,14 @@ export function Feed() {
                           <div className="flex items-center gap-4 md:gap-8">
                             <button
                               onClick={() => handleToggleLike(note.id)}
-                              className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
-                                hasLiked
-                                  ? "text-rose-500"
-                                  : "text-(--text-muted) hover:text-rose-400"
-                              }`}
+                              className={`flex items-center gap-1.5 transition-colors cursor-pointer ${hasLiked
+                                ? "text-rose-500"
+                                : "text-(--text-muted) hover:text-rose-400"
+                                }`}
                             >
                               <i
-                                className={`${
-                                  hasLiked ? "fa-solid" : "fa-regular"
-                                } fa-heart text-base hover:scale-110 transition-all `}
+                                className={`${hasLiked ? "fa-solid" : "fa-regular"
+                                  } fa-heart text-base hover:scale-110 transition-all `}
                               ></i>
                               <span className="text-xs font-bold">
                                 {note.reactions?.length || 0}
@@ -260,16 +269,14 @@ export function Feed() {
                             </button>
                             <button
                               onClick={() => handleToggleSave(note.id)}
-                              className={`flex items-center transition-colors cursor-pointer ${
-                                hasSaved
-                                  ? "text-yellow-500"
-                                  : "text-(--text-muted) hover:text-yellow-400"
-                              }`}
+                              className={`flex items-center transition-colors cursor-pointer ${hasSaved
+                                ? "text-yellow-500"
+                                : "text-(--text-muted) hover:text-yellow-400"
+                                }`}
                             >
                               <i
-                                className={`${
-                                  hasSaved ? "fa-solid" : "fa-regular"
-                                } fa-bookmark text-base hover:scale-110 transition-all`}
+                                className={`${hasSaved ? "fa-solid" : "fa-regular"
+                                  } fa-bookmark text-base hover:scale-110 transition-all`}
                               ></i>
                             </button>
                           </div>
@@ -280,7 +287,7 @@ export function Feed() {
                               if (navigator.share) {
                                 navigator
                                   .share({ title: note.title, url: url })
-                                  .catch(() => {});
+                                  .catch(() => { });
                               } else {
                                 navigator.clipboard.writeText(url);
                                 alert("Link copied!");

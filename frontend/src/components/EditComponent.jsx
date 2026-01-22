@@ -11,16 +11,16 @@ export function EditNote() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("General");
-  const [visibility, setVisibility] = useState("Private");
-  const [folderId, setFolderId] = useState("");
-  const [folders, setFolders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [ title, setTitle ] = useState("");
+  const [ content, setContent ] = useState("");
+  const [ category, setCategory ] = useState("General");
+  const [ visibility, setVisibility ] = useState("Private");
+  const [ folderId, setFolderId ] = useState("");
+  const [ folders, setFolders ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
 
-  // MEMBER 3: Toggle state for Read-Only vs Edit
-  const [isEditing, setIsEditing] = useState(false);
+
+  const [ isEditing, setIsEditing ] = useState(false);
 
   const categories = [
     "General",
@@ -58,7 +58,7 @@ export function EditNote() {
       }
     };
     loadData();
-  }, [id, user]);
+  }, [ id, user ]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -74,7 +74,7 @@ export function EditNote() {
       })
       .eq("id", id);
 
-    setIsEditing(false); // Go back to read mode after saving
+    setIsEditing(false);
     if (visibility === "Public") navigate("/feed");
   };
 
@@ -96,7 +96,7 @@ export function EditNote() {
           {/* MAIN CONTENT AREA */}
           <div className="lg:col-span-2 space-y-6">
             {!isEditing ? (
-              /* MEMBER 3: READ-ONLY VIEW */
+
               <div className="space-y-8 animate-in fade-in duration-500">
                 <h1 className="text-5xl font-black tracking-tighter text-(--text-main) leading-tight">
                   {title}
@@ -107,7 +107,7 @@ export function EditNote() {
                 />
               </div>
             ) : (
-              /* EDIT MODE (Original UI) */
+
               <div className="space-y-6 animate-in zoom-in-95 duration-200">
                 <input
                   value={title}
@@ -130,7 +130,7 @@ export function EditNote() {
           {/* SIDEBAR SETTINGS */}
           <div className="space-y-4">
             <div className="bg-(--bg-card) border border-(--border-subtle) rounded-[2.5rem] p-8 space-y-8 sticky top-12">
-              {/* MEMBER 3: TOGGLE BUTTON */}
+
               <button
                 type="button"
                 onClick={() => setIsEditing(!isEditing)}
@@ -205,11 +205,10 @@ export function EditNote() {
                           visibility === "Public" ? "Private" : "Public"
                         )
                       }
-                      className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${
-                        visibility === "Public"
+                      className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${visibility === "Public"
                           ? "bg-(--accent-surface) border-(--accent-primary) text-(--accent-primary)"
                           : "bg-(--bg-input) border-(--border-subtle) text-(--text-faint)"
-                      }`}
+                        }`}
                     >
                       {visibility === "Public"
                         ? "🚀 GOING PUBLIC"

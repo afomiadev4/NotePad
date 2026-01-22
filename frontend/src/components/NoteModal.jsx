@@ -12,7 +12,7 @@ export function NoteModal({
 }) {
   const formRef = useRef();
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [ isEditing, setIsEditing ] = useState(false);
   const categories = [
     "General",
     "Life",
@@ -22,7 +22,7 @@ export function NoteModal({
     "Thoughts",
   ];
 
-  const [formData, setFormData] = useState({
+  const [ formData, setFormData ] = useState({
     title: "",
     content: "",
     category: "General",
@@ -30,16 +30,16 @@ export function NoteModal({
     visibility: "Private",
   });
 
-  const [wordCount, setWordCount] = useState(0);
+  const [ wordCount, setWordCount ] = useState(0);
   const WORD_LIMIT = 300;
 
   useEffect(() => {
     const plainText = (formData.content || "").replace(/<[^>]*>/g, " ");
     const words = plainText.match(/\b[-?(\w+)]+\b/gi);
     setWordCount(words ? words.length : 0);
-  }, [formData.content]);
+  }, [ formData.content ]);
 
-  // This effect runs every time a note is clicked/opened
+
   useEffect(() => {
     if (isOpen && note) {
       setFormData({
@@ -52,7 +52,7 @@ export function NoteModal({
       });
       setIsEditing(false);
     }
-  }, [note, isOpen]);
+  }, [ note, isOpen ]);
 
   if (!isOpen || !note) return null; // Safety check: if no note, don't render anything
 
@@ -135,9 +135,8 @@ export function NoteModal({
                 {formData.visibility === "Public" && (
                   <div className="flex-1 h-1 bg-(--bg-card) rounded-full overflow-hidden max-w-[100px]">
                     <div
-                      className={`h-full transition-all duration-300 ${
-                        wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
-                      }`}
+                      className={`h-full transition-all duration-300 ${wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
+                        }`}
                       style={{
                         width: `${Math.min(
                           (wordCount / WORD_LIMIT) * 100,

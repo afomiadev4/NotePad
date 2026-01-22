@@ -8,33 +8,34 @@ import "react-quill-new/dist/quill.snow.css";
 
 export function CreateNote() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [ searchParams ] = useSearchParams();
   const user = useSelector((state) => state.auth.user);
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [category, setCategory] = useState("General");
-  const [isPublic, setIsPublic] = useState(
+  const [ title, setTitle ] = useState("");
+  const [ content, setContent ] = useState("");
+  const [ category, setCategory ] = useState("General");
+  const [ isPublic, setIsPublic ] = useState(
     searchParams.get("mode") === "public"
   );
-  const [folderId, setFolderId] = useState("uncategorized");
-  const [folders, setFolders] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [ folderId, setFolderId ] = useState("uncategorized");
+  const [ folders, setFolders ] = useState([]);
+  const [ loading, setLoading ] = useState(false);
 
-  const [wordCount, setWordCount] = useState(0);
+  const [ wordCount, setWordCount ] = useState(0);
   const WORD_LIMIT = 300;
 
   useEffect(() => {
     const plainText = content.replace(/<[^>]*>/g, " ");
-    const words = plainText.match(/\b[-?(\w+)]+\b/gi);
-    setWordCount(words ? words.length : 0);
-  }, [content]);
+    const words = plainText.split(/\s+/);
+    const actualWords = words.filter(word => word.trim().length > 0);
+    setWordCount(actualWords.length);
+  }, [ content ]);
 
-  // Sync state with URL if user clicks different NavLinks
+
   useEffect(() => {
     const mode = searchParams.get("mode");
     setIsPublic(mode === "public");
-  }, [searchParams]);
+  }, [ searchParams ]);
 
   useEffect(() => {
     if (user?.id) {
@@ -47,13 +48,13 @@ export function CreateNote() {
       };
       fetchFolders();
     }
-  }, [user]);
+  }, [ user ]);
 
   const handleSave = async (e) => {
     e.preventDefault();
     if (!user?.id) return;
 
-    // Strict validation for Public Posts
+
     if (isPublic && wordCount > WORD_LIMIT) {
       alert(
         `Limit exceeded! Public posts cannot be more than ${WORD_LIMIT} words.`
@@ -68,7 +69,7 @@ export function CreateNote() {
         content,
         user_id: user.id,
         folder_id: folderId === "uncategorized" ? null : folderId,
-        visibility: isPublic ? "Public" : "Private",
+        visibility: isPublic === true ? "Public" : "Private",
         category,
         updated_at: new Date(),
       },
@@ -118,11 +119,10 @@ export function CreateNote() {
                     Word Count
                   </label>
                   <span
-                    className={`text-sm font-black transition-colors ${
-                      isPublic && wordCount > WORD_LIMIT
-                        ? "text-red-500"
-                        : "text-blue-400"
-                    }`}
+                    className={`text-sm font-black transition-colors ${isPublic && wordCount > WORD_LIMIT
+                      ? "text-red-500"
+                      : "text-blue-400"
+                      }`}
                   >
                     {wordCount}
                     {isPublic ? ` / ${WORD_LIMIT}` : ""}
@@ -131,9 +131,8 @@ export function CreateNote() {
                 {isPublic && (
                   <div className="w-full h-1 bg-[var(--bg-card)] rounded-full overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-300 ${
-                        wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
-                      }`}
+                      className={`h-full transition-all duration-300 ${wordCount > WORD_LIMIT ? "bg-red-500" : "bg-blue-500"
+                        }`}
                       style={{
                         width: `${Math.min(
                           (wordCount / WORD_LIMIT) * 100,
@@ -212,11 +211,10 @@ export function CreateNote() {
                 <button
                   type="button"
                   onClick={() => setIsPublic(!isPublic)}
-                  className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${
-                    isPublic
-                      ? "bg-[var(--accent-surface)] border-[var(--accent-primary)] text-[var(--accent-primary)] hover:scale-[1.02]"
-                      : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-faint)] hover:border-[var(--text-muted)] hover:text-[var(--text-muted)] hover:scale-[1.02]"
-                  }`}
+                  className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${isPublic
+                    ? "bg-[var(--accent-surface)] border-[var(--accent-primary)] text-[var(--accent-primary)] hover:scale-[1.02]"
+                    : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-faint)] hover:border-[var(--text-muted)] hover:text-[var(--text-muted)] hover:scale-[1.02]"
+                    }`}
                 >
                   {isPublic ? "🚀 PUBLIC FEED" : "🔒 PRIVATE NOTE"}
                 </button>
@@ -231,8 +229,8 @@ export function CreateNote() {
                   {loading
                     ? "CREATING..."
                     : isPublic
-                    ? "POST TO FEED"
-                    : "CREATE NOTE"}
+                      ? "POST TO FEED"
+                      : "CREATE NOTE"}
                 </button>
                 <button
                   type="button"
