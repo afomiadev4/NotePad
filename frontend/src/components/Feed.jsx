@@ -58,6 +58,7 @@ export function Feed() {
 
   useEffect(() => {
     fetchPosts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCat, filterUser]);
 
   const handleToggleLike = async (noteId) => {
@@ -122,15 +123,15 @@ export function Feed() {
       <main className="flex-1 w-full lg:ml-64 px-4 md:px-8 pt-4 md:pt-8">
         <div className="max-w-2xl mx-auto space-y-6 pb-32 lg:pb-12">
           {/* Responsive Header */}
-          <header className="sticky top-0 bg-[var(--bg-page)]/90 backdrop-blur-xl z-30 pb-4 border-b border-[var(--border-subtle)] pt-2 transition-colors duration-300">
+          <header className="sticky top-0 bg-(--bg-page)/90 backdrop-blur-xl z-30 pb-4 border-b border-(--border-subtle) pt-2 transition-colors duration-300">
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl md:text-2xl font-black tracking-tight flex items-center gap-3 truncate text-[var(--text-main)]">
+                <h1 className="text-xl md:text-2xl font-black tracking-tight flex items-center gap-3 truncate text-(--text-main)">
                   {filterUser ? (
                     <>
                       <button
                         onClick={() => setFilterUser(null)}
-                        className="hover:text-[var(--accent-primary)] transition-colors p-1"
+                        className="hover:text-(--accent-primary) transition-colors p-1"
                       >
                         <i className="fa-solid fa-arrow-left text-sm"></i>
                       </button>
@@ -143,7 +144,7 @@ export function Feed() {
                 {filterUser && (
                   <button
                     onClick={() => setFilterUser(null)}
-                    className="shrink-0 text-[10px] font-black uppercase tracking-widest bg-[var(--bg-card)] px-3 py-1.5 rounded-full hover:bg-[var(--bg-card-hover)] text-[var(--text-muted)]"
+                    className="shrink-0 text-[10px] font-black uppercase tracking-widest bg-(--bg-card) px-3 py-1.5 rounded-full hover:bg-(--bg-card-hover) text-(--text-muted)"
                   >
                     Clear
                   </button>
@@ -162,8 +163,8 @@ export function Feed() {
                     onClick={() => setActiveCat(c)}
                     className={`shrink-0 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border cursor-pointer ${
                       activeCat === c
-                        ? "bg-[var(--text-main)] text-[var(--bg-page)] border-transparent"
-                        : "border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)]"
+                        ? "bg-(--text-main) text-(--bg-page) border-transparent"
+                        : "border-(--border-subtle) text-(--text-muted) hover:text-(--text-main)"
                     }`}
                   >
                     {c}
@@ -175,7 +176,7 @@ export function Feed() {
 
           {/* Posts Section */}
           {loading ? (
-            <div className="flex justify-center py-20 text-[var(--accent-primary)] animate-pulse font-black uppercase tracking-widest text-[10px]">
+            <div className="flex justify-center py-20 text-(--accent-primary) animate-pulse font-black uppercase tracking-widest text-[10px]">
               Syncing...
             </div>
           ) : (
@@ -191,7 +192,7 @@ export function Feed() {
                 return (
                   <article
                     key={note.id}
-                    className="bg-[var(--bg-card)] rounded-[1.5rem] md:rounded-[2rem] border border-[var(--border-subtle)] p-4 md:p-6 hover:bg-[var(--bg-card-hover)] transition-all"
+                    className="bg-(--bg-card) rounded-[1.5rem] md:rounded-[2rem] border border-(--border-subtle) p-4 md:p-6 hover:bg-(--bg-card-hover) transition-all"
                   >
                     <div className="flex gap-3 md:gap-4">
                       {/* Responsive Image Size */}
@@ -205,30 +206,35 @@ export function Feed() {
                       />
 
                       <div className="flex-1 min-w-0">
-                        <span
-                          onClick={() => setViewingProfile(note.profiles)}
-                          className="font-bold text-sm md:text-base text-[var(--text-main)] cursor-pointer hover:text-[var(--accent-primary)] hover:underline transition-all truncate block"
-                        >
-                          @{note.profiles?.username || "anonymous"}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span
+                            onClick={() => setViewingProfile(note.profiles)}
+                            className="font-bold text-sm md:text-base text-(--text-main) cursor-pointer hover:text-(--accent-primary) hover:underline transition-all truncate"
+                          >
+                            @{note.profiles?.username || "anonymous"}
+                          </span>
+                          <span className="text-[10px] font-black uppercase tracking-widest bg-(--bg-page) px-2 py-0.5 rounded-md text-(--text-muted) border border-(--border-subtle) shrink-0">
+                            {note.category}
+                          </span>
+                        </div>
 
-                        <h2 className="text-lg md:text-xl font-bold text-[var(--text-main)] mt-2 md:mt-4 leading-tight truncate">
+                        <h2 className="text-lg md:text-xl font-bold text-(--text-main) mt-2 md:mt-4 leading-tight truncate">
                           {note.title}
                         </h2>
                         <div
-                          className="text-[var(--text-muted)] text-xs md:text-sm my-3 md:my-4 line-clamp-5 md:line-clamp-6 leading-relaxed"
+                          className="text-(--text-muted) text-xs md:text-sm my-3 md:my-4 line-clamp-5 md:line-clamp-6 leading-relaxed"
                           dangerouslySetInnerHTML={{ __html: note.content }}
                         />
 
                         {/* Action Bar */}
-                        <div className="flex items-center justify-between pt-4 border-t border-[var(--border-subtle)]">
+                        <div className="flex items-center justify-between pt-4 border-t border-(--border-subtle)">
                           <div className="flex items-center gap-4 md:gap-8">
                             <button
                               onClick={() => handleToggleLike(note.id)}
                               className={`flex items-center gap-1.5 transition-colors cursor-pointer ${
                                 hasLiked
                                   ? "text-rose-500"
-                                  : "text-[var(--text-muted)] hover:text-rose-400"
+                                  : "text-(--text-muted) hover:text-rose-400"
                               }`}
                             >
                               <i
@@ -245,7 +251,7 @@ export function Feed() {
                                 setSelectedNote(note);
                                 setIsCommentModalOpen(true);
                               }}
-                              className="flex items-center gap-1.5 text-[var(--text-muted)] hover:text-[var(--accent-primary)] transition-colors cursor-pointer"
+                              className="flex items-center gap-1.5 text-(--text-muted) hover:text-(--accent-primary) transition-colors cursor-pointer"
                             >
                               <i className="fa-regular fa-comment text-base hover:scale-110 transition-all"></i>
                               <span className="text-xs font-bold">
@@ -257,7 +263,7 @@ export function Feed() {
                               className={`flex items-center transition-colors cursor-pointer ${
                                 hasSaved
                                   ? "text-yellow-500"
-                                  : "text-[var(--text-muted)] hover:text-yellow-400"
+                                  : "text-(--text-muted) hover:text-yellow-400"
                               }`}
                             >
                               <i
@@ -280,7 +286,7 @@ export function Feed() {
                                 alert("Link copied!");
                               }
                             }}
-                            className="text-[var(--text-muted)] hover:text-emerald-400 transition-colors p-2 cursor-pointer"
+                            className="text-(--text-muted) hover:text-emerald-400 transition-colors p-2 cursor-pointer"
                           >
                             <i className="fa-solid fa-arrow-up-from-bracket text-sm hover:scale-110 transition-all"></i>
                           </button>
