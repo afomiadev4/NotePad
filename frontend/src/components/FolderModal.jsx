@@ -23,24 +23,24 @@ const COLORS = [
 
 export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
   const user = useSelector((state) => state.auth.user);
-  const [name, setName] = useState("");
+  const [ name, setName ] = useState("");
   const folderRef = useRef();
-  const [selectedIcon, setSelectedIcon] = useState(ICONS[0]);
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
+  const [ selectedIcon, setSelectedIcon ] = useState(ICONS[ 0 ]);
+  const [ selectedColor, setSelectedColor ] = useState(COLORS[ 0 ]);
 
   useEffect(() => {
     if (folder) {
       setName(folder.name || "");
-      setSelectedIcon(folder.icon || ICONS[0]);
+      setSelectedIcon(folder.icon || ICONS[ 0 ]);
       const colorMatch =
-        COLORS.find((c) => c.class === folder.color) || COLORS[0];
+        COLORS.find((c) => c.class === folder.color) || COLORS[ 0 ];
       setSelectedColor(colorMatch);
     } else {
       setName("");
-      setSelectedIcon(ICONS[0]);
-      setSelectedColor(COLORS[0]);
+      setSelectedIcon(ICONS[ 0 ]);
+      setSelectedColor(COLORS[ 0 ]);
     }
-  }, [folder, isOpen]);
+  }, [ folder, isOpen ]);
 
   if (!isOpen) return null;
 
@@ -56,11 +56,11 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
     };
 
     if (folder) {
-      // Update existing
+
       await supabase.from("folders").update(folderData).eq("id", folder.id);
     } else {
-      // Create new
-      await supabase.from("folders").insert([folderData]);
+
+      await supabase.from("folders").insert([ folderData ]);
     }
 
     onRefresh();
@@ -124,11 +124,10 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
                   key={icon}
                   type="button"
                   onClick={() => setSelectedIcon(icon)}
-                  className={`p-3 rounded-xl border transition-all ${
-                    selectedIcon === icon
+                  className={`p-3 rounded-xl border transition-all ${selectedIcon === icon
                       ? "bg-[var(--accent-primary)] border-[var(--accent-primary)] text-white"
                       : "bg-[var(--bg-input)] border-[var(--border-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)]"
-                  }`}
+                    }`}
                 >
                   <i className={`fa-solid ${icon}`}></i>
                 </button>
@@ -146,11 +145,10 @@ export function FolderModal({ isOpen, onClose, onRefresh, folder }) {
                   key={color.name}
                   type="button"
                   onClick={() => setSelectedColor(color)}
-                  className={`w-10 h-10 rounded-full border-2 transition-all ${
-                    selectedColor.name === color.name
+                  className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.name === color.name
                       ? "border-[var(--text-main)] scale-110"
                       : "border-transparent"
-                  } ${color.bg}`}
+                    } ${color.bg}`}
                 >
                   <div
                     className={`w-3 h-3 rounded-full mx-auto ${color.class}`}

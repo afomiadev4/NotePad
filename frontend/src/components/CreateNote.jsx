@@ -25,10 +25,17 @@ export function CreateNote() {
   const WORD_LIMIT = 300;
 
   useEffect(() => {
+    if (!content || content.trim() === "" || content === "<p></p>") {
+      setWordCount(0);
+      return;
+    }
     const plainText = content.replace(/<[^>]*>/g, " ");
-    const words = plainText.split(/\s+/);
-    const actualWords = words.filter(word => word.trim().length > 0);
-    setWordCount(actualWords.length);
+
+    const sanitizedText = plainText.replace(/&nbsp;/g, " ").replace(/\s+/g, " ").trim();
+
+    const words = sanitizedText.split(" ").filter(word => word.length > 0);
+
+    setWordCount(words.length);
   }, [ content ]);
 
 

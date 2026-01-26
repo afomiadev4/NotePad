@@ -206,8 +206,8 @@ export function EditNote() {
                         )
                       }
                       className={`w-full py-4 rounded-2xl border font-black text-[10px] tracking-widest transition-all ${visibility === "Public"
-                          ? "bg-(--accent-surface) border-(--accent-primary) text-(--accent-primary)"
-                          : "bg-(--bg-input) border-(--border-subtle) text-(--text-faint)"
+                        ? "bg-(--accent-surface) border-(--accent-primary) text-(--accent-primary)"
+                        : "bg-(--bg-input) border-(--border-subtle) text-(--text-faint)"
                         }`}
                     >
                       {visibility === "Public"

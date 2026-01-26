@@ -3,6 +3,7 @@ import { supabase } from "../supabaseClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useSelector } from "react-redux";
 
 export function AccountPage() {
   const { theme, toggleTheme } = useTheme();
@@ -15,6 +16,8 @@ export function AccountPage() {
   const [ userPosts, setUserPosts ] = useState([]);
   const [ loading, setLoading ] = useState(true);
   const navigate = useNavigate();
+  const currentUser = useSelector((state) => state.auth.user);
+
 
   useEffect(() => {
     const getUserData = async () => {
@@ -58,8 +61,8 @@ export function AccountPage() {
         profiles:user_id (username, avatar_url)
       `
         )
-        .eq("user_id", userId) // Only this user's posts
-        .eq("visibility", "Public") // Only public posts
+        .eq("user_id", userId)
+        .eq("visibility", "Public")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -150,14 +153,33 @@ export function AccountPage() {
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(
-      "PERMANENTLY DELETE ACCOUNT? This cannot be undone."
-    );
-    if (confirmed) {
+
+    if (!currentUser?.id) {
+      alert("No user found. Try logging out and back in.");
+      return;
+    }
+
+    if (!window.confirm("Are you sure? This cannot be undone.")) return;
+
+    try {
+      setLoading(true);
+
+      await supabase.from("notes").delete().eq("user_id", currentUser.id);
+
+      await supabase.from("profiles").delete().eq("id", currentUser.id);
+
       await supabase.auth.signOut();
-      navigate("/login");
+      alert("Account succesfully delete.");
+      navigate("/");
+    }
+    catch (error) {
+      alert("Error: " + error.message);
+    }
+    finally {
+      setLoading(false);
     }
   };
+
 
   const handleDelete = async (noteId) => {
     const confirmed = window.confirm("Are you sure?");
@@ -221,8 +243,8 @@ export function AccountPage() {
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 className={`px-6 py-2 rounded-xl border font-bold text-sm transition active:scale-95 ${isEditing
-                    ? "border-red-500/50 text-red-500 bg-red-500/5"
-                    : "border-[var(--border-subtle)] hover:bg-[var(--bg-card-hover)] text-[var(--text-main)]"
+                  ? "border-red-500/50 text-red-500 bg-red-500/5"
+                  : "border-[var(--border-subtle)] hover:bg-[var(--bg-card-hover)] text-[var(--text-main)]"
                   }`}
               >
                 {isEditing ? "Cancel" : "Edit Profile"}

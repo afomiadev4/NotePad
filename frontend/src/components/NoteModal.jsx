@@ -33,12 +33,6 @@ export function NoteModal({
   const [ wordCount, setWordCount ] = useState(0);
   const WORD_LIMIT = 300;
 
-  useEffect(() => {
-    const plainText = (formData.content || "").replace(/<[^>]*>/g, " ");
-    const words = plainText.match(/\b[-?(\w+)]+\b/gi);
-    setWordCount(words ? words.length : 0);
-  }, [ formData.content ]);
-
 
   useEffect(() => {
     if (isOpen && note) {
@@ -47,15 +41,14 @@ export function NoteModal({
         title: note.title || "Untitled",
         content: note.content || "",
         category: note.category || "General",
-        folderId: note.folder_id || "uncategorized", // Changed to folder_id to match Supabase snake_case
+        folderId: note.folder_id || "uncategorized",
         visibility: note.visibility || "Private",
       });
       setIsEditing(false);
     }
   }, [ note, isOpen ]);
 
-  if (!isOpen || !note) return null; // Safety check: if no note, don't render anything
-
+  if (!isOpen || !note) return null;
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({

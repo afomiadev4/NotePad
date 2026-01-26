@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navigation } from "./Navigation";
 import { FolderModal } from "./FolderModal";
-import { NoteModal } from "./NoteModal"; // ADDED THIS
+import { NoteModal } from "./NoteModal";
 import { supabase } from "../supabaseClient";
 import { useSelector } from "react-redux";
 
@@ -11,21 +11,21 @@ export function Folders() {
   const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
-  const [folders, setFolders] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
-  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [ folders, setFolders ] = useState([]);
+  const [ notes, setNotes ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
+  const [ isFolderModalOpen, setIsFolderModalOpen ] = useState(false);
+  const [ selectedFolder, setSelectedFolder ] = useState(null);
 
-  // MEMBER 3: State for Note Modal
-  const [selectedNote, setSelectedNote] = useState(null);
-  const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+
+  const [ selectedNote, setSelectedNote ] = useState(null);
+  const [ isNoteModalOpen, setIsNoteModalOpen ] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
     setLoading(true);
     try {
-      const [fRes, nRes] = await Promise.all([
+      const [ fRes, nRes ] = await Promise.all([
         supabase.from("folders").select("*").eq("user_id", user.id),
         supabase
           .from("notes")
@@ -56,9 +56,9 @@ export function Folders() {
 
   useEffect(() => {
     fetchData();
-  }, [user]);
+  }, [ user ]);
 
-  // MEMBER 3: Note Action Handlers
+
   const handleNoteClick = (note) => {
     setSelectedNote(note);
     setIsNoteModalOpen(true);
@@ -81,6 +81,7 @@ export function Folders() {
       fetchData();
     }
   };
+
 
   const handleDeleteNote = async () => {
     if (!selectedNote) return;
