@@ -131,7 +131,7 @@ export function Feed() {
     <div className="min-h-screen bg-[var(--bg-page)] flex flex-col lg:flex-row text-[var(--text-main)] font-sans overflow-x-hidden transition-colors duration-300">
       <Navigation />
 
-      {/* Main Content */}
+
       <main className="flex-1 w-full lg:ml-64 px-4 md:px-8 pt-4 md:pt-8">
         <div className="max-w-2xl mx-auto space-y-6 pb-32 lg:pb-12">
           {/* Responsive Header */}
@@ -167,7 +167,7 @@ export function Feed() {
                 <SearchBar setNotes={setNotes} />
               </div>
 
-              {/* Category Pills - Scrollable on mobile */}
+
               <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-4 px-4 lg:mx-0 lg:px-0">
                 {categories.map((c) => (
                   <button
@@ -233,7 +233,7 @@ export function Feed() {
                           {note.title}
                         </h2>
                         <div
-                          className="text-(--text-muted) text-xs md:text-sm my-3 md:my-4 line-clamp-5 md:line-clamp-6 leading-relaxed"
+                          className="text-(--text-muted) text-xs md:text-sm my-3 md:my-4 leading-relaxed break-words whitespace-pre-wrap overflow-hidden"
                           dangerouslySetInnerHTML={{ __html: note.content }}
                         />
 
