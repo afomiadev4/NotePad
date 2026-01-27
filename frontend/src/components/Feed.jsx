@@ -30,37 +30,36 @@ export function Feed() {
     setNotes([]);
     setLoading(true);
     try {
+
       let query = supabase
         .from("notes")
-        .select(
-          `
+        .select(`
           *,
           profiles!user_id (id, username, avatar_url, bio),
           reactions!note_id (user_id),
           saves!note_id (user_id),
           comments!note_id (id)
-        `
-        )
-        .eq("visibility", "Public")
-        .order("created_at", { ascending: false });
+        `)
+        .eq("visibility", "Public");
 
       if (activeCat !== "All") {
         query = query.eq("category", activeCat);
       }
 
+
       if (filterUser) {
         query = query.eq("user_id", filterUser.id);
       }
 
-      query = query.eq("visibility", "Public");
 
       const { data, error } = await query.order("created_at", { ascending: false });
 
-      console.log("FEED DATA RETURNED:", data.map(n => ({ title: n.title, vis: n.visibility })));
-
       if (error) throw error;
 
-      setNotes(data || []);
+
+      const publicOnly = (data || []).filter(n => n.visibility === "Public");
+
+      setNotes(publicOnly);
     } catch (error) {
       console.error("Error fetching feed:", error.message);
     } finally {

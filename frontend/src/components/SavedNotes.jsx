@@ -5,8 +5,8 @@ import { useSelector } from "react-redux";
 
 export function SavedNotes() {
   const user = useSelector((state) => state.auth.user);
-  const [savedNotes, setSavedNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [ savedNotes, setSavedNotes ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
 
   const fetchSaved = async () => {
     if (!user) return;
@@ -40,7 +40,7 @@ export function SavedNotes() {
 
   useEffect(() => {
     fetchSaved();
-  }, [user]);
+  }, [ user ]);
 
   const removeSave = async (noteId) => {
     const { error } = await supabase
@@ -99,8 +99,7 @@ export function SavedNotes() {
                       <img
                         src={
                           note.profiles?.avatar_url ||
-                          `https://ui-avatars.com/api/?name=${
-                            note.profiles?.username || "U"
+                          `https://ui-avatars.com/api/?name=${note.profiles?.username || "U"
                           }&background=random`
                         }
                         className="w-8 h-8 rounded-xl object-cover border border-[var(--border-subtle)]"
@@ -114,7 +113,7 @@ export function SavedNotes() {
                       {note.title}
                     </h3>
                     <div
-                      className="text-sm text-[var(--text-faint)] line-clamp-4 leading-relaxed font-medium"
+                      className="text-(--text-muted) text-xs md:text-sm my-3 md:my-4 leading-relaxed break-words whitespace-pre-wrap overflow-hidden"
                       dangerouslySetInnerHTML={{ __html: note.content }}
                     />
                   </div>

@@ -343,7 +343,7 @@ export function AccountPage() {
                       </div>
 
                       <div
-                        className="text-[var(--text-muted)] text-sm line-clamp-3 leading-relaxed mb-6"
+                        className="text-(--text-muted) text-xs md:text-sm my-3 md:my-4 leading-relaxed break-words whitespace-pre-wrap overflow-hidden"
                         dangerouslySetInnerHTML={{ __html: post.content }}
                       />
 
